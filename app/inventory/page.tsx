@@ -7,6 +7,7 @@ import GrinderForm from '@/components/GrinderForm'
 import MokaPotForm from '@/components/MokaPotForm'
 import InventoryList from '@/components/InventoryList'
 import { Bean, Grinder, MokaPot } from '@/lib/types'
+import { getAuthHeaders } from '@/lib/utils'
 
 export default function InventoryPage() {
   const [beans, setBeans] = useState<Bean[]>([])
@@ -22,9 +23,12 @@ export default function InventoryPage() {
 
   const fetchBeans = async () => {
     try {
-      const response = await fetch('/api/beans')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/beans', { headers })
       if (response.ok) {
         setBeans(await response.json())
+      } else {
+        console.error('Beans fetch failed:', response.status, response.statusText)
       }
     } catch (err) {
       console.error('Error fetching beans:', err)
@@ -33,9 +37,12 @@ export default function InventoryPage() {
 
   const fetchGrinders = async () => {
     try {
-      const response = await fetch('/api/grinders')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/grinders', { headers })
       if (response.ok) {
         setGrinders(await response.json())
+      } else {
+        console.error('Grinders fetch failed:', response.status, response.statusText)
       }
     } catch (err) {
       console.error('Error fetching grinders:', err)
@@ -44,9 +51,12 @@ export default function InventoryPage() {
 
   const fetchMokaPots = async () => {
     try {
-      const response = await fetch('/api/moka-pots')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/moka-pots', { headers })
       if (response.ok) {
         setMokaPots(await response.json())
+      } else {
+        console.error('Moka pots fetch failed:', response.status, response.statusText)
       }
     } catch (err) {
       console.error('Error fetching moka pots:', err)
@@ -54,57 +64,75 @@ export default function InventoryPage() {
   }
 
   const handleAddBean = async (bean: any) => {
+    const headers = await getAuthHeaders()
     const response = await fetch('/api/beans', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(bean),
     })
     if (response.ok) {
       await fetchBeans()
+    } else {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to add bean: ${response.status}`)
     }
   }
 
   const handleAddGrinder = async (grinder: any) => {
+    const headers = await getAuthHeaders()
     const response = await fetch('/api/grinders', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(grinder),
     })
     if (response.ok) {
       await fetchGrinders()
+    } else {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to add grinder: ${response.status}`)
     }
   }
 
   const handleAddMokaPot = async (mokaPot: any) => {
+    const headers = await getAuthHeaders()
     const response = await fetch('/api/moka-pots', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(mokaPot),
     })
     if (response.ok) {
       await fetchMokaPots()
+    } else {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `Failed to add moka pot: ${response.status}`)
     }
   }
 
   const handleDeleteBean = async (id: string) => {
-    const response = await fetch(`/api/beans?id=${id}`, { method: 'DELETE' })
-    if (response.ok) {
-      await fetchBeans()
-    }
+    const headers = await getAuthHeaders()
+    const response = await fetch(`/api/beans?id=${id}`, {
+      method: 'DELETE',
+      headers,
+    })
+    if (response.ok) await fetchBeans()
   }
 
   const handleDeleteGrinder = async (id: string) => {
-    const response = await fetch(`/api/grinders?id=${id}`, { method: 'DELETE' })
-    if (response.ok) {
-      await fetchGrinders()
-    }
+    const headers = await getAuthHeaders()
+    const response = await fetch(`/api/grinders?id=${id}`, {
+      method: 'DELETE',
+      headers,
+    })
+    if (response.ok) await fetchGrinders()
   }
 
   const handleDeleteMokaPot = async (id: string) => {
-    const response = await fetch(`/api/moka-pots?id=${id}`, { method: 'DELETE' })
-    if (response.ok) {
-      await fetchMokaPots()
-    }
+    const headers = await getAuthHeaders()
+    const response = await fetch(`/api/moka-pots?id=${id}`, {
+      method: 'DELETE',
+      headers,
+    })
+    if (response.ok) await fetchMokaPots()
   }
 
   if (loading) {

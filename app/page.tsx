@@ -4,20 +4,32 @@ import { useEffect, useState } from 'react'
 import Header from '@/components/Header'
 import BrewCard from '@/components/BrewCard'
 import { Brew } from '@/lib/types'
+import { getAuthHeaders } from '@/lib/utils'
+import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
 
 export default function Home() {
+  const { user, loading: authLoading } = useAuth()
   const [brews, setBrews] = useState<Brew[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetchBrews()
-  }, [])
+    // Wait for auth to resolve before fetching
+    if (!authLoading) {
+      if (user) {
+        fetchBrews()
+      } else {
+        setLoading(false)
+      }
+    }
+  }, [user, authLoading])
 
   const fetchBrews = async () => {
+    setLoading(true)
     try {
-      const response = await fetch('/api/brews')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/brews', { headers })
       if (!response.ok) throw new Error('Failed to fetch brews')
       const data = await response.json()
       setBrews(data)
@@ -30,8 +42,10 @@ export default function Home() {
 
   const handleDelete = async (id: string) => {
     try {
+      const headers = await getAuthHeaders()
       const response = await fetch(`/api/brews?id=${id}`, {
         method: 'DELETE',
+        headers,
       })
       if (!response.ok) throw new Error('Failed to delete brew')
       setBrews(brews.filter((b) => b.id !== id))
@@ -54,66 +68,78 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-            <p className="text-[#8b6f47] text-sm mb-2">Total Brews</p>
-            <p className="text-4xl font-bold text-[#d4a574]">{brews.length}</p>
+        {/* Not signed in */}
+        {!authLoading && !user ? (
+          <div className="text-center py-20 bg-[#2d2520] border border-[#3d3530] rounded-lg">
+            <div className="text-6xl mb-4">☕</div>
+            <h2 className="text-2xl font-bold text-[#d4a574] mb-2">Welcome to Moka Tracker</h2>
+            <p className="text-[#8b6f47] mb-6">Sign in to start logging your brews.</p>
+            <p className="text-[#8b6f47] text-sm">Click <strong className="text-[#d4a574]">Sign In</strong> in the top right corner.</p>
           </div>
-          <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-            <p className="text-[#8b6f47] text-sm mb-2">Avg Vibe Rating</p>
-            <p className="text-4xl font-bold text-[#d4a574]">
-              {brews.length > 0
-                ? (brews.reduce((sum, b) => sum + b.vibe_rating, 0) / brews.length).toFixed(1)
-                : '—'}
-            </p>
-          </div>
-          <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-            <p className="text-[#8b6f47] text-sm mb-2">Quick Action</p>
-            <Link
-              href="/brew"
-              className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition"
-            >
-              Log Brew →
-            </Link>
-          </div>
-        </div>
+        ) : (
+          <>
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
+                <p className="text-[#8b6f47] text-sm mb-2">Total Brews</p>
+                <p className="text-4xl font-bold text-[#d4a574]">{brews.length}</p>
+              </div>
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
+                <p className="text-[#8b6f47] text-sm mb-2">Avg Vibe Rating</p>
+                <p className="text-4xl font-bold text-[#d4a574]">
+                  {brews.length > 0
+                    ? (brews.reduce((sum, b) => sum + b.vibe_rating, 0) / brews.length).toFixed(1)
+                    : '—'}
+                </p>
+              </div>
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
+                <p className="text-[#8b6f47] text-sm mb-2">Quick Action</p>
+                <Link
+                  href="/brew"
+                  className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition"
+                >
+                  Log Brew →
+                </Link>
+              </div>
+            </div>
 
-        {/* Brews List */}
-        <section>
-          <h2 className="text-2xl font-bold text-[#d4a574] mb-6">Recent Brews</h2>
+            {/* Brews List */}
+            <section>
+              <h2 className="text-2xl font-bold text-[#d4a574] mb-6">Recent Brews</h2>
 
-          {loading ? (
-            <div className="text-center py-12 text-[#8b6f47]">
-              <p>Loading your brewing history...</p>
-            </div>
-          ) : error ? (
-            <div className="bg-red-900/30 border border-red-700 text-red-400 px-6 py-4 rounded">
-              {error}
-            </div>
-          ) : brews.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-[#8b6f47] mb-4">No brews logged yet.</p>
-              <Link
-                href="/brew"
-                className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-6 rounded transition"
-              >
-                Log Your First Brew
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {brews.map((brew) => (
-                <BrewCard
-                  key={brew.id}
-                  brew={brew}
-                  onDelete={handleDelete}
-                  isDeleting={false}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+              {loading ? (
+                <div className="text-center py-12 text-[#8b6f47]">
+                  <p>Loading your brewing history...</p>
+                </div>
+              ) : error ? (
+                <div className="bg-red-900/30 border border-red-700 text-red-400 px-6 py-4 rounded">
+                  {error}
+                </div>
+              ) : brews.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-[#8b6f47] mb-4">No brews logged yet.</p>
+                  <Link
+                    href="/brew"
+                    className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-6 rounded transition"
+                  >
+                    Log Your First Brew
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {brews.map((brew) => (
+                    <BrewCard
+                      key={brew.id}
+                      brew={brew}
+                      onDelete={handleDelete}
+                      isDeleting={false}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </main>
     </>
   )

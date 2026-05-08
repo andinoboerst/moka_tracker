@@ -20,6 +20,9 @@ export interface Grinder {
 export interface MokaPot {
   id: string
   user_id: string
+  brand: string
+  model: string
+  type: string
   size_cups: number
   created_at: string
   updated_at: string

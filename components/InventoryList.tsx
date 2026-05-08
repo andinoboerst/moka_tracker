@@ -37,7 +37,12 @@ export default function InventoryList({
     } else {
       return (
         <div className="flex-1">
-          <h4 className="font-medium text-[#f5f1ed]">{item.size_cups} Cup Moka Pot</h4>
+          <h4 className="font-medium text-[#f5f1ed]">
+            {item.brand} {item.model}
+          </h4>
+          <p className="text-sm text-[#8b6f47]">
+            {item.type} • {item.size_cups} Cup
+          </p>
         </div>
       )
     }

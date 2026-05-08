@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import BrewForm from '@/components/BrewForm'
 import { Bean, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
+import { getAuthHeaders } from '@/lib/utils'
 import Link from 'next/link'
 
 export default function BrewPage() {
@@ -23,7 +24,8 @@ export default function BrewPage() {
 
   const fetchBeans = async () => {
     try {
-      const response = await fetch('/api/beans')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/beans', { headers })
       if (response.ok) setBeans(await response.json())
     } catch (err) {
       console.error('Error fetching beans:', err)
@@ -32,7 +34,8 @@ export default function BrewPage() {
 
   const fetchGrinders = async () => {
     try {
-      const response = await fetch('/api/grinders')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/grinders', { headers })
       if (response.ok) setGrinders(await response.json())
     } catch (err) {
       console.error('Error fetching grinders:', err)
@@ -41,7 +44,8 @@ export default function BrewPage() {
 
   const fetchMokaPots = async () => {
     try {
-      const response = await fetch('/api/moka-pots')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/moka-pots', { headers })
       if (response.ok) setMokaPots(await response.json())
     } catch (err) {
       console.error('Error fetching moka pots:', err)
@@ -51,15 +55,17 @@ export default function BrewPage() {
   const handleSubmitBrew = async (brewData: BrewCreateInput) => {
     setIsSubmitting(true)
     try {
+      const authHeaders = await getAuthHeaders()
       const response = await fetch('/api/brews', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(brewData),
       })
       if (response.ok) {
         router.push('/')
       } else {
-        throw new Error('Failed to save brew')
+        const err = await response.json()
+        throw new Error(err.error || 'Failed to save brew')
       }
     } catch (err) {
       throw err

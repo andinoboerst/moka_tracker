@@ -4,7 +4,7 @@
  */
 export const calculateBrewRatio = (coffeeWeight: number, waterIn: number): number => {
   if (waterIn === 0) return 0
-  return Number((coffeeWeight / waterIn).toFixed(2))
+  return Number((waterIn / coffeeWeight).toFixed(2))
 }
 
 /**
@@ -13,7 +13,7 @@ export const calculateBrewRatio = (coffeeWeight: number, waterIn: number): numbe
  */
 export const calculateExtractionRatio = (coffeeWeight: number, yieldOut: number): number => {
   if (yieldOut === 0) return 0
-  return Number((coffeeWeight / yieldOut).toFixed(2))
+  return Number((yieldOut / coffeeWeight).toFixed(2))
 }
 
 /**
@@ -55,4 +55,15 @@ export const getVibeEmoji = (rating: number): string => {
   if (rating <= 6) return '🙂'
   if (rating <= 8) return '😊'
   return '🤩'
+}
+
+/**
+ * Returns the Authorization header for authenticated API calls.
+ * Must be called in a browser context (client component or event handler).
+ */
+export const getAuthHeaders = async (): Promise<Record<string, string>> => {
+  const { supabase } = await import('./supabase')
+  const { data: { session } } = await supabase.auth.getSession()
+  const token = session?.access_token
+  return token ? { Authorization: `Bearer ${token}` } : {}
 }

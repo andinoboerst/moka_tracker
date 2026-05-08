@@ -1,0 +1,406 @@
+
+> moka_tracker@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.16:3000
+- Environments: .env.local
+✓ Ready in 376ms
+
+ GET /inventory 200 in 285ms (next.js: 102ms, application-code: 183ms)
+ GET /inventory 200 in 93ms (next.js: 7ms, application-code: 86ms)
+ GET /api/beans 401 in 70ms (next.js: 58ms, application-code: 12ms)
+ GET /api/grinders 401 in 96ms (next.js: 94ms, application-code: 3ms)
+ GET /api/moka-pots 401 in 52ms (next.js: 49ms, application-code: 4ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/inventory" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="en" className="geist_a715...">
+                          <body
+                            className="min-h-screen flex flex-col bg-[#1a1410] text-[#f5f1ed]"
+-                           __processed_361e26da-7e2f-4596-9f2b-1c3275e2ddda__="true"
+-                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
+                          >
+                  ...
+ 
+⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "127.0.0.1".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['127.0.0.1'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[browser] Beans fetch failed: 401 Unauthorized 
+    at fetchBeans (app/inventory/page.tsx:38:17)
+  36 |         setBeans(await response.json())
+  37 |       } else {
+> 38 |         console.error('Beans fetch failed:', response.status, response.statusText)
+     |                 ^
+  39 |       }
+  40 |     } catch (err) {
+  41 |       console.error('Error fetching beans:', err) (app/inventory/page.tsx:38:17)
+[browser] Grinders fetch failed: 401 Unauthorized 
+    at fetchGrinders (app/inventory/page.tsx:59:17)
+  57 |         setGrinders(await response.json())
+  58 |       } else {
+> 59 |         console.error('Grinders fetch failed:', response.status, response.statusText)
+     |                 ^
+  60 |       }
+  61 |     } catch (err) {
+  62 |       console.error('Error fetching grinders:', err) (app/inventory/page.tsx:59:17)
+[browser] Moka pots fetch failed: 401 Unauthorized 
+    at fetchMokaPots (app/inventory/page.tsx:80:17)
+  78 |         setMokaPots(await response.json())
+  79 |       } else {
+> 80 |         console.error('Moka pots fetch failed:', response.status, response.statusText)
+     |                 ^
+  81 |       }
+  82 |     } catch (err) {
+  83 |       console.error('Error fetching moka pots:', err) (app/inventory/page.tsx:80:17)
+ GET /api/beans 200 in 443ms (next.js: 5ms, application-code: 437ms)
+ GET /api/grinders 200 in 444ms (next.js: 11ms, application-code: 433ms)
+ GET /api/moka-pots 200 in 446ms (next.js: 15ms, application-code: 431ms)
+Auth header: Bearer invalid-token
+ POST /api/beans 401 in 73ms (next.js: 1742µs, application-code: 71ms)
+ GET / 200 in 55ms (next.js: 15ms, application-code: 41ms)
+(node:24568) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✓ Compiled in 244ms
+ GET /inventory 200 in 41ms (next.js: 6ms, application-code: 36ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/inventory" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="en" className="geist_a715...">
+                          <body
+                            className="min-h-screen flex flex-col bg-[#1a1410] text-[#f5f1ed]"
+-                           __processed_88dabc66-9289-440e-8ce4-709bebfeb007__="true"
+-                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
+                          >
+                  ...
+ 
+ GET /api/moka-pots 200 in 181ms (next.js: 7ms, application-code: 174ms)
+ GET /api/beans 200 in 208ms (next.js: 4ms, application-code: 204ms)
+ GET /api/grinders 200 in 234ms (next.js: 6ms, application-code: 228ms)
+ GET / 200 in 39ms (next.js: 6ms, application-code: 32ms)
+✓ Compiled in 16ms
+ GET /inventory 200 in 137ms (next.js: 64ms, application-code: 72ms)
+ GET /inventory 200 in 136ms (next.js: 78ms, application-code: 58ms)
+ GET /inventory 200 in 71ms (next.js: 1698µs, application-code: 69ms)
+ GET /inventory 200 in 65ms (next.js: 2ms, application-code: 63ms)
+ GET /inventory 200 in 66ms (next.js: 3ms, application-code: 63ms)
+ GET /inventory 200 in 66ms (next.js: 3ms, application-code: 63ms)
+ GET /inventory 200 in 63ms (next.js: 1714µs, application-code: 61ms)
+ GET /inventory 200 in 73ms (next.js: 4ms, application-code: 69ms)
+ GET /inventory 200 in 71ms (next.js: 3ms, application-code: 68ms)
+ GET /inventory 200 in 68ms (next.js: 1791µs, application-code: 66ms)
+ GET /inventory 200 in 75ms (next.js: 2ms, application-code: 73ms)
+ GET /inventory 200 in 78ms (next.js: 2ms, application-code: 75ms)
+ GET /inventory 200 in 78ms (next.js: 12ms, application-code: 66ms)
+ GET /inventory 200 in 68ms (next.js: 1377µs, application-code: 67ms)
+ GET /inventory 200 in 69ms (next.js: 10ms, application-code: 58ms)
+ GET /inventory 200 in 71ms (next.js: 1670µs, application-code: 70ms)
+ GET /inventory 200 in 72ms (next.js: 10ms, application-code: 62ms)
+ GET /inventory 200 in 76ms (next.js: 1680µs, application-code: 74ms)
+ GET /inventory 200 in 81ms (next.js: 3ms, application-code: 78ms)
+ GET /inventory 200 in 92ms (next.js: 2ms, application-code: 90ms)
+ GET /inventory 200 in 109ms (next.js: 1976µs, application-code: 107ms)
+ GET /inventory 200 in 158ms (next.js: 1885µs, application-code: 156ms)
+ GET /inventory 200 in 172ms (next.js: 3ms, application-code: 169ms)
+ GET /inventory 200 in 176ms (next.js: 1867µs, application-code: 175ms)
+ GET /inventory 200 in 172ms (next.js: 8ms, application-code: 164ms)
+ GET /inventory 200 in 159ms (next.js: 9ms, application-code: 150ms)
+ GET /inventory 200 in 146ms (next.js: 5ms, application-code: 141ms)
+ GET /inventory 200 in 99ms (next.js: 11ms, application-code: 88ms)
+ GET /inventory 200 in 102ms (next.js: 19ms, application-code: 83ms)
+ GET /inventory 200 in 85ms (next.js: 6ms, application-code: 79ms)
+ GET /inventory 200 in 81ms (next.js: 14ms, application-code: 67ms)
+ GET /inventory 200 in 79ms (next.js: 3ms, application-code: 77ms)
+ GET /inventory 200 in 68ms (next.js: 3ms, application-code: 65ms)
+ GET /inventory 200 in 78ms (next.js: 1874µs, application-code: 76ms)
+ GET /inventory 200 in 77ms (next.js: 2ms, application-code: 75ms)
+ GET /inventory 200 in 65ms (next.js: 3ms, application-code: 62ms)
+ GET /inventory 200 in 54ms (next.js: 3ms, application-code: 51ms)
+ GET /inventory 200 in 41ms (next.js: 3ms, application-code: 39ms)
+ GET /inventory 200 in 41ms (next.js: 14ms, application-code: 27ms)
+ GET /inventory 200 in 25ms (next.js: 1116µs, application-code: 24ms)
+ GET /api/test 200 in 177ms (next.js: 172ms, application-code: 4ms)
+ GET / 200 in 94ms (next.js: 11ms, application-code: 84ms)
+Auth header: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6ImEwNDFkODk4LTY0MDctNGFlZC1iMGNjLThlMzQwYmRmYjdmOCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3ppYXZzc21kZGZvZ21qdnFsYWZsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiMjZhNTk2OS0yNjQxLTQyY2MtYmU4Yy00YzQzZGNmMmRmNDQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MjU1MjkzLCJpYXQiOjE3NzgyNTE2OTMsImVtYWlsIjoiYW5kaW5vLmJvZXJzdEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiYW5kaW5vLmJvZXJzdEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiMjZhNTk2OS0yNjQxLTQyY2MtYmU4Yy00YzQzZGNmMmRmNDQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3ODI1MTY5M31dLCJzZXNzaW9uX2lkIjoiNTk0OGYwODMtOTE4NS00NWJmLWE1NzktNDI0ZTMyMTBiNjJiIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.bSy3MnNJU9i1MkVrkXMooTI4xkH3ANnmU4XlQUgMdJLLoTuw4VjDgswHKTyHCa4b8bs3rZHB0zUJSiLnD1_TLQ
+Supabase insert error: {
+  code: '42501',
+  details: null,
+  hint: null,
+  message: 'new row violates row-level security policy for table "beans"'
+}
+ POST /api/beans 500 in 600ms (next.js: 62ms, application-code: 539ms)
+ GET / 200 in 19ms (next.js: 1307µs, application-code: 18ms)
+ POST /api/beans 401 in 233ms (next.js: 1603µs, application-code: 232ms)
+ GET /inventory 200 in 55ms (next.js: 3ms, application-code: 52ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/inventory" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="en" className="geist_a715...">
+                          <body
+                            className="min-h-screen flex flex-col bg-[#1a1410] text-[#f5f1ed]"
+-                           __processed_33794729-87a9-4c5b-b25a-1834c1921186__="true"
+-                           bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWll..."
+                          >
+                  ...
+ 
+ GET /api/beans 200 in 254ms (next.js: 1092µs, application-code: 253ms)
+ GET /api/grinders 200 in 243ms (next.js: 20ms, application-code: 224ms)
+ GET /api/moka-pots 200 in 221ms (next.js: 17ms, application-code: 203ms)
+ POST /api/beans 201 in 217ms (next.js: 1484µs, application-code: 216ms)
+ GET /api/beans 200 in 155ms (next.js: 2ms, application-code: 153ms)
+ GET / 200 in 29ms (next.js: 2ms, application-code: 27ms)
+ GET /inventory 200 in 34ms (next.js: 3ms, application-code: 31ms)
+ GET /api/beans 200 in 231ms (next.js: 3ms, application-code: 228ms)
+ GET /api/moka-pots 200 in 205ms (next.js: 26ms, application-code: 179ms)
+ GET /api/grinders 200 in 219ms (next.js: 7ms, application-code: 211ms)
+ GET / 200 in 31ms (next.js: 2ms, application-code: 29ms)
+ POST /api/beans 201 in 237ms (next.js: 1099µs, application-code: 235ms)
+ GET /api/beans 200 in 171ms (next.js: 3ms, application-code: 168ms)
+ GET /inventory 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET /api/beans 200 in 163ms (next.js: 3ms, application-code: 161ms)
+ GET /api/grinders 200 in 169ms (next.js: 10ms, application-code: 159ms)
+ GET /api/moka-pots 200 in 176ms (next.js: 19ms, application-code: 158ms)
+ GET /inventory 200 in 34ms (next.js: 3ms, application-code: 31ms)
+ GET /api/moka-pots 200 in 518ms (next.js: 87ms, application-code: 431ms)
+ GET /api/grinders 200 in 523ms (next.js: 40ms, application-code: 483ms)
+ GET /api/beans 200 in 525ms (next.js: 3ms, application-code: 522ms)
+ DELETE /api/beans?id=2d394695-37a9-4cc8-a35f-4035c90a38db 200 in 236ms (next.js: 3ms, application-code: 233ms)
+ GET /api/beans 200 in 159ms (next.js: 1387µs, application-code: 158ms)
+ DELETE /api/beans?id=f0a2255b-4cb0-4860-9677-e2b934036d3d 200 in 157ms (next.js: 3ms, application-code: 154ms)
+ GET /api/beans 200 in 237ms (next.js: 3ms, application-code: 234ms)
+ GET / 200 in 29ms (next.js: 2ms, application-code: 27ms)
+ DELETE /api/beans?id=2d394695-37a9-4cc8-a35f-4035c90a38db 200 in 215ms (next.js: 1691µs, application-code: 213ms)
+ GET /api/beans 200 in 167ms (next.js: 1128µs, application-code: 166ms)
+ DELETE /api/beans?id=2d394695-37a9-4cc8-a35f-4035c90a38db 200 in 213ms (next.js: 1657µs, application-code: 211ms)
+ GET /api/beans 200 in 171ms (next.js: 4ms, application-code: 167ms)
+ GET /inventory 200 in 28ms (next.js: 2ms, application-code: 26ms)
+ GET /api/beans 200 in 167ms (next.js: 5ms, application-code: 162ms)
+ GET /api/moka-pots 200 in 175ms (next.js: 15ms, application-code: 160ms)
+ GET /api/grinders 200 in 185ms (next.js: 11ms, application-code: 174ms)
+ DELETE /api/beans?id=f0a2255b-4cb0-4860-9677-e2b934036d3d 200 in 172ms (next.js: 4ms, application-code: 169ms)
+ GET /api/beans 200 in 243ms (next.js: 2ms, application-code: 241ms)
+ DELETE /api/beans?id=2d394695-37a9-4cc8-a35f-4035c90a38db 200 in 213ms (next.js: 3ms, application-code: 210ms)
+ GET /api/beans 200 in 158ms (next.js: 2ms, application-code: 156ms)
+ GET /inventory 200 in 32ms (next.js: 3ms, application-code: 29ms)
+ GET /api/grinders 200 in 360ms (next.js: 30ms, application-code: 331ms)
+ GET /api/moka-pots 200 in 357ms (next.js: 31ms, application-code: 326ms)
+ GET /api/beans 200 in 369ms (next.js: 11ms, application-code: 357ms)
+ DELETE /api/beans?id=f0a2255b-4cb0-4860-9677-e2b934036d3d 200 in 166ms (next.js: 3ms, application-code: 163ms)
+ GET /api/beans 200 in 224ms (next.js: 3ms, application-code: 221ms)
+ DELETE /api/beans?id=2d394695-37a9-4cc8-a35f-4035c90a38db 200 in 204ms (next.js: 5ms, application-code: 199ms)
+ GET /api/beans 200 in 153ms (next.js: 2ms, application-code: 151ms)
+ GET / 200 in 31ms (next.js: 3ms, application-code: 28ms)
+ POST /api/beans 201 in 316ms (next.js: 2ms, application-code: 314ms)
+ GET /api/beans 200 in 161ms (next.js: 2ms, application-code: 159ms)
+ POST /api/grinders 201 in 215ms (next.js: 1604µs, application-code: 213ms)
+ GET /api/grinders 200 in 149ms (next.js: 2ms, application-code: 147ms)
+ POST /api/moka-pots 201 in 151ms (next.js: 2ms, application-code: 149ms)
+ GET /api/moka-pots 200 in 133ms (next.js: 1270µs, application-code: 132ms)
+ GET / 200 in 21ms (next.js: 3ms, application-code: 18ms)
+ GET /api/brews 401 in 43ms (next.js: 38ms, application-code: 5ms)
+ GET /api/brews 401 in 7ms (next.js: 3ms, application-code: 4ms)
+ GET /brew 200 in 45ms (next.js: 30ms, application-code: 15ms)
+ GET /api/beans 401 in 4ms (next.js: 1423µs, application-code: 3ms)
+ GET /api/grinders 401 in 4ms (next.js: 3ms, application-code: 1687µs)
+ GET /api/moka-pots 401 in 6ms (next.js: 5ms, application-code: 1357µs)
+ GET /api/beans 401 in 8ms (next.js: 6ms, application-code: 2ms)
+ GET /api/grinders 401 in 9ms (next.js: 2ms, application-code: 7ms)
+ GET /api/moka-pots 401 in 14ms (next.js: 10ms, application-code: 4ms)
+ GET /inventory 200 in 20ms (next.js: 4ms, application-code: 16ms)
+ GET /api/moka-pots 200 in 137ms (next.js: 3ms, application-code: 134ms)
+ GET /api/beans 200 in 149ms (next.js: 1086µs, application-code: 148ms)
+ GET /api/grinders 200 in 149ms (next.js: 4ms, application-code: 145ms)
+ GET /api/moka-pots 200 in 177ms (next.js: 3ms, application-code: 174ms)
+ GET /api/grinders 200 in 170ms (next.js: 3ms, application-code: 167ms)
+ GET /api/beans 200 in 235ms (next.js: 935µs, application-code: 234ms)
+ GET / 200 in 24ms (next.js: 2ms, application-code: 22ms)
+✓ Compiled in 59ms
+ GET / 200 in 26ms (next.js: 3ms, application-code: 23ms)
+ GET /inventory 200 in 28ms (next.js: 3ms, application-code: 26ms)
+ GET /api/moka-pots 200 in 494ms (next.js: 8ms, application-code: 486ms)
+ GET /api/grinders 200 in 496ms (next.js: 5ms, application-code: 491ms)
+ GET /api/beans 200 in 497ms (next.js: 1261µs, application-code: 496ms)
+ GET / 200 in 19ms (next.js: 3ms, application-code: 16ms)
+ GET /api/brews 200 in 232ms (next.js: 1761µs, application-code: 230ms)
+ GET /api/brews 200 in 154ms (next.js: 1406µs, application-code: 152ms)
+ GET /brew 200 in 23ms (next.js: 3ms, application-code: 20ms)
+ GET /api/beans 401 in 3ms (next.js: 1052µs, application-code: 1800µs)
+ GET /api/grinders 401 in 5ms (next.js: 4ms, application-code: 1674µs)
+ GET /api/moka-pots 401 in 3ms (next.js: 1372µs, application-code: 1637µs)
+ GET /api/beans 401 in 5ms (next.js: 3ms, application-code: 1661µs)
+ GET /api/grinders 401 in 9ms (next.js: 7ms, application-code: 1862µs)
+ GET /api/moka-pots 401 in 2ms (next.js: 780µs, application-code: 1337µs)
+ GET /inventory 200 in 21ms (next.js: 3ms, application-code: 17ms)
+ GET /api/grinders 200 in 213ms (next.js: 3ms, application-code: 210ms)
+ GET /api/beans 200 in 215ms (next.js: 1544µs, application-code: 214ms)
+ GET /api/moka-pots 200 in 215ms (next.js: 5ms, application-code: 210ms)
+ GET /api/grinders 200 in 151ms (next.js: 1616µs, application-code: 149ms)
+ GET /api/moka-pots 200 in 151ms (next.js: 6ms, application-code: 145ms)
+ GET /api/beans 200 in 179ms (next.js: 4ms, application-code: 175ms)
+ GET / 200 in 16ms (next.js: 3ms, application-code: 13ms)
+ GET /api/brews 200 in 158ms (next.js: 1295µs, application-code: 156ms)
+ GET /api/brews 200 in 186ms (next.js: 1018µs, application-code: 185ms)
+ GET / 200 in 31ms (next.js: 4ms, application-code: 27ms)
+ GET / 200 in 35ms (next.js: 3ms, application-code: 32ms)
+ GET / 200 in 27ms (next.js: 1722µs, application-code: 25ms)
+✓ Compiled in 4ms
+ GET /inventory 200 in 326ms (next.js: 50ms, application-code: 276ms)
+ GET / 200 in 219ms (next.js: 45ms, application-code: 174ms)
+ GET /inventory 200 in 190ms (next.js: 54ms, application-code: 136ms)
+ GET / 200 in 71ms (next.js: 3ms, application-code: 68ms)
+ GET /inventory 200 in 99ms (next.js: 1932µs, application-code: 98ms)
+ GET / 200 in 117ms (next.js: 2ms, application-code: 115ms)
+ GET /inventory 200 in 120ms (next.js: 14ms, application-code: 106ms)
+ GET / 200 in 104ms (next.js: 21ms, application-code: 83ms)
+ GET /inventory 200 in 110ms (next.js: 8ms, application-code: 102ms)
+ GET / 200 in 72ms (next.js: 19ms, application-code: 53ms)
+ GET /inventory 200 in 74ms (next.js: 4ms, application-code: 70ms)
+ GET / 200 in 40ms (next.js: 4ms, application-code: 36ms)
+ GET / 200 in 96ms (next.js: 4ms, application-code: 92ms)
+✓ Compiled in 22ms
+✓ Compiled in 67ms
+ GET /api/brews 200 in 377ms (next.js: 58ms, application-code: 319ms)
+✓ Compiled in 92ms
+ GET / 200 in 167ms (next.js: 49ms, application-code: 118ms)
+ GET /inventory 200 in 168ms (next.js: 130ms, application-code: 38ms)
+ GET / 200 in 25ms (next.js: 1132µs, application-code: 24ms)
+ GET /inventory 200 in 25ms (next.js: 10ms, application-code: 15ms)
+ GET / 200 in 95ms (next.js: 3ms, application-code: 92ms)
+ GET / 200 in 29ms (next.js: 3ms, application-code: 26ms)
+ GET /api/brews 200 in 254ms (next.js: 63ms, application-code: 191ms)
+ GET /api/brews 200 in 205ms (next.js: 1040µs, application-code: 204ms)
+ GET /brew 200 in 41ms (next.js: 23ms, application-code: 18ms)
+ GET /api/grinders 200 in 227ms (next.js: 40ms, application-code: 187ms)
+ GET /api/beans 200 in 238ms (next.js: 19ms, application-code: 219ms)
+ GET /api/moka-pots 200 in 238ms (next.js: 59ms, application-code: 179ms)
+ GET /api/grinders 200 in 148ms (next.js: 1865µs, application-code: 146ms)
+ GET /api/beans 200 in 155ms (next.js: 1354µs, application-code: 154ms)
+ GET /api/moka-pots 200 in 156ms (next.js: 4ms, application-code: 152ms)
+ GET / 200 in 32ms (next.js: 1935µs, application-code: 30ms)
+ POST /api/brews 201 in 642ms (next.js: 2ms, application-code: 640ms)
+ GET / 200 in 13ms (next.js: 1607µs, application-code: 11ms)
+ GET /api/brews 200 in 189ms (next.js: 936µs, application-code: 188ms)
+ GET /api/brews 200 in 200ms (next.js: 1309µs, application-code: 199ms)
+ GET / 200 in 39ms (next.js: 4ms, application-code: 35ms)
+ GET / 200 in 28ms (next.js: 3ms, application-code: 25ms)
+✓ Compiled in 14ms
+ GET / 200 in 30ms (next.js: 4ms, application-code: 26ms)
+ GET /api/brews 200 in 533ms (next.js: 1423µs, application-code: 531ms)
+ GET /api/brews 200 in 246ms (next.js: 2ms, application-code: 244ms)
+ DELETE /api/brews?id=5236afab-13fd-4122-a499-64249ff6eb54 200 in 259ms (next.js: 3ms, application-code: 256ms)
+ GET /brew 200 in 15ms (next.js: 4ms, application-code: 12ms)
+ GET /api/grinders 200 in 201ms (next.js: 962µs, application-code: 200ms)
+ GET /api/beans 200 in 207ms (next.js: 1402µs, application-code: 206ms)
+ GET /api/moka-pots 200 in 204ms (next.js: 3ms, application-code: 201ms)
+ GET /api/moka-pots 200 in 149ms (next.js: 10ms, application-code: 139ms)
+ GET /api/beans 200 in 164ms (next.js: 6ms, application-code: 158ms)
+ GET /api/grinders 200 in 171ms (next.js: 3ms, application-code: 168ms)
+ GET / 200 in 28ms (next.js: 1464µs, application-code: 26ms)
+ GET / 200 in 33ms (next.js: 3ms, application-code: 31ms)
+ POST /api/brews 201 in 396ms (next.js: 2ms, application-code: 394ms)
+ GET / 200 in 11ms (next.js: 1454µs, application-code: 10ms)
+ GET /api/brews 200 in 192ms (next.js: 1174µs, application-code: 190ms)
+ GET /api/brews 200 in 259ms (next.js: 2ms, application-code: 257ms)
+ GET / 200 in 24ms (next.js: 1623µs, application-code: 23ms)
+ GET / 200 in 10ms (next.js: 3ms, application-code: 7ms)
+ GET / 200 in 16ms (next.js: 1725µs, application-code: 14ms)
+[?25h

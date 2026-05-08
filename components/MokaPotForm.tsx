@@ -11,7 +11,10 @@ interface MokaPotFormProps {
 
 export default function MokaPotForm({ onSubmit, isLoading }: MokaPotFormProps) {
   const [formData, setFormData] = useState({
-    size_cups: 3,
+    brand: '',
+    model: '',
+    type: 'Stovetop',
+    size_cups: 2,
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -23,7 +26,7 @@ export default function MokaPotForm({ onSubmit, isLoading }: MokaPotFormProps) {
 
     try {
       await onSubmit(formData)
-      setFormData({ size_cups: 3 })
+      setFormData({ brand: '', model: '', type: 'Stovetop', size_cups: 2 })
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
     } catch (err) {
@@ -53,6 +56,49 @@ export default function MokaPotForm({ onSubmit, isLoading }: MokaPotFormProps) {
 
       <div>
         <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+          Brand
+        </label>
+        <input
+          type="text"
+          value={formData.brand}
+          onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+          className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+          placeholder="e.g., Bialetti"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+          Model
+        </label>
+        <input
+          type="text"
+          value={formData.model}
+          onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+          className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+          placeholder="e.g., Venus"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+          Type
+        </label>
+        <select
+          value={formData.type}
+          onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+          className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+        >
+          <option value="Stovetop">Stovetop</option>
+          <option value="Electric">Electric</option>
+          <option value="Induction">Induction</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
           Size (Cups)
         </label>
         <select
@@ -61,6 +107,7 @@ export default function MokaPotForm({ onSubmit, isLoading }: MokaPotFormProps) {
           className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
         >
           <option value={1}>1 Cup</option>
+          <option value={2}>2 Cups</option>
           <option value={3}>3 Cups</option>
           <option value={6}>6 Cups</option>
           <option value={9}>9 Cups</option>
