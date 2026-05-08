@@ -1,0 +1,120 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Header from '@/components/Header'
+import BrewForm from '@/components/BrewForm'
+import { Bean, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
+import Link from 'next/link'
+
+export default function BrewPage() {
+  const router = useRouter()
+  const [beans, setBeans] = useState<Bean[]>([])
+  const [grinders, setGrinders] = useState<Grinder[]>([])
+  const [mokaPots, setMokaPots] = useState<MokaPot[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    Promise.all([fetchBeans(), fetchGrinders(), fetchMokaPots()]).then(() =>
+      setLoading(false)
+    )
+  }, [])
+
+  const fetchBeans = async () => {
+    try {
+      const response = await fetch('/api/beans')
+      if (response.ok) setBeans(await response.json())
+    } catch (err) {
+      console.error('Error fetching beans:', err)
+    }
+  }
+
+  const fetchGrinders = async () => {
+    try {
+      const response = await fetch('/api/grinders')
+      if (response.ok) setGrinders(await response.json())
+    } catch (err) {
+      console.error('Error fetching grinders:', err)
+    }
+  }
+
+  const fetchMokaPots = async () => {
+    try {
+      const response = await fetch('/api/moka-pots')
+      if (response.ok) setMokaPots(await response.json())
+    } catch (err) {
+      console.error('Error fetching moka pots:', err)
+    }
+  }
+
+  const handleSubmitBrew = async (brewData: BrewCreateInput) => {
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('/api/brews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(brewData),
+      })
+      if (response.ok) {
+        router.push('/')
+      } else {
+        throw new Error('Failed to save brew')
+      }
+    } catch (err) {
+      throw err
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-[#8b6f47]">Loading your equipment...</p>
+        </div>
+      </>
+    )
+  }
+
+  if (beans.length === 0 || grinders.length === 0 || mokaPots.length === 0) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-yellow-900/30 border border-yellow-700 rounded-lg p-6 text-center">
+            <h2 className="text-xl font-bold text-yellow-400 mb-2">
+              Complete Your Inventory First
+            </h2>
+            <p className="text-yellow-300 mb-4">
+              You need at least one bean, grinder, and moka pot to log a brew.
+            </p>
+            <Link
+              href="/inventory"
+              className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-6 rounded transition"
+            >
+              Go to Inventory
+            </Link>
+          </div>
+        </main>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Header />
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        <BrewForm
+          beans={beans}
+          grinders={grinders}
+          mokaPots={mokaPots}
+          onSubmit={handleSubmitBrew}
+          isLoading={isSubmitting}
+        />
+      </main>
+    </>
+  )
+}

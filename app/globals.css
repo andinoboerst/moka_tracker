@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  /* Coffee-bean aesthetic colors */
+  --background: #1a1410;
+  --foreground: #f5f1ed;
+  --coffee-dark: #2d2520;
+  --coffee-medium: #3d3530;
+  --coffee-light: #5a4f4a;
+  --coffee-accent: #8b6f47;
+  --coffee-gold: #d4a574;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-coffee-dark: var(--coffee-dark);
+  --color-coffee-medium: var(--coffee-medium);
+  --color-coffee-light: var(--coffee-light);
+  --color-coffee-accent: var(--coffee-accent);
+  --color-coffee-gold: var(--coffee-gold);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+* {
+  @apply transition-colors duration-200;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--coffee-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--coffee-accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--coffee-gold);
+}
