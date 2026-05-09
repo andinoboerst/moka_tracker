@@ -13,6 +13,7 @@ export default function Home() {
   const [brews, setBrews] = useState<Brew[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
   useEffect(() => {
     // Wait for auth to resolve before fetching
@@ -51,6 +52,34 @@ export default function Home() {
       setBrews(brews.filter((b) => b.id !== id))
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete')
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you absolutely sure? This will permanently delete your account and all your brewing data. This action cannot be undone.")) {
+      return
+    }
+    
+    setIsDeletingAccount(true)
+    try {
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/auth/delete', {
+        method: 'DELETE',
+        headers
+      })
+      
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to delete account')
+      }
+      
+      // Successfully deleted on server, now sign out locally
+      const { supabase } = await import('@/lib/supabase')
+      await supabase.auth.signOut()
+      window.location.reload()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error deleting account')
+      setIsDeletingAccount(false)
     }
   }
 
@@ -94,7 +123,7 @@ export default function Home() {
                           <h2 className="text-xl font-bold text-[#d4a574]">Next Brew Guide</h2>
                         </div>
                         <p className="text-[#8b6f47] text-sm mb-3">
-                          Based on your last brew ({brews[0].bean?.name}, {brews[0].vibe_rating}/10 vibe):
+                          Based on your last brew ({brews[0].bean?.name ? `${brews[0].bean.name}, ` : ''}{brews[0].vibe_rating}/10 vibe):
                         </p>
                         <p className="text-[#f5f1ed] text-lg font-medium leading-relaxed mb-6 max-w-3xl">
                           "{parsed.suggestion}"
@@ -174,6 +203,23 @@ export default function Home() {
                   ))}
                 </div>
               )}
+            </section>
+
+            {/* Danger Zone */}
+            <section className="mt-20 pt-8 border-t border-red-900/30">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-[#1a1410] p-6 rounded border border-red-900/20">
+                <div>
+                  <h3 className="text-red-500 font-bold mb-1">Danger Zone</h3>
+                  <p className="text-[#8b6f47] text-sm">Permanently delete your account and all associated brewing data.</p>
+                </div>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isDeletingAccount}
+                  className="bg-transparent border border-red-900 text-red-500 hover:bg-red-950 px-4 py-2 rounded transition disabled:opacity-50 whitespace-nowrap"
+                >
+                  {isDeletingAccount ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
             </section>
           </>
         )}

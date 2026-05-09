@@ -107,9 +107,10 @@ export async function POST(request: NextRequest) {
       
       if (mistralApiKey) {
         const prompt = `You are a coffee brewing expert analyzing a moka pot brew. 
-Analyze the following brew details and provide two things:
-1. A short, 1-2 sentence "Brew Master Recap" summarizing the result.
-2. A single, highly actionable sentence of advice for their NEXT brew based on their tasting notes and rating.
+Analyze the following brew details and provide a JSON response with two specific keys:
+
+1. "summary": A short, 1-2 sentence recap explaining exactly WHY the brew came out the way it did based on the extraction ratios and tasting notes. DO NOT include any advice or suggestions for the next brew here.
+2. "suggestion": A single, highly actionable sentence giving clear, exact instructions on what variable to change (and to what) for their NEXT brew to improve it based on their feedback.
 
 Brew Details:
 - Vibe Rating: ${vibe_rating}/10
@@ -127,7 +128,7 @@ Rules:
 - Do not use markdown blocks around the JSON. Just return raw JSON.
 
 Example Response:
-{"summary": "A decent attempt, but the extraction ratio indicates over-extraction causing bitterness.", "suggestion": "For your next brew, try adjusting your grinder one notch coarser to reduce the contact time and avoid bitter notes."}`
+{"summary": "The brew extracted too quickly, leading to a sour profile due to under-extraction at a 1:1.7 ratio.", "suggestion": "For your next brew, adjust your grinder 1-2 clicks finer to slow down the extraction and increase sweetness."}`
 
         const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
           method: 'POST',
@@ -145,11 +146,23 @@ Example Response:
 
         if (recapResponse.ok) {
           const mistralData = await recapResponse.json()
-          const content = mistralData.choices[0].message.content.trim()
+          let content = mistralData.choices?.[0]?.message?.content?.trim() || ''
           
-          // Verify it's valid JSON before saving
-          JSON.parse(content)
-          ai_recap = content
+          // Strip markdown code blocks if Mistral returned them
+          if (content.startsWith('```json')) {
+            content = content.replace(/^```json\n/, '').replace(/\n```$/, '')
+          } else if (content.startsWith('```')) {
+            content = content.replace(/^```\n/, '').replace(/\n```$/, '')
+          }
+
+          try {
+            // Verify it's valid JSON before saving
+            JSON.parse(content)
+            ai_recap = content
+          } catch (parseError) {
+            console.error('Mistral returned invalid JSON:', content)
+            // Leave ai_recap empty so fallback runs
+          }
         } else {
           console.error('Mistral API error:', await recapResponse.text())
         }

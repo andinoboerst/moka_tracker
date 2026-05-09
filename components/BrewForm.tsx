@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Bean, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
 import { calculateBrewRatio, calculateExtractionRatio } from '@/lib/utils'
 import { X } from 'lucide-react'
@@ -33,6 +33,16 @@ export default function BrewForm({
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  // Auto-select latest equipment when it loads
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      bean_id: prev.bean_id || (beans[0]?.id ?? ''),
+      grinder_id: prev.grinder_id || (grinders[0]?.id ?? ''),
+      moka_pot_id: prev.moka_pot_id || (mokaPots[0]?.id ?? ''),
+    }))
+  }, [beans, grinders, mokaPots])
 
   // Auto-calculated values
   const brewRatio = useMemo(() => {
