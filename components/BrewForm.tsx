@@ -28,6 +28,8 @@ export default function BrewForm({
     coffee_weight_g: '',
     water_added_g: '',
     final_yield_g: '',
+    extraction_time_s: '',
+    milk_added_g: '',
     vibe_rating: '7',
     tasting_notes: '',
   })
@@ -79,6 +81,8 @@ export default function BrewForm({
         coffee_weight_g: parseFloat(formData.coffee_weight_g),
         water_added_g: parseFloat(formData.water_added_g),
         final_yield_g: parseFloat(formData.final_yield_g),
+        extraction_time_s: parseInt(formData.extraction_time_s),
+        milk_added_g: formData.milk_added_g ? parseFloat(formData.milk_added_g) : undefined,
         vibe_rating: parseInt(formData.vibe_rating),
         tasting_notes: formData.tasting_notes,
       })
@@ -90,6 +94,8 @@ export default function BrewForm({
         coffee_weight_g: '',
         water_added_g: '',
         final_yield_g: '',
+        extraction_time_s: '',
+        milk_added_g: '',
         vibe_rating: '7',
         tasting_notes: '',
       })
@@ -173,7 +179,7 @@ export default function BrewForm({
             <option value="">Select a moka pot</option>
             {mokaPots.map((pot) => (
               <option key={pot.id} value={pot.id}>
-                {pot.size_cups} Cup
+                {pot.brand} {pot.model} ({pot.size_cups} Cup)
               </option>
             ))}
           </select>
@@ -239,6 +245,36 @@ export default function BrewForm({
             onChange={(e) => setFormData({ ...formData, final_yield_g: e.target.value })}
             placeholder="e.g., 32"
             required
+            min="0"
+            step="0.1"
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+            Extraction Time (s)
+          </label>
+          <input
+            type="number"
+            value={formData.extraction_time_s}
+            onChange={(e) => setFormData({ ...formData, extraction_time_s: e.target.value })}
+            placeholder="e.g., 45"
+            required
+            min="0"
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+            Milk Added (g) - <span className="text-[#8b6f47] font-normal italic">Leave empty for black coffee</span>
+          </label>
+          <input
+            type="number"
+            value={formData.milk_added_g}
+            onChange={(e) => setFormData({ ...formData, milk_added_g: e.target.value })}
+            placeholder="e.g., 50"
             min="0"
             step="0.1"
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"

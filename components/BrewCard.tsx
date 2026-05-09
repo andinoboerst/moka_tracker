@@ -57,7 +57,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">Moka Pot</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
-            {brew.moka_pot?.size_cups} Cup
+            {brew.moka_pot?.brand} {brew.moka_pot?.model} ({brew.moka_pot?.size_cups} Cup)
           </p>
         </div>
 
@@ -85,18 +85,28 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         </div>
       </div>
 
-      {/* Ratios */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Additional Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">Brew Ratio</p>
-          <p className="text-base font-semibold text-[#d4a574]">
+          <p className="text-sm font-semibold text-[#d4a574]">
             1:{brew.brew_ratio_input?.toFixed(2)}
           </p>
         </div>
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">Extraction</p>
-          <p className="text-base font-semibold text-[#d4a574]">
+          <p className="text-sm font-semibold text-[#d4a574]">
             1:{brew.extraction_ratio_output?.toFixed(2)}
+          </p>
+        </div>
+        <div className="bg-[#1a1410] rounded p-3">
+          <p className="text-xs text-[#8b6f47] mb-1">Time</p>
+          <p className="text-sm font-semibold text-[#f5f1ed]">{brew.extraction_time_s}s</p>
+        </div>
+        <div className="bg-[#1a1410] rounded p-3">
+          <p className="text-xs text-[#8b6f47] mb-1">Style</p>
+          <p className="text-sm font-semibold text-[#f5f1ed]">
+            {brew.milk_added_g ? `Milk (${brew.milk_added_g}g)` : 'Black'}
           </p>
         </div>
       </div>

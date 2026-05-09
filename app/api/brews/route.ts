@@ -72,6 +72,8 @@ export async function POST(request: NextRequest) {
       coffee_weight_g,
       water_added_g,
       final_yield_g,
+      extraction_time_s,
+      milk_added_g,
       vibe_rating,
       tasting_notes,
     } = body
@@ -85,6 +87,7 @@ export async function POST(request: NextRequest) {
       coffee_weight_g === undefined ||
       water_added_g === undefined ||
       final_yield_g === undefined ||
+      extraction_time_s === undefined ||
       vibe_rating === undefined
     ) {
       return NextResponse.json(
@@ -93,12 +96,46 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Create a client with the user's token so we can query history and insert
+    const userClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      }
+    )
+
     // Calculate ratios
     const brew_ratio_input = calculateBrewRatio(coffee_weight_g, water_added_g)
     const extraction_ratio_output = calculateExtractionRatio(
       coffee_weight_g,
       final_yield_g
     )
+
+    // Fetch up to 3 previous brews with exactly the same beans, grinder, and moka pot
+    const { data: previousBrews } = await userClient
+      .from('brews')
+      .select('*')
+      .eq('bean_id', bean_id)
+      .eq('grinder_id', grinder_id)
+      .eq('moka_pot_id', moka_pot_id)
+      .order('created_at', { ascending: false })
+      .limit(3)
+
+    let historyText = 'No previous brews with this exact setup.'
+    if (previousBrews && previousBrews.length > 0) {
+      historyText = previousBrews.map((b, i) => `
+Previous Brew ${i + 1}:
+- Vibe Rating: ${b.vibe_rating}/10
+- Grinder Setting: ${b.grinder_setting} clicks
+- Coffee/Water/Yield: ${b.coffee_weight_g}g / ${b.water_added_g}g / ${b.final_yield_g}g
+- Extraction Time: ${b.extraction_time_s}s
+- Tasting Notes: "${b.tasting_notes || 'None'}"`).join('\n')
+    }
 
     // Generate AI recap via Mistral directly
     let ai_recap = ''
@@ -107,19 +144,25 @@ export async function POST(request: NextRequest) {
       
       if (mistralApiKey) {
         const prompt = `You are a coffee brewing expert analyzing a moka pot brew. 
-Analyze the following brew details and provide a JSON response with two specific keys:
+Analyze the following CURRENT brew details, and consider the HISTORY of previous brews with this exact same setup, to provide a JSON response with two specific keys:
 
-1. "summary": A short, 1-2 sentence recap explaining exactly WHY the brew came out the way it did based on the extraction ratios and tasting notes. DO NOT include any advice or suggestions for the next brew here.
-2. "suggestion": A single, highly actionable sentence giving clear, exact instructions on what variable to change (and to what) for their NEXT brew to improve it based on their feedback.
+1. "summary": A short, 1-2 sentence recap explaining exactly WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. DO NOT include any advice or suggestions for the next brew here.
+2. "suggestion": A single, highly actionable sentence giving clear, exact instructions on what variable to change (and to what) for their NEXT brew. Base this heavily on what has and hasn't worked in their previous brews (if any exist).
 
-Brew Details:
+CURRENT Brew Details:
 - Vibe Rating: ${vibe_rating}/10
+- Grinder Setting: ${grinder_setting} clicks
 - Tasting Notes: "${tasting_notes || 'None provided'}"
 - Coffee: ${coffee_weight_g}g
 - Water In: ${water_added_g}g
 - Yield: ${final_yield_g}g
+- Extraction Time: ${extraction_time_s} seconds
+- Milk Added: ${milk_added_g ? `${milk_added_g}g` : 'None (Black Coffee)'}
 - Brew Ratio: 1:${brew_ratio_input}
 - Extraction Ratio: 1:${extraction_ratio_output}
+
+HISTORY (Last 3 brews with this Bean + Grinder + Moka Pot):
+${historyText}
 
 Rules:
 - If rating is low (≤5) and notes mention "bitter", suggest finer grind or lower heat for the next brew.
@@ -198,19 +241,6 @@ Example Response:
       // We will save with empty string or continue without crashing
     }
 
-    // Create a client with the user's token so RLS policies work
-    const userClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-      {
-        global: {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      }
-    )
-
     const { data, error } = await userClient
       .from('brews')
       .insert([
@@ -223,6 +253,8 @@ Example Response:
           coffee_weight_g: parseFloat(coffee_weight_g),
           water_added_g: parseFloat(water_added_g),
           final_yield_g: parseFloat(final_yield_g),
+          extraction_time_s: parseInt(extraction_time_s),
+          milk_added_g: milk_added_g ? parseFloat(milk_added_g) : null,
           brew_ratio_input,
           extraction_ratio_output,
           vibe_rating: parseInt(vibe_rating),

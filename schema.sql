@@ -47,6 +47,8 @@ CREATE TABLE IF NOT EXISTS public.brews (
   final_yield_g DECIMAL(6, 2) NOT NULL,
   brew_ratio_input DECIMAL(8, 2), -- Coffee : Water In (auto-calculated)
   extraction_ratio_output DECIMAL(8, 2), -- Coffee : Yield Out (auto-calculated)
+  extraction_time_s INTEGER NOT NULL DEFAULT 0,
+  milk_added_g DECIMAL(6, 2),
   vibe_rating INTEGER CHECK (vibe_rating >= 1 AND vibe_rating <= 10),
   tasting_notes TEXT,
   ai_recap TEXT,

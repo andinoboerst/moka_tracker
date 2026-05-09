@@ -38,6 +38,8 @@ export interface Brew {
   coffee_weight_g: number
   water_added_g: number
   final_yield_g: number
+  extraction_time_s: number
+  milk_added_g?: number
   brew_ratio_input?: number
   extraction_ratio_output?: number
   vibe_rating: number
@@ -58,6 +60,8 @@ export interface BrewCreateInput {
   coffee_weight_g: number
   water_added_g: number
   final_yield_g: number
+  extraction_time_s: number
+  milk_added_g?: number
   vibe_rating: number
   tasting_notes: string
 }
