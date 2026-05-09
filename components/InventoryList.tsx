@@ -28,9 +28,13 @@ export default function InventoryList({
               {bean.name}
             </h4>
             {bean.is_active !== false ? (
-              <Zap className="w-3 h-3 text-yellow-500" title="Active" />
+              <span title="Active">
+                <Zap className="w-3 h-3 text-yellow-500" />
+              </span>
             ) : (
-              <ZapOff className="w-3 h-3 text-[#5a4f4a]" title="Inactive" />
+              <span title="Inactive">
+                <ZapOff className="w-3 h-3 text-[#5a4f4a]" />
+              </span>
             )}
           </div>
           <p className="text-sm text-[#8b6f47]">
