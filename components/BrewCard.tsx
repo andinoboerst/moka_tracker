@@ -47,10 +47,21 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">Grinder</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
-            {brew.grinder_setting} clicks
+            {brew.grinder_id ? (
+              <>
+                {brew.grinder_setting} clicks
+                {brew.grinder?.microns_per_click && (
+                  <span className="text-xs text-[#8b6f47] ml-1">
+                    ({brew.grinder_setting! * brew.grinder.microns_per_click}μm)
+                  </span>
+                )}
+              </>
+            ) : (
+              'Pre-ground'
+            )}
           </p>
           <p className="text-xs text-[#8b6f47]">
-            {brew.grinder?.brand} {brew.grinder?.model}
+            {brew.grinder_id ? `${brew.grinder?.brand} ${brew.grinder?.model}` : 'No grinder used'}
           </p>
         </div>
 

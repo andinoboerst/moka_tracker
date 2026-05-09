@@ -15,6 +15,11 @@ export default function InventoryPage() {
   const [mokaPots, setMokaPots] = useState<MokaPot[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Edit states
+  const [editingBean, setEditingBean] = useState<Bean | null>(null)
+  const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null)
+  const [editingMokaPot, setEditingMokaPot] = useState<MokaPot | null>(null)
+
   useEffect(() => {
     Promise.all([fetchBeans(), fetchGrinders(), fetchMokaPots()]).then(() =>
       setLoading(false)
@@ -27,8 +32,6 @@ export default function InventoryPage() {
       const response = await fetch('/api/beans', { headers })
       if (response.ok) {
         setBeans(await response.json())
-      } else {
-        console.error('Beans fetch failed:', response.status, response.statusText)
       }
     } catch (err) {
       console.error('Error fetching beans:', err)
@@ -41,8 +44,6 @@ export default function InventoryPage() {
       const response = await fetch('/api/grinders', { headers })
       if (response.ok) {
         setGrinders(await response.json())
-      } else {
-        console.error('Grinders fetch failed:', response.status, response.statusText)
       }
     } catch (err) {
       console.error('Error fetching grinders:', err)
@@ -55,60 +56,65 @@ export default function InventoryPage() {
       const response = await fetch('/api/moka-pots', { headers })
       if (response.ok) {
         setMokaPots(await response.json())
-      } else {
-        console.error('Moka pots fetch failed:', response.status, response.statusText)
       }
     } catch (err) {
       console.error('Error fetching moka pots:', err)
     }
   }
 
-  const handleAddBean = async (bean: any) => {
+  const handleSaveBean = async (bean: any) => {
     const headers = await getAuthHeaders()
+    const method = bean.id ? 'PUT' : 'POST'
     const response = await fetch('/api/beans', {
-      method: 'POST',
+      method,
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(bean),
     })
     if (response.ok) {
       await fetchBeans()
+      setEditingBean(null)
     } else {
       const errorData = await response.json()
-      throw new Error(errorData.error || `Failed to add bean: ${response.status}`)
+      throw new Error(errorData.error || `Failed to save bean`)
     }
   }
 
-  const handleAddGrinder = async (grinder: any) => {
+  const handleSaveGrinder = async (grinder: any) => {
     const headers = await getAuthHeaders()
+    const method = grinder.id ? 'PUT' : 'POST'
     const response = await fetch('/api/grinders', {
-      method: 'POST',
+      method,
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(grinder),
     })
     if (response.ok) {
       await fetchGrinders()
+      setEditingGrinder(null)
     } else {
       const errorData = await response.json()
-      throw new Error(errorData.error || `Failed to add grinder: ${response.status}`)
+      throw new Error(errorData.error || `Failed to save grinder`)
     }
   }
 
-  const handleAddMokaPot = async (mokaPot: any) => {
+  const handleSaveMokaPot = async (mokaPot: any) => {
     const headers = await getAuthHeaders()
+    const method = mokaPot.id ? 'PUT' : 'POST'
     const response = await fetch('/api/moka-pots', {
-      method: 'POST',
+      method,
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(mokaPot),
     })
     if (response.ok) {
       await fetchMokaPots()
+      setEditingMokaPot(null)
     } else {
       const errorData = await response.json()
-      throw new Error(errorData.error || `Failed to add moka pot: ${response.status}`)
+      throw new Error(errorData.error || `Failed to save moka pot`)
     }
   }
 
   const handleDeleteBean = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this bean bag?')) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/beans?id=${id}`, {
       method: 'DELETE',
@@ -118,6 +124,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteGrinder = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this grinder?')) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/grinders?id=${id}`, {
       method: 'DELETE',
@@ -127,6 +134,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteMokaPot = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this moka pot?')) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/moka-pots?id=${id}`, {
       method: 'DELETE',
@@ -162,9 +170,24 @@ export default function InventoryPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left column: Forms */}
           <div className="space-y-6">
-            <BeanForm onSubmit={handleAddBean} isLoading={false} />
-            <GrinderForm onSubmit={handleAddGrinder} isLoading={false} />
-            <MokaPotForm onSubmit={handleAddMokaPot} isLoading={false} />
+            <BeanForm 
+              onSubmit={handleSaveBean} 
+              isLoading={false} 
+              initialData={editingBean}
+              onCancel={() => setEditingBean(null)}
+            />
+            <GrinderForm 
+              onSubmit={handleSaveGrinder} 
+              isLoading={false} 
+              initialData={editingGrinder}
+              onCancel={() => setEditingGrinder(null)}
+            />
+            <MokaPotForm 
+              onSubmit={handleSaveMokaPot} 
+              isLoading={false} 
+              initialData={editingMokaPot}
+              onCancel={() => setEditingMokaPot(null)}
+            />
           </div>
 
           {/* Right column: Lists */}
@@ -175,6 +198,7 @@ export default function InventoryPage() {
                 items={beans}
                 type="beans"
                 onDelete={handleDeleteBean}
+                onEdit={setEditingBean}
                 isDeleting={false}
               />
             </section>
@@ -185,6 +209,7 @@ export default function InventoryPage() {
                 items={grinders}
                 type="grinders"
                 onDelete={handleDeleteGrinder}
+                onEdit={setEditingGrinder}
                 isDeleting={false}
               />
             </section>
@@ -195,6 +220,7 @@ export default function InventoryPage() {
                 items={mokaPots}
                 type="moka-pots"
                 onDelete={handleDeleteMokaPot}
+                onEdit={setEditingMokaPot}
                 isDeleting={false}
               />
             </section>

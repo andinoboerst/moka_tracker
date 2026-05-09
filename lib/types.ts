@@ -4,6 +4,9 @@ export interface Bean {
   name: string
   roaster: string
   roast_level: string
+  roast_date?: string
+  weight_g?: number
+  is_active?: boolean
   created_at: string
   updated_at: string
 }
@@ -13,6 +16,7 @@ export interface Grinder {
   user_id: string
   brand: string
   model: string
+  microns_per_click?: number
   created_at: string
   updated_at: string
 }
@@ -32,9 +36,9 @@ export interface Brew {
   id: string
   user_id: string
   bean_id: string
-  grinder_id: string
+  grinder_id?: string
   moka_pot_id: string
-  grinder_setting: number
+  grinder_setting?: number
   coffee_weight_g: number
   water_added_g: number
   final_yield_g: number
@@ -54,9 +58,9 @@ export interface Brew {
 
 export interface BrewCreateInput {
   bean_id: string
-  grinder_id: string
+  grinder_id?: string
   moka_pot_id: string
-  grinder_setting: number
+  grinder_setting?: number
   coffee_weight_g: number
   water_added_g: number
   final_yield_g: number

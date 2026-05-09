@@ -36,15 +36,18 @@ export default function BrewForm({
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
+  // Filter for active beans only
+  const activeBeans = useMemo(() => beans.filter(b => b.is_active !== false), [beans])
+
   // Auto-select latest equipment when it loads
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      bean_id: prev.bean_id || (beans[0]?.id ?? ''),
+      bean_id: prev.bean_id || (activeBeans[0]?.id ?? ''),
       grinder_id: prev.grinder_id || (grinders[0]?.id ?? ''),
       moka_pot_id: prev.moka_pot_id || (mokaPots[0]?.id ?? ''),
     }))
-  }, [beans, grinders, mokaPots])
+  }, [activeBeans, grinders, mokaPots])
 
   // Auto-calculated values
   const brewRatio = useMemo(() => {
@@ -75,9 +78,9 @@ export default function BrewForm({
     try {
       await onSubmit({
         bean_id: formData.bean_id,
-        grinder_id: formData.grinder_id,
+        grinder_id: formData.grinder_id || undefined,
         moka_pot_id: formData.moka_pot_id,
-        grinder_setting: parseInt(formData.grinder_setting),
+        grinder_setting: formData.grinder_id ? parseInt(formData.grinder_setting) : undefined,
         coffee_weight_g: parseFloat(formData.coffee_weight_g),
         water_added_g: parseFloat(formData.water_added_g),
         final_yield_g: parseFloat(formData.final_yield_g),
@@ -139,7 +142,7 @@ export default function BrewForm({
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
           >
             <option value="">Select a bean</option>
-            {beans.map((bean) => (
+            {activeBeans.map((bean) => (
               <option key={bean.id} value={bean.id}>
                 {bean.name} ({bean.roast_level})
               </option>
@@ -157,7 +160,7 @@ export default function BrewForm({
             required
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
           >
-            <option value="">Select a grinder</option>
+            <option value="">None (Pre-ground)</option>
             {grinders.map((grinder) => (
               <option key={grinder.id} value={grinder.id}>
                 {grinder.brand} {grinder.model}
@@ -188,20 +191,22 @@ export default function BrewForm({
 
       {/* Brew Parameters */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Grinder Setting (clicks)
-          </label>
-          <input
-            type="number"
-            value={formData.grinder_setting}
-            onChange={(e) => setFormData({ ...formData, grinder_setting: e.target.value })}
-            placeholder="e.g., 15"
-            required
-            min="0"
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
-          />
-        </div>
+        {formData.grinder_id && (
+          <div>
+            <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+              Grinder Setting (clicks)
+            </label>
+            <input
+              type="number"
+              value={formData.grinder_setting}
+              onChange={(e) => setFormData({ ...formData, grinder_setting: e.target.value })}
+              placeholder="e.g., 15"
+              required
+              min="0"
+              className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+            />
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">

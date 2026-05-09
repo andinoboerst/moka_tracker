@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { brand, model } = body
+    const { brand, model, microns_per_click } = body
 
     if (!brand || !model) {
       return NextResponse.json(
@@ -84,6 +84,7 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           brand,
           model,
+          microns_per_click: microns_per_click ? parseInt(microns_per_click) : null,
         },
       ])
       .select()
@@ -95,6 +96,42 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data[0], { status: 201 })
   } catch (err) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const token = request.headers.get('authorization')?.replace('Bearer ', '')
+    const { data: { user } } = await supabase.auth.getUser(token)
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const body = await request.json()
+    const { id, brand, model, microns_per_click } = body
+
+    if (!id || !brand || !model) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    const userClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      { global: { headers: { Authorization: `Bearer ${token}` } } }
+    )
+
+    const { data, error } = await userClient
+      .from('grinders')
+      .update({
+        brand,
+        model,
+        microns_per_click: microns_per_click ? parseInt(microns_per_click) : null,
+      })
+      .eq('id', id)
+      .select()
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data[0])
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
 

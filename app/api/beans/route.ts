@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, roaster, roast_level } = body
+    const { name, roaster, roast_level, roast_date, weight_g, is_active } = body
 
     if (!name || !roaster || !roast_level) {
       return NextResponse.json(
@@ -86,6 +86,9 @@ export async function POST(request: NextRequest) {
           name,
           roaster,
           roast_level,
+          roast_date: roast_date || null,
+          weight_g: weight_g ? parseInt(weight_g) : null,
+          is_active: is_active !== undefined ? is_active : true,
         },
       ])
       .select()
@@ -98,6 +101,66 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data[0], { status: 201 })
   } catch (err: any) {
     console.error('POST /api/beans error:', err.message, err.stack)
+    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('authorization')
+    const token = authHeader?.replace('Bearer ', '')
+    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(token)
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { id, name, roaster, roast_level, roast_date, weight_g, is_active } = body
+
+    if (!id || !name || !roaster || !roast_level) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    const userClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      }
+    )
+
+    const { data, error } = await userClient
+      .from('beans')
+      .update({
+        name,
+        roaster,
+        roast_level,
+        roast_date: roast_date || null,
+        weight_g: weight_g ? parseInt(weight_g) : null,
+        is_active: is_active !== undefined ? is_active : true,
+      })
+      .eq('id', id)
+      .select()
+
+    if (error) {
+      console.error('Supabase update error:', error)
+      return NextResponse.json({ error: error.message, details: error }, { status: 500 })
+    }
+
+    return NextResponse.json(data[0])
+  } catch (err: any) {
+    console.error('PUT /api/beans error:', err.message, err.stack)
     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
   }
 }

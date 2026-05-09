@@ -1,22 +1,49 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Bean } from '@/lib/types'
-import { X } from 'lucide-react'
+import { X, Save, Plus } from 'lucide-react'
 
 interface BeanFormProps {
-  onSubmit: (bean: Omit<Bean, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>
+  onSubmit: (bean: any) => Promise<void>
   isLoading: boolean
+  initialData?: Bean | null
+  onCancel?: () => void
 }
 
-export default function BeanForm({ onSubmit, isLoading }: BeanFormProps) {
+export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }: BeanFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     roaster: '',
     roast_level: 'Medium',
+    roast_date: '',
+    weight_g: '',
+    is_active: true,
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name,
+        roaster: initialData.roaster,
+        roast_level: initialData.roast_level,
+        roast_date: initialData.roast_date || '',
+        weight_g: initialData.weight_g?.toString() || '',
+        is_active: initialData.is_active !== false,
+      })
+    } else {
+      setFormData({
+        name: '',
+        roaster: '',
+        roast_level: 'Medium',
+        roast_date: '',
+        weight_g: '',
+        is_active: true,
+      })
+    }
+  }, [initialData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,21 +51,40 @@ export default function BeanForm({ onSubmit, isLoading }: BeanFormProps) {
     setSuccess(false)
 
     try {
-      await onSubmit(formData)
-      setFormData({ name: '', roaster: '', roast_level: 'Medium' })
+      const payload = initialData ? { ...formData, id: initialData.id } : formData
+      await onSubmit(payload)
+      if (!initialData) {
+        setFormData({ 
+          name: '', 
+          roaster: '', 
+          roast_level: 'Medium',
+          roast_date: '',
+          weight_g: '',
+          is_active: true,
+        })
+      }
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add bean')
+      setError(err instanceof Error ? err.message : 'Failed to save bean')
     }
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-4"
+      className={`bg-[#2d2520] border ${initialData ? 'border-[#d4a574]' : 'border-[#3d3530]'} rounded-lg p-6 space-y-4`}
     >
-      <h3 className="text-lg font-semibold text-[#d4a574]">Add New Bean</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-[#d4a574]">
+          {initialData ? 'Edit Bean Bag' : 'Add New Bean Bag'}
+        </h3>
+        {onCancel && (
+          <button type="button" onClick={onCancel} className="text-[#8b6f47] hover:text-[#f5f1ed]">
+            <X className="w-5 h-5" />
+          </button>
+        )}
+      </div>
 
       {error && (
         <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-2 rounded flex items-center justify-between">
@@ -49,60 +95,91 @@ export default function BeanForm({ onSubmit, isLoading }: BeanFormProps) {
 
       {success && (
         <div className="bg-green-900/30 border border-green-700 text-green-400 px-4 py-2 rounded">
-          Bean added successfully!
+          Bean saved successfully!
         </div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-          Bean Name
-        </label>
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="e.g., Ethiopian Yirgacheffe"
-          required
-          className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
-        />
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Bean Name</label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="e.g., Yirgacheffe"
+            required
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+          />
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-          Roaster
-        </label>
-        <input
-          type="text"
-          value={formData.roaster}
-          onChange={(e) => setFormData({ ...formData, roaster: e.target.value })}
-          placeholder="e.g., Blue Bottle Coffee"
-          required
-          className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
-        />
-      </div>
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Roaster</label>
+          <input
+            type="text"
+            value={formData.roaster}
+            onChange={(e) => setFormData({ ...formData, roaster: e.target.value })}
+            placeholder="e.g., Blue Bottle"
+            required
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+          />
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-          Roast Level
-        </label>
-        <select
-          value={formData.roast_level}
-          onChange={(e) => setFormData({ ...formData, roast_level: e.target.value })}
-          className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
-        >
-          <option>Light</option>
-          <option>Medium</option>
-          <option>Dark</option>
-          <option>French</option>
-        </select>
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Roast Level</label>
+          <select
+            value={formData.roast_level}
+            onChange={(e) => setFormData({ ...formData, roast_level: e.target.value })}
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+          >
+            <option>Light</option>
+            <option>Medium</option>
+            <option>Dark</option>
+            <option>French</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Roast Date</label>
+          <input
+            type="date"
+            value={formData.roast_date}
+            onChange={(e) => setFormData({ ...formData, roast_date: e.target.value })}
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Bag Weight (g)</label>
+          <input
+            type="number"
+            value={formData.weight_g}
+            onChange={(e) => setFormData({ ...formData, weight_g: e.target.value })}
+            placeholder="e.g., 250"
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 pt-6">
+          <input
+            type="checkbox"
+            id="is_active"
+            checked={formData.is_active}
+            onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+            className="w-4 h-4 rounded border-[#5a4f4a] bg-[#1a1410] text-[#d4a574] focus:ring-[#d4a574]"
+          />
+          <label htmlFor="is_active" className="text-sm font-medium text-[#f5f1ed]">
+            Currently Active Bag
+          </label>
+        </div>
       </div>
 
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-[#d4a574] hover:bg-[#c49464] disabled:opacity-50 text-[#1a1410] font-medium py-2 rounded transition"
+        className="w-full bg-[#d4a574] hover:bg-[#c49464] disabled:opacity-50 text-[#1a1410] font-bold py-2 rounded transition flex items-center justify-center gap-2"
       >
-        {isLoading ? 'Adding...' : 'Add Bean'}
+        {initialData ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+        {isLoading ? 'Saving...' : initialData ? 'Update Bean Bag' : 'Add Bean Bag'}
       </button>
     </form>
   )

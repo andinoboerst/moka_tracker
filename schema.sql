@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS public.beans (
   name VARCHAR(255) NOT NULL,
   roaster VARCHAR(255) NOT NULL,
   roast_level VARCHAR(50) NOT NULL, -- Light, Medium, Dark, etc.
+  roast_date DATE,
+  weight_g INTEGER,
+  is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -18,6 +21,7 @@ CREATE TABLE IF NOT EXISTS public.grinders (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   brand VARCHAR(255) NOT NULL,
   model VARCHAR(255) NOT NULL,
+  microns_per_click INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -39,9 +43,9 @@ CREATE TABLE IF NOT EXISTS public.brews (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   bean_id UUID NOT NULL REFERENCES public.beans(id) ON DELETE CASCADE,
-  grinder_id UUID NOT NULL REFERENCES public.grinders(id) ON DELETE CASCADE,
+  grinder_id UUID REFERENCES public.grinders(id) ON DELETE CASCADE,
   moka_pot_id UUID NOT NULL REFERENCES public.moka_pots(id) ON DELETE CASCADE,
-  grinder_setting INTEGER NOT NULL,
+  grinder_setting INTEGER,
   coffee_weight_g DECIMAL(6, 2) NOT NULL,
   water_added_g DECIMAL(6, 2) NOT NULL,
   final_yield_g DECIMAL(6, 2) NOT NULL,

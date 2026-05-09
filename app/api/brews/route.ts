@@ -81,9 +81,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (
       !bean_id ||
-      !grinder_id ||
       !moka_pot_id ||
-      grinder_setting === undefined ||
       coffee_weight_g === undefined ||
       water_added_g === undefined ||
       final_yield_g === undefined ||
@@ -116,13 +114,20 @@ export async function POST(request: NextRequest) {
       final_yield_g
     )
 
-    // Fetch up to 3 previous brews with exactly the same beans, grinder, and moka pot
-    const { data: previousBrews } = await userClient
+    // Fetch up to 3 previous brews with exactly the same setup
+    let query = userClient
       .from('brews')
       .select('*')
       .eq('bean_id', bean_id)
-      .eq('grinder_id', grinder_id)
       .eq('moka_pot_id', moka_pot_id)
+
+    if (grinder_id) {
+      query = query.eq('grinder_id', grinder_id)
+    } else {
+      query = query.is('grinder_id', null)
+    }
+
+    const { data: previousBrews } = await query
       .order('created_at', { ascending: false })
       .limit(3)
 
@@ -131,7 +136,7 @@ export async function POST(request: NextRequest) {
       historyText = previousBrews.map((b, i) => `
 Previous Brew ${i + 1}:
 - Vibe Rating: ${b.vibe_rating}/10
-- Grinder Setting: ${b.grinder_setting} clicks
+${b.grinder_id ? `- Grinder Setting: ${b.grinder_setting} clicks` : '- Coffee was Pre-ground'}
 - Coffee/Water/Yield: ${b.coffee_weight_g}g / ${b.water_added_g}g / ${b.final_yield_g}g
 - Extraction Time: ${b.extraction_time_s}s
 - Tasting Notes: "${b.tasting_notes || 'None'}"`).join('\n')
@@ -151,7 +156,7 @@ Analyze the following CURRENT brew details, and consider the HISTORY of previous
 
 CURRENT Brew Details:
 - Vibe Rating: ${vibe_rating}/10
-- Grinder Setting: ${grinder_setting} clicks
+${grinder_id ? `- Grinder Setting: ${grinder_setting} clicks` : '- Coffee is Pre-ground (No grinder)'}
 - Tasting Notes: "${tasting_notes || 'None provided'}"
 - Coffee: ${coffee_weight_g}g
 - Water In: ${water_added_g}g
@@ -161,12 +166,13 @@ CURRENT Brew Details:
 - Brew Ratio: 1:${brew_ratio_input}
 - Extraction Ratio: 1:${extraction_ratio_output}
 
-HISTORY (Last 3 brews with this Bean + Grinder + Moka Pot):
+HISTORY (Last 3 brews with this setup):
 ${historyText}
 
 Rules:
 - If rating is low (≤5) and notes mention "bitter", suggest finer grind or lower heat for the next brew.
 - If notes mention "sour", suggest coarser grind or higher heat for the next brew.
+- IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size, since they cannot change it. Focus on water ratio, total yield, or heat instead.
 - YOU MUST RETURN A VALID JSON OBJECT WITH EXACTLY TWO KEYS: "summary" and "suggestion".
 - Do not use markdown blocks around the JSON. Just return raw JSON.
 
@@ -247,9 +253,9 @@ Example Response:
         {
           user_id: user.id,
           bean_id,
-          grinder_id,
+          grinder_id: grinder_id || null,
           moka_pot_id,
-          grinder_setting,
+          grinder_setting: grinder_setting !== undefined && grinder_setting !== '' ? parseInt(grinder_setting) : null,
           coffee_weight_g: parseFloat(coffee_weight_g),
           water_added_g: parseFloat(water_added_g),
           final_yield_g: parseFloat(final_yield_g),
