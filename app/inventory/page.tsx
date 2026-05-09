@@ -143,6 +143,23 @@ export default function InventoryPage() {
     if (response.ok) await fetchMokaPots()
   }
 
+  const handleToggleBeanActive = async (bean: Bean) => {
+    try {
+      const headers = await getAuthHeaders()
+      const updatedBean = { ...bean, is_active: !bean.is_active }
+      const response = await fetch('/api/beans', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(updatedBean),
+      })
+      if (response.ok) {
+        await fetchBeans()
+      }
+    } catch (err) {
+      console.error('Error toggling bean status:', err)
+    }
+  }
+
   if (loading) {
     return (
       <>
@@ -199,6 +216,7 @@ export default function InventoryPage() {
                 type="beans"
                 onDelete={handleDeleteBean}
                 onEdit={setEditingBean}
+                onToggleActive={handleToggleBeanActive}
                 isDeleting={false}
               />
             </section>

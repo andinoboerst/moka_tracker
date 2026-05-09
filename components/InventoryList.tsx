@@ -8,6 +8,7 @@ interface InventoryListProps {
   type: 'beans' | 'grinders' | 'moka-pots'
   onDelete: (id: string) => Promise<void>
   onEdit: (item: any) => void
+  onToggleActive?: (item: any) => Promise<void>
   isDeleting: boolean
 }
 
@@ -16,6 +17,7 @@ export default function InventoryList({
   type,
   onDelete,
   onEdit,
+  onToggleActive,
   isDeleting,
 }: InventoryListProps) {
   const renderItem = (item: any) => {
@@ -24,23 +26,14 @@ export default function InventoryList({
       return (
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h4 className={`font-medium ${bean.is_active !== false ? 'text-[#f5f1ed]' : 'text-[#8b6f47] line-through'}`}>
+            <h4 className={`font-medium transition-all ${bean.is_active !== false ? 'text-[#f5f1ed]' : 'text-[#8b6f47] line-through opacity-50'}`}>
               {bean.name}
             </h4>
-            {bean.is_active !== false ? (
-              <span title="Active">
-                <Zap className="w-3 h-3 text-yellow-500" />
-              </span>
-            ) : (
-              <span title="Inactive">
-                <ZapOff className="w-3 h-3 text-[#5a4f4a]" />
-              </span>
-            )}
           </div>
           <p className="text-sm text-[#8b6f47]">
             {bean.roaster} • {bean.roast_level}
           </p>
-          <div className="flex gap-4 mt-1">
+          <div className={`flex gap-4 mt-1 transition-opacity ${bean.is_active !== false ? 'opacity-100' : 'opacity-40'}`}>
             {bean.roast_date && (
               <span className="text-[10px] text-[#8b6f47] flex items-center gap-1">
                 <Calendar className="w-3 h-3" /> {new Date(bean.roast_date).toLocaleDateString()}
@@ -96,9 +89,28 @@ export default function InventoryList({
       {items.map((item) => (
         <div
           key={item.id}
-          className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-4 flex items-center justify-between hover:border-[#5a4f4a] transition"
+          className={`bg-[#2d2520] border border-[#3d3530] rounded-lg p-4 flex items-center justify-between hover:border-[#5a4f4a] transition ${
+            type === 'beans' && (item as Bean).is_active === false ? 'opacity-70 bg-[#251e1a]' : ''
+          }`}
         >
-          {renderItem(item)}
+          <div className="flex items-center gap-4 flex-1">
+            {type === 'beans' && onToggleActive && (
+              <button
+                onClick={() => onToggleActive(item)}
+                className={`flex-shrink-0 w-8 h-4 rounded-full relative transition-colors duration-200 focus:outline-none ${
+                  (item as Bean).is_active !== false ? 'bg-yellow-600' : 'bg-[#1a1410] border border-[#3d3530]'
+                }`}
+                title={(item as Bean).is_active !== false ? "Deactivate bag" : "Activate bag"}
+              >
+                <div
+                  className={`absolute top-0.5 left-1 w-2.5 h-2.5 rounded-full bg-white transition-transform duration-200 ${
+                    (item as Bean).is_active !== false ? 'translate-x-3.5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            )}
+            {renderItem(item)}
+          </div>
           <div className="flex items-center gap-1">
             <button
               onClick={() => onEdit(item)}
