@@ -154,8 +154,8 @@ If a brew is bad, you are heartbroken and dramatic (use words like "Mamma Mia!",
 
 Analyze the following CURRENT brew details, and consider the HISTORY of previous brews with this exact same setup, to provide a JSON response with two specific keys:
 
-1. "summary": A short, passionate 1-2 sentence recap in your Italian personality explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Mix in Italian flair but keep the technical reason clear in English.
-2. "suggestion": A single, highly actionable sentence giving clear instructions on what variable to change for their NEXT brew, delivered with your Italian charm.
+1. "summary": A short, passionate 1-2 sentence recap in your Italian personality explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Use emojis and mix in Italian flair!
+2. "suggestion": A detailed, passionate 2-3 sentence suggestion for the next brew, delivered with your Italian charm. Give clear, exact instructions on what to change and why it will make the coffee Bellissimo. Use plenty of emojis! 🤌🇮🇹☕
 
 CURRENT Brew Details:
 - Vibe Rating: ${vibe_rating}/10
@@ -180,7 +180,7 @@ Rules:
 - Do not use markdown blocks around the JSON. Just return raw JSON.
 
 Example Response:
-{"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the profile sour and weak!", "suggestion": "For the next time, Ottimo! Use a finer grind to slow down the water and find the sweetness!"}`
+{"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the profile sour and weak! 😰☕", "suggestion": "For the next time, Ottimo! Use a finer grind to slow down the water and find the sweetness. It will be like a kiss from an angel! 🤌✨"}`
 
         const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
           method: 'POST',
@@ -226,22 +226,22 @@ Example Response:
         let suggestion = ''
 
         if (vibe_rating <= 3) {
-          summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place.`
+          summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place, like a Vespa in a crowded piazza! 😰🇮🇹`
           if ((tasting_notes || '').toLowerCase().includes('bitter')) {
-            summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}.`
-            suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect.`
+            summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}. My soul is weeping! 😭☕`
+            suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect and it will love you back. It must be as smooth as a gondola ride! 🤌✨`
           } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
-            summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love.`
-            suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer.`
+            summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love for these beans! 🍋☕`
+            suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer. Slow it down, let the flavors bloom like a spring day in Tuscany! 🤌🌸`
           } else {
-            suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time.`
+            suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time. Don't be afraid to try something new, fortune favors the bold! 🤌💪`
           }
         } else if (vibe_rating <= 6) {
-          summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}.`
-          suggestion = `A small tweak to the clicks, and it will be Bellissimo! Just a little more precision.`
+          summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}. Not bad, but we can do better! 🙂☕`
+          suggestion = `A small tweak to the clicks, and it will be Bellissimo! Just a little more precision with your grind and you will be singing like Pavarotti! 🤌🎶`
         } else {
-          summary = `Magnifico! Splendido! This brew is a work of art, a true Italian masterpiece.`
-          suggestion = `Perfetto! Keep these settings exactly as they are. You have found the soul of the moka pot!`
+          summary = `Magnifico! Splendido! This brew is a work of art, a true Italian masterpiece. I am moved to tears! 🤩🇮🇹☕`
+          suggestion = `Perfetto! Keep these settings exactly as they are. You have found the soul of the moka pot, now go and enjoy this liquid gold! 🤌✨🥇`
         }
         ai_recap = JSON.stringify({ summary, suggestion })
       }
