@@ -33,9 +33,9 @@ export async function GET(request: NextRequest) {
       .select(
         `
         *,
-        beans (*),
-        grinders (*),
-        moka_pots (*)
+        bean:beans (*),
+        grinder:grinders (*),
+        moka_pot:moka_pots (*)
       `
       )
       .order('created_at', { ascending: false })
@@ -265,9 +265,9 @@ Example Response:
       .select(
         `
         *,
-        beans (*),
-        grinders (*),
-        moka_pots (*)
+        bean:beans (*),
+        grinder:grinders (*),
+        moka_pot:moka_pots (*)
       `
       )
 
