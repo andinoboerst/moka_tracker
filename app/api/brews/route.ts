@@ -100,36 +100,89 @@ export async function POST(request: NextRequest) {
       final_yield_g
     )
 
-    // Generate AI recap
+    // Generate AI recap via Mistral directly
     let ai_recap = ''
     try {
-      const recapResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-recap`,
-        {
+      const mistralApiKey = process.env.MISTRAL_API_KEY
+      
+      if (mistralApiKey) {
+        const prompt = `You are a coffee brewing expert analyzing a moka pot brew. 
+Analyze the following brew details and provide two things:
+1. A short, 1-2 sentence "Brew Master Recap" summarizing the result.
+2. A single, highly actionable sentence of advice for their NEXT brew based on their tasting notes and rating.
+
+Brew Details:
+- Vibe Rating: ${vibe_rating}/10
+- Tasting Notes: "${tasting_notes || 'None provided'}"
+- Coffee: ${coffee_weight_g}g
+- Water In: ${water_added_g}g
+- Yield: ${final_yield_g}g
+- Brew Ratio: 1:${brew_ratio_input}
+- Extraction Ratio: 1:${extraction_ratio_output}
+
+Rules:
+- If rating is low (≤5) and notes mention "bitter", suggest finer grind or lower heat for the next brew.
+- If notes mention "sour", suggest coarser grind or higher heat for the next brew.
+- YOU MUST RETURN A VALID JSON OBJECT WITH EXACTLY TWO KEYS: "summary" and "suggestion".
+- Do not use markdown blocks around the JSON. Just return raw JSON.
+
+Example Response:
+{"summary": "A decent attempt, but the extraction ratio indicates over-extraction causing bitterness.", "suggestion": "For your next brew, try adjusting your grinder one notch coarser to reduce the contact time and avoid bitter notes."}`
+
+        const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${mistralApiKey}`,
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            vibe_rating,
-            tasting_notes,
-            coffee_weight_g,
-            water_added_g,
-            final_yield_g,
-            brew_ratio_input,
-            extraction_ratio_output,
+            model: 'mistral-small-latest',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.7,
+            response_format: { type: 'json_object' }
           }),
-        }
-      )
+        })
 
-      if (recapResponse.ok) {
-        const recapData = await recapResponse.json()
-        ai_recap = recapData.recap || ''
+        if (recapResponse.ok) {
+          const mistralData = await recapResponse.json()
+          const content = mistralData.choices[0].message.content.trim()
+          
+          // Verify it's valid JSON before saving
+          JSON.parse(content)
+          ai_recap = content
+        } else {
+          console.error('Mistral API error:', await recapResponse.text())
+        }
+      }
+      
+      // Fallback generator if Mistral fails or no key
+      if (!ai_recap) {
+        let summary = ''
+        let suggestion = ''
+
+        if (vibe_rating <= 3) {
+          summary = `Room for improvement here. Your extraction ratio of 1:${extraction_ratio_output} suggests an unbalanced extraction.`
+          if ((tasting_notes || '').toLowerCase().includes('bitter')) {
+            summary = `This brew came out bitter due to over-extraction. Your extraction ratio was 1:${extraction_ratio_output}.`
+            suggestion = `For your next brew, try increasing your grinder setting (coarser) or reducing heat slightly to prevent bitterness.`
+          } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
+            summary = `The sourness indicates under-extraction. A brew ratio of 1:${brew_ratio_input} might be too high for your setup.`
+            suggestion = `For your next brew, use a finer grind setting to increase brew time and extraction.`
+          } else {
+            suggestion = `Experiment with grinder adjustments and brew time to dial in the perfect extraction next time.`
+          }
+        } else if (vibe_rating <= 6) {
+          summary = `Solid brew! Your 1:${brew_ratio_input} brew ratio produced a yield of 1:${extraction_ratio_output}.`
+          suggestion = `Small tweaks to your grinder setting could refine the profile further for your next cup.`
+        } else {
+          summary = `Excellent work! This brew hit the mark with a great vibe rating.`
+          suggestion = `Your ${brew_ratio_input}:1 water ratio and ${extraction_ratio_output}:1 extraction ratio are well-balanced. Keep these exact settings consistent for your next brew!`
+        }
+        ai_recap = JSON.stringify({ summary, suggestion })
       }
     } catch (error) {
       console.error('Error generating AI recap:', error)
-      // Continue without recap if generation fails
+      // We will save with empty string or continue without crashing
     }
 
     // Create a client with the user's token so RLS policies work

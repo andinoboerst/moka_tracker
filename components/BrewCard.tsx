@@ -116,7 +116,16 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
             <Sparkles className="w-5 h-5 text-[#d4a574] flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-xs text-[#d4a574] font-semibold mb-1">Brew Master Recap</p>
-              <p className="text-sm text-[#f5f1ed]">{brew.ai_recap}</p>
+              <p className="text-sm text-[#f5f1ed]">
+                {(() => {
+                  try {
+                    const parsed = JSON.parse(brew.ai_recap);
+                    return parsed.summary || brew.ai_recap;
+                  } catch (e) {
+                    return brew.ai_recap;
+                  }
+                })()}
+              </p>
             </div>
           </div>
         </div>

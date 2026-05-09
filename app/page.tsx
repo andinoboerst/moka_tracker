@@ -78,6 +78,43 @@ export default function Home() {
           </div>
         ) : (
           <>
+            {/* Next Brew Guide Card */}
+            {brews.length > 0 && brews[0].ai_recap && (() => {
+              try {
+                const parsed = JSON.parse(brews[0].ai_recap);
+                if (parsed.suggestion) {
+                  return (
+                    <div className="mb-8 bg-gradient-to-r from-[#2d2520] to-[#1a1410] border border-[#d4a574]/30 rounded-xl p-6 shadow-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <span className="text-8xl">☕</span>
+                      </div>
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-xl">✨</span>
+                          <h2 className="text-xl font-bold text-[#d4a574]">Next Brew Guide</h2>
+                        </div>
+                        <p className="text-[#8b6f47] text-sm mb-3">
+                          Based on your last brew ({brews[0].bean?.name}, {brews[0].vibe_rating}/10 vibe):
+                        </p>
+                        <p className="text-[#f5f1ed] text-lg font-medium leading-relaxed mb-6 max-w-3xl">
+                          "{parsed.suggestion}"
+                        </p>
+                        <Link
+                          href="/brew"
+                          className="inline-block bg-transparent border-2 border-[#d4a574] hover:bg-[#d4a574] hover:text-[#1a1410] text-[#d4a574] font-bold py-2 px-6 rounded transition"
+                        >
+                          Log Next Brew →
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                }
+              } catch (e) {
+                // If parsing fails, it's an old string-only recap, skip showing the card
+              }
+              return null;
+            })()}
+
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
               <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
