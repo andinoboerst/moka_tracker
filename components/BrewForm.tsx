@@ -53,13 +53,19 @@ export default function BrewForm({
 
   // Auto-select latest equipment when it loads
   useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      bean_id: prev.bean_id || (activeBeans[0]?.id ?? ''),
-      grinder_id: prev.grinder_id || (grinders[0]?.id ?? ''),
-      moka_pot_id: prev.moka_pot_id || (mokaPots[0]?.id ?? ''),
-    }))
-  }, [activeBeans, grinders, mokaPots])
+    setFormData(prev => {
+      const selectedBeanId = prev.bean_id || (activeBeans[0]?.id ?? '')
+      const selectedBean = beans.find(b => b.id === selectedBeanId)
+      const isPreGround = selectedBean?.is_pre_ground === true
+      
+      return {
+        ...prev,
+        bean_id: selectedBeanId,
+        grinder_id: isPreGround ? '' : (prev.grinder_id || (grinders[0]?.id ?? '')),
+        moka_pot_id: prev.moka_pot_id || (mokaPots[0]?.id ?? ''),
+      }
+    })
+  }, [activeBeans, grinders, mokaPots, beans])
 
   // Auto-calculated values
   const brewRatio = useMemo(() => {

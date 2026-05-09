@@ -29,14 +29,14 @@ export default function InventoryList({
             <h4 className={`font-medium transition-all ${bean.is_active !== false ? 'text-[#f5f1ed]' : 'text-[#8b6f47] line-through opacity-50'}`}>
               {bean.name}
             </h4>
-          </div>
-          <p className="text-sm text-[#8b6f47] flex items-center gap-2">
-            {bean.roaster} • {bean.roast_level}
             {bean.is_pre_ground && (
-              <span className="px-1.5 py-0.5 rounded bg-[#3d3530] text-[#d4a574] text-[9px] font-bold uppercase tracking-wider border border-[#5a4f4a]">
+              <span className="text-[10px] text-[#d4a574] bg-[#3d3530] px-1.5 py-0.5 rounded border border-[#5a4f4a] font-bold uppercase">
                 Pre-ground
               </span>
             )}
+          </div>
+          <p className="text-sm text-[#8b6f47] flex items-center gap-2">
+            {bean.roaster} • {bean.roast_level}
           </p>
           <div className={`flex gap-4 mt-1 transition-opacity ${bean.is_active !== false ? 'opacity-100' : 'opacity-40'}`}>
             {bean.roast_date && (
