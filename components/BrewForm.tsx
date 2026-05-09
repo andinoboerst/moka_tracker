@@ -44,28 +44,26 @@ export default function BrewForm({
     return selectedBean?.is_pre_ground === true
   }, [beans, formData.bean_id])
 
-  // Clear grinder if bean is pre-ground
-  useEffect(() => {
-    if (isBeanPreGround) {
-      setFormData(prev => ({ ...prev, grinder_id: '', grinder_setting: '' }))
-    }
-  }, [isBeanPreGround])
-
-  // Auto-select latest equipment when it loads
+  // Consolidated auto-selection and pre-ground logic
   useEffect(() => {
     setFormData(prev => {
       const selectedBeanId = prev.bean_id || (activeBeans[0]?.id ?? '')
       const selectedBean = beans.find(b => b.id === selectedBeanId)
       const isPreGround = selectedBean?.is_pre_ground === true
       
+      // We want to re-select a grinder if:
+      // 1. No grinder is currently selected AND it's not pre-ground
+      // 2. We just switched from a pre-ground bean to a whole bean
+      const needsGrinder = !isPreGround && (!prev.grinder_id || prev.grinder_id === '')
+
       return {
         ...prev,
         bean_id: selectedBeanId,
-        grinder_id: isPreGround ? '' : (prev.grinder_id || (grinders[0]?.id ?? '')),
+        grinder_id: isPreGround ? '' : (needsGrinder ? (grinders[0]?.id ?? '') : prev.grinder_id),
         moka_pot_id: prev.moka_pot_id || (mokaPots[0]?.id ?? ''),
       }
     })
-  }, [activeBeans, grinders, mokaPots, beans])
+  }, [activeBeans, grinders, mokaPots, beans, formData.bean_id])
 
   // Auto-calculated values
   const brewRatio = useMemo(() => {
