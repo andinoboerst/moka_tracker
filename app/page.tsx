@@ -60,7 +60,7 @@ export default function Home() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#d4a574] mb-2">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2">
             Brewing Dashboard
           </h1>
           <p className="text-[#8b6f47] text-lg">
@@ -72,7 +72,7 @@ export default function Home() {
         {!authLoading && !user ? (
           <div className="text-center py-20 bg-[#2d2520] border border-[#3d3530] rounded-lg">
             <div className="text-6xl mb-4">☕</div>
-            <h2 className="text-2xl font-bold text-[#d4a574] mb-2">Welcome to Moka Tracker</h2>
+            <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-2">Welcome to Moka Tracker</h2>
             <p className="text-[#8b6f47] mb-6">Sign in to start logging your brews.</p>
             <p className="text-[#8b6f47] text-sm">Click <strong className="text-[#d4a574]">Sign In</strong> in the top right corner.</p>
           </div>
@@ -91,7 +91,7 @@ export default function Home() {
                       <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-xl">✨</span>
-                          <h2 className="text-xl font-bold text-[#d4a574]">Next Brew Guide</h2>
+                          <h2 className="text-xl font-serif font-bold text-[#d4a574]">Next Brew Guide</h2>
                         </div>
                         <p className="text-[#8b6f47] text-sm mb-3">
                           Based on your last brew ({brews[0].bean?.name ? `${brews[0].bean.name}, ` : ''}{brews[0].vibe_rating}/10 vibe):
@@ -142,7 +142,7 @@ export default function Home() {
 
             {/* Brews List */}
             <section>
-              <h2 className="text-2xl font-bold text-[#d4a574] mb-6">Recent Brews</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-6">Recent Brews</h2>
 
               {loading ? (
                 <div className="text-center py-12 text-[#8b6f47]">

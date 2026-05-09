@@ -9,6 +9,12 @@
   --coffee-light: #5a4f4a;
   --coffee-accent: #8b6f47;
   --coffee-gold: #d4a574;
+  
+  /* Italian Flair */
+  --italy-green: #008C45;
+  --italy-white: #f5f1ed;
+  --italy-red: #CD212A;
+  --brass-gradient: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);
 }
 
 @theme inline {
@@ -19,8 +25,11 @@
   --color-coffee-light: var(--coffee-light);
   --color-coffee-accent: var(--coffee-accent);
   --color-coffee-gold: var(--coffee-gold);
+  --color-italy-green: var(--italy-green);
+  --color-italy-red: var(--italy-red);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-playfair);
 }
 
 body {

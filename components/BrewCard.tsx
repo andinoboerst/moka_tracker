@@ -1,7 +1,7 @@
 'use client'
 
 import { Brew } from '@/lib/types'
-import { getVibeEmoji, formatDate } from '@/lib/utils'
+import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
 import { Trash2, Sparkles } from 'lucide-react'
 
 interface BrewCardProps {
@@ -22,7 +22,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
           </h3>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{getVibeEmoji(brew.vibe_rating)}</span>
+          <span className="text-2xl" title={getVibeName(brew.vibe_rating)}>{getVibeEmoji(brew.vibe_rating)}</span>
           <button
             onClick={() => onDelete(brew.id)}
             disabled={isDeleting}
@@ -75,7 +75,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">Vibe Rating</p>
           <p className="text-sm font-medium text-[#d4a574]">
-            {brew.vibe_rating}/10
+            {brew.vibe_rating}/10 — {getVibeName(brew.vibe_rating)}
           </p>
         </div>
       </div>

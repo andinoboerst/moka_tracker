@@ -48,11 +48,22 @@ export const getVibeColor = (rating: number): string => {
  * Get vibe emoji based on rating
  */
 export const getVibeEmoji = (rating: number): string => {
-  if (rating <= 2) return '😤'
-  if (rating <= 4) return '😐'
-  if (rating <= 6) return '🙂'
-  if (rating <= 8) return '😊'
-  return '🤩'
+  if (rating <= 2) return '🫠' // Mamma Mia...
+  if (rating <= 4) return '🤷‍♂️' // Così così
+  if (rating <= 6) return '☕' // Bene
+  if (rating <= 8) return '🇮🇹' // Bellissimo
+  return '🤌' // Ottimo!
+}
+
+/**
+ * Get vibe name based on rating
+ */
+export const getVibeName = (rating: number): string => {
+  if (rating <= 2) return 'Mamma Mia...'
+  if (rating <= 4) return 'Così così'
+  if (rating <= 6) return 'Bene'
+  if (rating <= 8) return 'Bellissimo'
+  return 'Ottimo!'
 }
 
 /**

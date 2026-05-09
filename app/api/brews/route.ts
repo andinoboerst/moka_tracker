@@ -148,11 +148,14 @@ ${b.grinder_id ? `- Grinder Setting: ${b.grinder_setting} clicks` : '- Coffee wa
       const mistralApiKey = process.env.MISTRAL_API_KEY
       
       if (mistralApiKey) {
-        const prompt = `You are a coffee brewing expert analyzing a moka pot brew. 
+        const prompt = `You are a coffee brewing expert with a big, passionate Italian personality. 
+You are deeply emotional about coffee. If a brew is good, you are ecstatic (use words like "Ottimo!", "Bellissimo!", "Magnifico!", "Perfetto!"). 
+If a brew is bad, you are heartbroken and dramatic (use words like "Mamma Mia!", "Che disastro!", "Che peccato!", "Sacrilegio!"). 
+
 Analyze the following CURRENT brew details, and consider the HISTORY of previous brews with this exact same setup, to provide a JSON response with two specific keys:
 
-1. "summary": A short, 1-2 sentence recap explaining exactly WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. DO NOT include any advice or suggestions for the next brew here.
-2. "suggestion": A single, highly actionable sentence giving clear, exact instructions on what variable to change (and to what) for their NEXT brew. Base this heavily on what has and hasn't worked in their previous brews (if any exist).
+1. "summary": A short, passionate 1-2 sentence recap in your Italian personality explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Mix in Italian flair but keep the technical reason clear in English.
+2. "suggestion": A single, highly actionable sentence giving clear instructions on what variable to change for their NEXT brew, delivered with your Italian charm.
 
 CURRENT Brew Details:
 - Vibe Rating: ${vibe_rating}/10
@@ -170,14 +173,14 @@ HISTORY (Last 3 brews with this setup):
 ${historyText}
 
 Rules:
-- If rating is low (≤5) and notes mention "bitter", suggest finer grind or lower heat for the next brew.
-- If notes mention "sour", suggest coarser grind or higher heat for the next brew.
-- IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size, since they cannot change it. Focus on water ratio, total yield, or heat instead.
+- If rating is low (≤5) and notes mention "bitter", suggest finer grind or lower heat.
+- If notes mention "sour", suggest coarser grind or higher heat.
+- IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size.
 - YOU MUST RETURN A VALID JSON OBJECT WITH EXACTLY TWO KEYS: "summary" and "suggestion".
 - Do not use markdown blocks around the JSON. Just return raw JSON.
 
 Example Response:
-{"summary": "The brew extracted too quickly, leading to a sour profile due to under-extraction at a 1:1.7 ratio.", "suggestion": "For your next brew, adjust your grinder 1-2 clicks finer to slow down the extraction and increase sweetness."}`
+{"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the profile sour and weak!", "suggestion": "For the next time, Ottimo! Use a finer grind to slow down the water and find the sweetness!"}`
 
         const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
           method: 'POST',
@@ -223,22 +226,22 @@ Example Response:
         let suggestion = ''
 
         if (vibe_rating <= 3) {
-          summary = `Room for improvement here. Your extraction ratio of 1:${extraction_ratio_output} suggests an unbalanced extraction.`
+          summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place.`
           if ((tasting_notes || '').toLowerCase().includes('bitter')) {
-            summary = `This brew came out bitter due to over-extraction. Your extraction ratio was 1:${extraction_ratio_output}.`
-            suggestion = `For your next brew, try increasing your grinder setting (coarser) or reducing heat slightly to prevent bitterness.`
+            summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}.`
+            suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect.`
           } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
-            summary = `The sourness indicates under-extraction. A brew ratio of 1:${brew_ratio_input} might be too high for your setup.`
-            suggestion = `For your next brew, use a finer grind setting to increase brew time and extraction.`
+            summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love.`
+            suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer.`
           } else {
-            suggestion = `Experiment with grinder adjustments and brew time to dial in the perfect extraction next time.`
+            suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time.`
           }
         } else if (vibe_rating <= 6) {
-          summary = `Solid brew! Your 1:${brew_ratio_input} brew ratio produced a yield of 1:${extraction_ratio_output}.`
-          suggestion = `Small tweaks to your grinder setting could refine the profile further for your next cup.`
+          summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}.`
+          suggestion = `A small tweak to the clicks, and it will be Bellissimo! Just a little more precision.`
         } else {
-          summary = `Excellent work! This brew hit the mark with a great vibe rating.`
-          suggestion = `Your ${brew_ratio_input}:1 water ratio and ${extraction_ratio_output}:1 extraction ratio are well-balanced. Keep these exact settings consistent for your next brew!`
+          summary = `Magnifico! Splendido! This brew is a work of art, a true Italian masterpiece.`
+          suggestion = `Perfetto! Keep these settings exactly as they are. You have found the soul of the moka pot!`
         }
         ai_recap = JSON.stringify({ summary, suggestion })
       }

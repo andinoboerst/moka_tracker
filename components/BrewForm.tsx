@@ -130,7 +130,7 @@ export default function BrewForm({
       onSubmit={handleSubmit}
       className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-6"
     >
-      <h2 className="text-2xl font-bold text-[#d4a574]">Log New Brew</h2>
+      <h2 className="text-3xl font-serif font-bold text-[#d4a574]">Log New Brew</h2>
 
       {error && (
         <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-2 rounded flex items-center justify-between">
@@ -325,7 +325,7 @@ export default function BrewForm({
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-2">
-            Vibe Rating: {formData.vibe_rating}/10 {getVibeEmoji(parseInt(formData.vibe_rating))}
+            Vibe Rating: {formData.vibe_rating}/10 — {getVibeName(parseInt(formData.vibe_rating))} {getVibeEmoji(parseInt(formData.vibe_rating))}
           </label>
           <input
             type="range"
@@ -363,9 +363,17 @@ export default function BrewForm({
 }
 
 function getVibeEmoji(rating: number): string {
-  if (rating <= 2) return '😤'
-  if (rating <= 4) return '😐'
-  if (rating <= 6) return '🙂'
-  if (rating <= 8) return '😊'
-  return '🤩'
+  if (rating <= 2) return '🫠'
+  if (rating <= 4) return '🤷‍♂️'
+  if (rating <= 6) return '☕'
+  if (rating <= 8) return '🇮🇹'
+  return '🤌'
+}
+
+function getVibeName(rating: number): string {
+  if (rating <= 2) return 'Mamma Mia...'
+  if (rating <= 4) return 'Così così'
+  if (rating <= 6) return 'Bene'
+  if (rating <= 8) return 'Bellissimo'
+  return 'Ottimo!'
 }
