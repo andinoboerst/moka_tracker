@@ -39,6 +39,18 @@ export default function BrewForm({
   // Filter for active beans only
   const activeBeans = useMemo(() => beans.filter(b => b.is_active !== false), [beans])
 
+  const isBeanPreGround = useMemo(() => {
+    const selectedBean = beans.find(b => b.id === formData.bean_id)
+    return selectedBean?.is_pre_ground === true
+  }, [beans, formData.bean_id])
+
+  // Clear grinder if bean is pre-ground
+  useEffect(() => {
+    if (isBeanPreGround) {
+      setFormData(prev => ({ ...prev, grinder_id: '', grinder_setting: '' }))
+    }
+  }, [isBeanPreGround])
+
   // Auto-select latest equipment when it loads
   useEffect(() => {
     setFormData(prev => ({
@@ -150,24 +162,26 @@ export default function BrewForm({
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Grinder
-          </label>
-          <select
-            value={formData.grinder_id}
-            onChange={(e) => setFormData({ ...formData, grinder_id: e.target.value })}
-            required
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
-          >
-            <option value="">None (Pre-ground)</option>
-            {grinders.map((grinder) => (
-              <option key={grinder.id} value={grinder.id}>
-                {grinder.brand} {grinder.model}
-              </option>
-            ))}
-          </select>
-        </div>
+        {!isBeanPreGround && (
+          <div>
+            <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+              Grinder
+            </label>
+            <select
+              value={formData.grinder_id}
+              onChange={(e) => setFormData({ ...formData, grinder_id: e.target.value })}
+              required
+              className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            >
+              <option value="">None (Pre-ground)</option>
+              {grinders.map((grinder) => (
+                <option key={grinder.id} value={grinder.id}>
+                  {grinder.brand} {grinder.model}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
@@ -191,7 +205,7 @@ export default function BrewForm({
 
       {/* Brew Parameters */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {formData.grinder_id && (
+        {formData.grinder_id && !isBeanPreGround && (
           <div>
             <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
               Grinder Setting (clicks)

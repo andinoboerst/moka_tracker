@@ -19,6 +19,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
     roast_date: '',
     weight_g: '',
     is_active: true,
+    is_pre_ground: false,
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -32,6 +33,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
         roast_date: initialData.roast_date || '',
         weight_g: initialData.weight_g?.toString() || '',
         is_active: initialData.is_active !== false,
+        is_pre_ground: initialData.is_pre_ground === true,
       })
     } else {
       setFormData({
@@ -41,6 +43,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
         roast_date: '',
         weight_g: '',
         is_active: true,
+        is_pre_ground: false,
       })
     }
   }, [initialData])
@@ -61,6 +64,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
           roast_date: '',
           weight_g: '',
           is_active: true,
+          is_pre_ground: false,
         })
       }
       setSuccess(true)
@@ -168,7 +172,20 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             className="w-4 h-4 rounded border-[#5a4f4a] bg-[#1a1410] text-[#d4a574] focus:ring-[#d4a574]"
           />
           <label htmlFor="is_active" className="text-sm font-medium text-[#f5f1ed]">
-            Currently Active Bag
+            Currently Active
+          </label>
+        </div>
+
+        <div className="flex items-center gap-2 pt-6">
+          <input
+            type="checkbox"
+            id="is_pre_ground"
+            checked={formData.is_pre_ground}
+            onChange={(e) => setFormData({ ...formData, is_pre_ground: e.target.checked })}
+            className="w-4 h-4 rounded border-[#5a4f4a] bg-[#1a1410] text-[#d4a574] focus:ring-[#d4a574]"
+          />
+          <label htmlFor="is_pre_ground" className="text-sm font-medium text-[#f5f1ed]">
+            Pre-ground Coffee
           </label>
         </div>
       </div>

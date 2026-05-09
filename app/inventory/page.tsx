@@ -31,7 +31,15 @@ export default function InventoryPage() {
       const headers = await getAuthHeaders()
       const response = await fetch('/api/beans', { headers })
       if (response.ok) {
-        setBeans(await response.json())
+        const data = await response.json()
+        // Sort: active (true or undefined) first, then inactive (false)
+        const sorted = data.sort((a: Bean, b: Bean) => {
+          const aActive = a.is_active !== false
+          const bActive = b.is_active !== false
+          if (aActive === bActive) return 0
+          return aActive ? -1 : 1
+        })
+        setBeans(sorted)
       }
     } catch (err) {
       console.error('Error fetching beans:', err)

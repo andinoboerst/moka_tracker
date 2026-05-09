@@ -7,6 +7,7 @@ export interface Bean {
   roast_date?: string
   weight_g?: number
   is_active?: boolean
+  is_pre_ground?: boolean
   created_at: string
   updated_at: string
 }
