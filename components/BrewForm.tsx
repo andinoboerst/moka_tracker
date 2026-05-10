@@ -306,7 +306,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Milk Added (Latte Aggiunto) (g) - <span className="text-[#8b6f47] font-normal italic">Leave empty for black coffee</span>
+            Milk Added (g) - <span className="text-[#8b6f47] font-normal italic">Leave empty for black coffee</span>
           </label>
           <input
             type="number"
