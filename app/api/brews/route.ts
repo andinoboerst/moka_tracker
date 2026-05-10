@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
       final_yield_g,
       extraction_time_s,
       milk_added_g,
+      milk_type,
       vibe_rating,
       tasting_notes,
       water_temp,
@@ -169,7 +170,7 @@ ${grinder_id ? `- Grinder Setting: ${grinder_setting} clicks` : '- Coffee is Pre
 - Water In: ${water_added_g}g
 - Yield: ${final_yield_g}g
 - Extraction Time: ${extraction_time_s} seconds
-- Milk Added: ${milk_added_g ? `${milk_added_g}g` : 'None (Black Coffee)'}
+- Milk Added: ${milk_added_g ? `${milk_added_g}g (${milk_type || 'Unknown type'})` : 'None (Black Coffee)'}
 - Brew Ratio: 1:${brew_ratio_input}
 - Extraction Ratio: 1:${extraction_ratio_output}
 - Water Temp: ${water_temp || 'Boiling'}
@@ -273,6 +274,7 @@ Example Response:
           final_yield_g: parseFloat(final_yield_g),
           extraction_time_s: parseInt(extraction_time_s),
           milk_added_g: milk_added_g ? parseFloat(milk_added_g) : null,
+          milk_type: milk_type || null,
           brew_ratio_input,
           extraction_ratio_output,
           vibe_rating: parseInt(vibe_rating),

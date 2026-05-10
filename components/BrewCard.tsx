@@ -117,7 +117,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">Style</p>
           <p className="text-sm font-semibold text-[#f5f1ed]">
-            {brew.milk_added_g ? `Milk (${brew.milk_added_g}g)` : 'Black'}
+            {brew.milk_added_g ? `${brew.milk_type || 'Milk'} (${brew.milk_added_g}g)` : 'Black'}
           </p>
         </div>
       </div>

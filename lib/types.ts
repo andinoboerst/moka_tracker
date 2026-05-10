@@ -45,6 +45,7 @@ export interface Brew {
   final_yield_g: number
   extraction_time_s: number
   milk_added_g?: number
+  milk_type?: string
   brew_ratio_input?: number
   extraction_ratio_output?: number
   vibe_rating: number
@@ -71,6 +72,7 @@ export interface BrewCreateInput {
   final_yield_g: number
   extraction_time_s: number
   milk_added_g?: number
+  milk_type?: string
   vibe_rating: number
   tasting_notes: string
   water_temp: string

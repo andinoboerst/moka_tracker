@@ -30,6 +30,7 @@ export default function BrewForm({
     final_yield_g: '',
     extraction_time_s: '',
     milk_added_g: '',
+    milk_type: 'Whole Milk',
     vibe_rating: '7',
     tasting_notes: '',
     water_temp: 'Boiling',
@@ -106,6 +107,7 @@ export default function BrewForm({
         final_yield_g: parseFloat(formData.final_yield_g),
         extraction_time_s: parseInt(formData.extraction_time_s),
         milk_added_g: formData.milk_added_g ? parseFloat(formData.milk_added_g) : undefined,
+        milk_type: formData.milk_added_g ? formData.milk_type : undefined,
         vibe_rating: parseInt(formData.vibe_rating),
         tasting_notes: formData.tasting_notes,
         water_temp: formData.water_temp,
@@ -123,6 +125,7 @@ export default function BrewForm({
         final_yield_g: '',
         extraction_time_s: '',
         milk_added_g: '',
+        milk_type: 'Whole Milk',
         vibe_rating: '7',
         tasting_notes: '',
         water_temp: 'Boiling',
@@ -315,6 +318,30 @@ export default function BrewForm({
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
           />
         </div>
+
+        {parseFloat(formData.milk_added_g) > 0 && (
+          <div>
+            <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+              Milk Type
+            </label>
+            <select
+              value={formData.milk_type}
+              onChange={(e) => setFormData({ ...formData, milk_type: e.target.value })}
+              className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            >
+              <option value="Whole Milk">Whole Milk</option>
+              <option value="Semi-skimmed">Semi-skimmed</option>
+              <option value="Skimmed">Skimmed</option>
+              <option value="Oat Milk">Oat Milk</option>
+              <option value="Almond Milk">Almond Milk</option>
+              <option value="Soy Milk">Soy Milk</option>
+              <option value="Coconut Milk">Coconut Milk</option>
+              <option value="Cashew Milk">Cashew Milk</option>
+              <option value="Pea Milk">Pea Milk</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Expert Variables */}
