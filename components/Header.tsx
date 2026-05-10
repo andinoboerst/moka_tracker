@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth'
 import { useState, useRef, useEffect } from 'react'
 import AuthModal from './AuthModal'
 import { User, Menu, X, Trash2, LogOut } from 'lucide-react'
+import { MokaPotIcon } from './icons/MokaPotIcon'
 import { getAuthHeaders } from '@/lib/utils'
 
 export default function Header() {
@@ -61,7 +62,9 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="text-2xl transition-transform group-hover:rotate-12">☕</div>
+              <div className="text-[#d4a574] transition-transform group-hover:scale-110 group-hover:rotate-6">
+                <MokaPotIcon className="w-8 h-8" />
+              </div>
               <div className="relative">
                 <h1 className="text-2xl font-serif font-bold text-[#d4a574]">Moka Tracker</h1>
                 <div className="absolute -bottom-1 left-0 w-full h-[2px] flex">

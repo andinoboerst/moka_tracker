@@ -7,6 +7,7 @@ import { Brew } from '@/lib/types'
 import { getAuthHeaders } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
+import { MokaPotIcon } from '@/components/icons/MokaPotIcon'
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth()
@@ -85,8 +86,8 @@ export default function Home() {
                 if (parsed.suggestion) {
                   return (
                     <div className="mb-8 bg-gradient-to-r from-[#2d2520] to-[#1a1410] border border-[#d4a574]/30 rounded-xl p-6 shadow-lg relative overflow-hidden">
-                      <div className="absolute top-0 right-0 p-4 opacity-10">
-                        <span className="text-8xl">☕</span>
+                      <div className="absolute top-0 right-0 p-4 opacity-10 text-[#d4a574]">
+                        <MokaPotIcon className="w-32 h-32" />
                       </div>
                       <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-3">
