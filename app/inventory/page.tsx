@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import BeanForm from '@/components/BeanForm'
 import GrinderForm from '@/components/GrinderForm'

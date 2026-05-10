@@ -8,6 +8,7 @@ import { getAuthHeaders } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
 import { MokaPotIcon } from '@/components/icons/MokaPotIcon'
+import { useLanguage } from '@/lib/LanguageContext'
 
 export default function Home() {
   const { language, t } = useLanguage()
