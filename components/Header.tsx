@@ -28,7 +28,7 @@ export default function Header() {
   }, [])
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Sei assolutamente sicuro? Are you sure? This will permanently delete your account and all your brewing data. This action cannot be undone.")) {
+    if (!window.confirm("Are you absolutely sure? This will permanently delete your account and all your brewing data. This action cannot be undone.")) {
       return
     }
     
@@ -112,7 +112,7 @@ export default function Header() {
                           className="w-full text-left px-4 py-2 text-sm text-[#f5f1ed] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2"
                         >
                           <LogOut className="w-4 h-4" />
-                          Sign Out (Esci)
+                          Sign Out
                         </button>
                         
                         <button
@@ -124,7 +124,7 @@ export default function Header() {
                           className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-900/30 transition flex items-center gap-2 mt-1"
                         >
                           <Trash2 className="w-4 h-4" />
-                          {isDeletingAccount ? 'Deleting...' : 'Delete Account (Elimina)'}
+                          {isDeletingAccount ? 'Deleting...' : 'Delete Account'}
                         </button>
                       </div>
                     )}
@@ -134,7 +134,7 @@ export default function Header() {
                     onClick={() => setIsAuthModalOpen(true)}
                     className="bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition text-sm hidden md:block"
                   >
-                    Sign In (Accedi)
+                    Sign In
                   </button>
                 )}
                 
@@ -185,7 +185,7 @@ export default function Header() {
                 }}
                 className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-[#d4a574] hover:bg-[#2d2520] transition"
               >
-                Sign In (Accedi)
+                Sign In
               </button>
             )}
           </div>
