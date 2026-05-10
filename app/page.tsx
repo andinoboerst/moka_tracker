@@ -63,8 +63,8 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2">
             Brewing Dashboard
           </h1>
-          <p className="text-[#8b6f47] text-lg">
-            Track your perfect moka pot brews. Every detail matters.
+          <p className="text-[#8b6f47] text-lg italic">
+            Log your liquid gold. Because life is too short for bad coffee! 🤌🇮🇹
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function Home() {
         {!authLoading && !user ? (
           <div className="text-center py-20 bg-[#2d2520] border border-[#3d3530] rounded-lg">
             <div className="text-6xl mb-4">☕</div>
-            <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-2">Welcome to Moka Tracker</h2>
+            <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-2">Benvenuto! Welcome to Moka Tracker</h2>
             <p className="text-[#8b6f47] mb-6">Sign in to start logging your brews.</p>
             <p className="text-[#8b6f47] text-sm">Click <strong className="text-[#d4a574]">Sign In</strong> in the top right corner.</p>
           </div>
@@ -91,7 +91,7 @@ export default function Home() {
                       <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-xl">✨</span>
-                          <h2 className="text-xl font-serif font-bold text-[#d4a574]">Next Brew Guide</h2>
+                          <h2 className="text-xl font-serif font-bold text-[#d4a574]">Next Brew Guide (Ottimo!)</h2>
                         </div>
                         <p className="text-[#8b6f47] text-sm mb-3">
                           Based on your last brew ({brews[0].bean?.name ? `${brews[0].bean.name}, ` : ''}{brews[0].vibe_rating}/10 vibe):
@@ -118,11 +118,11 @@ export default function Home() {
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
               <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-                <p className="text-[#8b6f47] text-sm mb-2">Total Brews</p>
+                <p className="text-[#8b6f47] text-sm mb-2">Total Brews (Tutti i Caffè)</p>
                 <p className="text-4xl font-bold text-[#d4a574]">{brews.length}</p>
               </div>
               <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-                <p className="text-[#8b6f47] text-sm mb-2">Avg Vibe Rating</p>
+                <p className="text-[#8b6f47] text-sm mb-2">Avg Vibe Rating (Vibe Media)</p>
                 <p className="text-4xl font-bold text-[#d4a574]">
                   {brews.length > 0
                     ? (brews.reduce((sum, b) => sum + b.vibe_rating, 0) / brews.length).toFixed(1)
@@ -130,7 +130,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-                <p className="text-[#8b6f47] text-sm mb-2">Quick Action</p>
+                <p className="text-[#8b6f47] text-sm mb-2">Quick Action (Presto!)</p>
                 <Link
                   href="/brew"
                   className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition"
@@ -142,7 +142,7 @@ export default function Home() {
 
             {/* Brews List */}
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-6">Recent Brews</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-6">Recent Brews (Ultime Erogazioni)</h2>
 
               {loading ? (
                 <div className="text-center py-12 text-[#8b6f47]">

@@ -187,8 +187,8 @@ export default function InventoryPage() {
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2">
             Inventory Management
           </h1>
-          <p className="text-[#8b6f47] text-lg">
-            Build your coffee equipment collection.
+          <p className="text-[#8b6f47] text-lg italic">
+            Organize your weapons of mass extraction. Mamma mia, look at all these beans! 🤌☕
           </p>
         </div>
 
@@ -218,7 +218,7 @@ export default function InventoryPage() {
           {/* Right column: Lists */}
           <div className="space-y-8">
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Beans</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Beans (I Tuoi Chicchi)</h2>
               <InventoryList
                 items={beans}
                 type="beans"
@@ -230,7 +230,7 @@ export default function InventoryPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Grinders</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Grinders (I Tuoi Macinacaffè)</h2>
               <InventoryList
                 items={grinders}
                 type="grinders"
@@ -241,7 +241,7 @@ export default function InventoryPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Moka Pots</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Moka Pots (Le Tue Moka)</h2>
               <InventoryList
                 items={mokaPots}
                 type="moka-pots"

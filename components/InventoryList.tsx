@@ -32,7 +32,7 @@ export default function InventoryList({
             </h4>
             {bean.is_pre_ground && (
               <span className="text-[10px] text-[#d4a574] bg-[#3d3530] px-1.5 py-0.5 rounded border border-[#5a4f4a] font-bold uppercase">
-                Pre-ground
+                Pre-ground (Macinato)
               </span>
             )}
           </div>
@@ -62,7 +62,7 @@ export default function InventoryList({
           </h4>
           {grinder.microns_per_click && (
             <p className="text-[10px] text-[#8b6f47] flex items-center gap-1 mt-0.5">
-              <Zap className="w-3 h-3" /> {grinder.microns_per_click} microns/click
+              <Zap className="w-3 h-3" /> {grinder.microns_per_click} microns/click (scatto)
             </p>
           )}
         </div>
@@ -84,8 +84,8 @@ export default function InventoryList({
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-8 text-[#8b6f47]">
-        No {type} added yet. Add one to get started!
+      <div className="text-center py-8 text-[#8b6f47] italic">
+        No {type === 'beans' ? 'beans' : type === 'grinders' ? 'grinders' : 'moka pots'} found. Add your first one! (Aggiungi!)
       </div>
     )
   }
@@ -106,7 +106,7 @@ export default function InventoryList({
                 className={`flex-shrink-0 w-8 h-4 rounded-full relative transition-colors duration-200 focus:outline-none ${
                   (item as Bean).is_active !== false ? 'bg-yellow-600' : 'bg-[#1a1410] border border-[#3d3530]'
                 }`}
-                title={(item as Bean).is_active !== false ? "Deactivate bag" : "Activate bag"}
+                title={(item as Bean).is_active !== false ? "Deactivate (Disattiva)" : "Activate (Attiva)"}
               >
                 <div
                   className={`absolute top-0.5 left-1 w-2.5 h-2.5 rounded-full bg-white transition-transform duration-200 ${

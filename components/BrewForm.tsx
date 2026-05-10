@@ -130,7 +130,7 @@ export default function BrewForm({
       onSubmit={handleSubmit}
       className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-6"
     >
-      <h2 className="text-3xl font-serif font-bold text-[#d4a574]">Log New Brew</h2>
+      <h2 className="text-3xl font-serif font-bold text-[#d4a574]">The Daily Ritual (Log Brew) 🤌</h2>
 
       {error && (
         <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-2 rounded flex items-center justify-between">
@@ -149,7 +149,7 @@ export default function BrewForm({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Bean
+            Bean (I Chicchi)
           </label>
           <select
             value={formData.bean_id}
@@ -157,7 +157,7 @@ export default function BrewForm({
             required
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
           >
-            <option value="">Select a bean</option>
+            <option value="">Select your beans...</option>
             {activeBeans.map((bean) => (
               <option key={bean.id} value={bean.id}>
                 {bean.name} ({bean.roast_level})
@@ -169,7 +169,7 @@ export default function BrewForm({
         {!isBeanPreGround && (
           <div>
             <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-              Grinder
+              Grinder (Il Macinacaffè)
             </label>
             <select
               value={formData.grinder_id}
@@ -177,7 +177,7 @@ export default function BrewForm({
               required
               className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
             >
-              <option value="">None (Pre-ground)</option>
+              <option value="">None (Pre-ground / Già macinato)</option>
               {grinders.map((grinder) => (
                 <option key={grinder.id} value={grinder.id}>
                   {grinder.brand} {grinder.model}
@@ -189,7 +189,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Moka Pot
+            The Moka (La Tua Moka)
           </label>
           <select
             value={formData.moka_pot_id}
@@ -197,7 +197,7 @@ export default function BrewForm({
             required
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
           >
-            <option value="">Select a moka pot</option>
+            <option value="">Select your moka...</option>
             {mokaPots.map((pot) => (
               <option key={pot.id} value={pot.id}>
                 {pot.brand} {pot.model} ({pot.size_cups} Cup)
@@ -212,7 +212,7 @@ export default function BrewForm({
         {formData.grinder_id && !isBeanPreGround && (
           <div>
             <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-              Grinder Setting (clicks)
+              Grinder Setting (Scatti Macina)
             </label>
             <input
               type="number"
@@ -228,7 +228,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Coffee Weight (g)
+            Coffee Weight (Peso Caffè) (g)
           </label>
           <input
             type="number"
@@ -244,7 +244,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Water Added (g)
+            Water in Boiler (Acqua in Caldaia) (g)
           </label>
           <input
             type="number"
@@ -260,7 +260,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Final Yield (g)
+            Final Yield (Resa in Tazza) (g)
           </label>
           <input
             type="number"
@@ -276,7 +276,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Extraction Time (s)
+            Extraction Time (Tempo Erogazione) (s)
           </label>
           <input
             type="number"
@@ -291,7 +291,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Milk Added (g) - <span className="text-[#8b6f47] font-normal italic">Leave empty for black coffee</span>
+            Milk Added (Latte Aggiunto) (g) - <span className="text-[#8b6f47] font-normal italic">Leave empty for black coffee</span>
           </label>
           <input
             type="number"
@@ -308,13 +308,13 @@ export default function BrewForm({
       {/* Auto-Calculated Ratios */}
       <div className="grid grid-cols-2 gap-4 p-4 bg-[#3d3530] rounded border border-[#5a4f4a]">
         <div>
-          <p className="text-sm text-[#8b6f47] mb-1">Brew Ratio (Coffee : Water In)</p>
+          <p className="text-sm text-[#8b6f47] mb-1">Brew Ratio (Caffè : Acqua)</p>
           <p className="text-lg font-semibold text-[#d4a574]">
             {brewRatio ? `1:${brewRatio.toFixed(2)}` : '—'}
           </p>
         </div>
         <div>
-          <p className="text-sm text-[#8b6f47] mb-1">Extraction Ratio (Coffee : Yield)</p>
+          <p className="text-sm text-[#8b6f47] mb-1">Extraction Ratio (Caffè : Resa)</p>
           <p className="text-lg font-semibold text-[#d4a574]">
             {extractionRatio ? `1:${extractionRatio.toFixed(2)}` : '—'}
           </p>
@@ -339,7 +339,7 @@ export default function BrewForm({
 
         <div>
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Tasting Notes
+            Tasting Notes (Note di Assaggio)
           </label>
           <textarea
             value={formData.tasting_notes}
@@ -356,7 +356,7 @@ export default function BrewForm({
         disabled={isLoading}
         className="w-full bg-[#d4a574] hover:bg-[#c49464] disabled:opacity-50 text-[#1a1410] font-bold py-3 rounded transition text-lg"
       >
-        {isLoading ? 'Logging Brew...' : 'Log Brew'}
+        {isLoading ? 'Saving...' : 'Save the Coffee! (Salva) ☕'}
       </button>
     </form>
   )
