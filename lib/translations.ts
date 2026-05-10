@@ -18,6 +18,7 @@ export const translations = {
     nav: {
       dashboard: "Dashboard",
       inventory: "Inventory",
+      analytics: "Analytics",
       log_brew: "Log Brew",
     },
     dashboard: {
@@ -146,6 +147,24 @@ export const translations = {
       heat: "Heat",
       flow: "Flow",
       paper_filter: "Paper Filter",
+    },
+    analytics: {
+      title: "Brewing Analytics",
+      subtitle: "Uncover the secrets of your ritual. Knowledge is power, and power makes better coffee! 🧪☕",
+      scatter_plot_title: "Rating Correlations",
+      toggle_grind: "Grind Size",
+      toggle_roast: "Days Past Roast",
+      rating_axis: "Vibe Rating",
+      grind_axis: "Grind Size (Microns/Clicks)",
+      roast_axis: "Days Past Roast",
+      line_graph_title: "Brew Time Trends",
+      line_graph_subtitle: "Last 10 sessions",
+      time_axis: "Extraction Time (s)",
+      session_axis: "Recent Sessions",
+      top_brews_title: "Top 5 Masterpieces",
+      top_brews_subtitle: "Your highest rated rituals, ordered by recency",
+      expand_details: "Show Settings",
+      hide_details: "Hide Settings",
     }
   },
   it: {
@@ -167,6 +186,7 @@ export const translations = {
     nav: {
       dashboard: "Bacheca",
       inventory: "Inventario",
+      analytics: "Analisi",
       log_brew: "Prepara Caffè",
     },
     dashboard: {
@@ -294,7 +314,25 @@ export const translations = {
       start_temp: "Inizio",
       heat: "Calore",
       flow: "Flusso",
-      paper_filter: "Filtro Carta",
+      paper_filter: "Filtro di Carta",
+    },
+    analytics: {
+      title: "Analisi Estrazione",
+      subtitle: "Scopri i segreti del tuo rituale. La conoscenza è potere, e il potere fa un caffè migliore! 🧪☕",
+      scatter_plot_title: "Correlazioni Voto",
+      toggle_grind: "Macinatura",
+      toggle_roast: "Giorni dalla Tostatura",
+      rating_axis: "Voto del Caffè",
+      grind_axis: "Macinatura (Micron/Scatti)",
+      roast_axis: "Giorni dalla Tostatura",
+      line_graph_title: "Tendenze Tempo Estrazione",
+      line_graph_subtitle: "Ultime 10 sessioni",
+      time_axis: "Tempo Estrazione (s)",
+      session_axis: "Sessioni Recenti",
+      top_brews_title: "I 5 Capolavori",
+      top_brews_subtitle: "I tuoi rituali con il voto più alto, ordinati per data",
+      expand_details: "Mostra Impostazioni",
+      hide_details: "Nascondi Impostazioni",
     }
   }
 }

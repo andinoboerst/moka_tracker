@@ -86,6 +86,9 @@ export default function Header() {
                 <Link href="/inventory" className="text-[#f5f1ed] hover:text-[#d4a574] transition">
                   {t('nav.inventory')}
                 </Link>
+                <Link href="/analytics" className="text-[#f5f1ed] hover:text-[#d4a574] transition">
+                  {t('nav.analytics')}
+                </Link>
                 <Link href="/brew" className="text-[#f5f1ed] hover:text-[#d4a574] transition">
                   {t('nav.log_brew')}
                 </Link>
@@ -182,6 +185,13 @@ export default function Header() {
                   className="block px-3 py-3 rounded-md text-base font-medium text-[#f5f1ed] hover:text-[#d4a574] hover:bg-[#2d2520] transition"
                 >
                   {t('nav.inventory')}
+                </Link>
+                <Link
+                  href="/analytics"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-3 py-3 rounded-md text-base font-medium text-[#f5f1ed] hover:text-[#d4a574] hover:bg-[#2d2520] transition"
+                >
+                  {t('nav.analytics')}
                 </Link>
                 <Link
                   href="/brew"
