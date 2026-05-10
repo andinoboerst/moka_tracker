@@ -3,6 +3,7 @@
 import { Brew } from '@/lib/types'
 import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
 import { Trash2, Sparkles } from 'lucide-react'
+import { useLanguage } from '@/lib/LanguageContext'
 
 interface BrewCardProps {
   brew: Brew
@@ -11,6 +12,7 @@ interface BrewCardProps {
 }
 
 export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) {
+  const { t } = useLanguage()
   return (
     <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-4 hover:border-[#5a4f4a] transition">
       {/* Header with date and delete */}
@@ -27,7 +29,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
             onClick={() => onDelete(brew.id)}
             disabled={isDeleting}
             className="p-2 hover:bg-red-900/30 rounded transition disabled:opacity-50"
-            title="Delete"
+            title={t('common.delete')}
           >
             <Trash2 className="w-4 h-4 text-red-400" />
           </button>
@@ -37,7 +39,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       {/* Brew Details Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Bean</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.bean')}</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
             {brew.bean?.roast_level} Roast
           </p>
@@ -45,7 +47,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         </div>
 
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Grinder</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.grinder')}</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
             {brew.grinder_id ? (
               <>
@@ -57,7 +59,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
                 )}
               </>
             ) : (
-              'Pre-ground'
+              t('brew_form.pre_ground')
             )}
           </p>
           <p className="text-xs text-[#8b6f47]">
@@ -66,14 +68,14 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         </div>
 
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Moka Pot</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.moka_pot')}</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
             {brew.moka_pot?.brand} {brew.moka_pot?.model} ({brew.moka_pot?.size_cups} Cup)
           </p>
         </div>
 
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Vibe Rating</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.vibe')}</p>
           <p className="text-sm font-medium text-[#d4a574]">
             {brew.vibe_rating}/10 — {getVibeName(brew.vibe_rating)}
           </p>
@@ -83,15 +85,15 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       {/* Measurements */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-[#3d3530] rounded p-3 text-center">
-          <p className="text-xs text-[#8b6f47]">Coffee</p>
+          <p className="text-xs text-[#8b6f47]">{t('brew_card.coffee')}</p>
           <p className="text-lg font-semibold text-[#d4a574]">{brew.coffee_weight_g}g</p>
         </div>
         <div className="bg-[#3d3530] rounded p-3 text-center">
-          <p className="text-xs text-[#8b6f47]">Water In</p>
+          <p className="text-xs text-[#8b6f47]">{t('brew_card.water_in')}</p>
           <p className="text-lg font-semibold text-[#d4a574]">{brew.water_added_g}g</p>
         </div>
         <div className="bg-[#3d3530] rounded p-3 text-center">
-          <p className="text-xs text-[#8b6f47]">Yield</p>
+          <p className="text-xs text-[#8b6f47]">{t('brew_card.yield')}</p>
           <p className="text-lg font-semibold text-[#d4a574]">{brew.final_yield_g}g</p>
         </div>
       </div>
@@ -99,25 +101,25 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       {/* Additional Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Brew Ratio</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.brew_ratio')}</p>
           <p className="text-sm font-semibold text-[#d4a574]">
             1:{brew.brew_ratio_input?.toFixed(2)}
           </p>
         </div>
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Extraction</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.extraction')}</p>
           <p className="text-sm font-semibold text-[#d4a574]">
             1:{brew.extraction_ratio_output?.toFixed(2)}
           </p>
         </div>
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Time</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.time')}</p>
           <p className="text-sm font-semibold text-[#f5f1ed]">{brew.extraction_time_s}s</p>
         </div>
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Style</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.style')}</p>
           <p className="text-sm font-semibold text-[#f5f1ed]">
-            {brew.milk_added_g ? `${brew.milk_type || 'Milk'} (${brew.milk_added_g}g)` : 'Black'}
+            {brew.milk_added_g ? `${brew.milk_type || 'Milk'} (${brew.milk_added_g}g)` : t('brew_card.black')}
           </p>
         </div>
       </div>
@@ -125,17 +127,17 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       {/* Expert Metrics Display */}
       <div className="flex flex-wrap gap-2 pt-2 border-t border-[#3d3530]/50">
         <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
-          <span>🌡️</span> {brew.water_temp || 'Boiling'} Start
+          <span>🌡️</span> {brew.water_temp || 'Boiling'} {t('brew_card.start_temp')}
         </div>
         <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
-          <span>🔥</span> {brew.heat_level || 'Medium-Low'} Heat
+          <span>🔥</span> {brew.heat_level || 'Medium-Low'} {t('brew_card.heat')}
         </div>
         <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
-          <span>🌊</span> {brew.flow_type || 'Steady'} Flow
+          <span>🌊</span> {brew.flow_type || 'Steady'} {t('brew_card.flow')}
         </div>
         {brew.has_paper_filter && (
           <div className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded flex items-center gap-1 border border-blue-800/30">
-            <span>📄</span> Paper Filter
+            <span>📄</span> {t('brew_card.paper_filter')}
           </div>
         )}
       </div>
@@ -143,7 +145,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       {/* Tasting Notes */}
       {brew.tasting_notes && (
         <div className="bg-[#1a1410] rounded p-3">
-          <p className="text-xs text-[#8b6f47] mb-1">Notes</p>
+          <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.notes')}</p>
           <p className="text-sm text-[#f5f1ed]">{brew.tasting_notes}</p>
         </div>
       )}

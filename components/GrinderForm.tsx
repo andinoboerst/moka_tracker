@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Grinder } from '@/lib/types'
 import { X, Save, Plus } from 'lucide-react'
+import { useLanguage } from '@/lib/LanguageContext'
 
 interface GrinderFormProps {
   onSubmit: (grinder: any) => Promise<void>
@@ -12,6 +13,7 @@ interface GrinderFormProps {
 }
 
 export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel }: GrinderFormProps) {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
@@ -57,7 +59,7 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
     >
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-[#d4a574]">
-          {initialData ? 'Edit Grinder' : 'Add New Grinder'}
+          {initialData ? t('grinder_form.edit_title') : t('grinder_form.add_title')}
         </h3>
         {onCancel && (
           <button type="button" onClick={onCancel} className="text-[#8b6f47] hover:text-[#f5f1ed]">
@@ -75,13 +77,13 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
 
       {success && (
         <div className="bg-green-900/30 border border-green-700 text-green-400 px-4 py-2 rounded">
-          Grinder saved successfully!
+          {t('grinder_form.success')}
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Brand</label>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('grinder_form.brand')}</label>
           <input
             type="text"
             value={formData.brand}
@@ -93,7 +95,7 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Model</label>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('grinder_form.model')}</label>
           <input
             type="text"
             value={formData.model}
@@ -106,7 +108,7 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
-            Microns per Click <span className="text-[#8b6f47] font-normal italic">(optional)</span>
+            {t('grinder_form.microns')}
           </label>
           <input
             type="number"
@@ -125,7 +127,7 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
         className="w-full bg-[#d4a574] hover:bg-[#c49464] disabled:opacity-50 text-[#1a1410] font-bold py-2 rounded transition flex items-center justify-center gap-2"
       >
         {initialData ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-        {isLoading ? 'Saving...' : initialData ? 'Update Grinder' : 'Add Grinder'}
+        {isLoading ? t('common.saving') : t('common.save')}
       </button>
     </form>
   )

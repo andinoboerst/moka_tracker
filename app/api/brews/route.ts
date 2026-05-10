@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
       extraction_time_s,
       milk_added_g,
       milk_type,
+      language,
       vibe_rating,
       tasting_notes,
       water_temp,
@@ -162,6 +163,8 @@ Analyze the following CURRENT brew details, and consider the HISTORY of previous
 1. "summary": A short, passionate 1-2 sentence recap in your Italian personality explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Use emojis and mix in Italian flair!
 2. "suggestion": A detailed, passionate 2-3 sentence suggestion for the next brew, delivered with your Italian charm. Give clear, exact instructions on what to change and why it will make the coffee Bellissimo. Use plenty of emojis! 🤌🇮🇹☕
 
+IMPORTANT: YOU MUST PROVIDE THE ENTIRE RESPONSE IN ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}. Use Italian culinary terms and passion regardless of the language choice.
+
 CURRENT Brew Details:
 - Vibe Rating: ${vibe_rating}/10
 ${grinder_id ? `- Grinder Setting: ${grinder_setting} clicks` : '- Coffee is Pre-ground (No grinder)'}
@@ -236,15 +239,28 @@ Example Response:
         let suggestion = ''
 
         if (vibe_rating <= 3) {
-          summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place, like a Vespa in a crowded piazza! 😰🇮🇹`
-          if ((tasting_notes || '').toLowerCase().includes('bitter')) {
-            summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}. My soul is weeping! 😭☕`
-            suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect and it will love you back. It must be as smooth as a gondola ride! 🤌✨`
-          } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
-            summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love for these beans! 🍋☕`
-            suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer. Slow it down, let the flavors bloom like a spring day in Tuscany! 🤌🌸`
+          if (language === 'it') {
+            summary = `Mamma Mia! Che disastro! Il tuo rapporto di estrazione di 1:${extraction_ratio_output} era tutto sballato, come una Vespa in una piazza affollata! 😰🇮🇹`
+            if ((tasting_notes || '').toLowerCase().includes('bitter')) {
+              summary = `Sacrilegio! Questo caffè è amaro come un cuore spezzato a causa della sovra-estrazione a 1:${extraction_ratio_output}. La mia anima piange! 😭☕`
+              suggestion = `Per la prossima volta, macina più grossolana e calore più basso, per favore! Dai al caffè un po' di rispetto e ti amerà a sua volta. Deve essere fluido come un giro in gondola! 🤌✨`
+            } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
+              summary = `Che peccato! L'acidità mi dice che hai affrettato l'estrazione. Un rapporto 1:${brew_ratio_input} non è abbastanza amore per questi chicchi! 🍋☕`
+              suggestion = `Ottimo! Usa una macinatura più fine la prossima volta per far ballare l'acqua con il caffè più a lungo. Rallenta, lascia che i sapori sboccino come un giorno di primavera in Toscana! 🤌🌸`
+            } else {
+              suggestion = `Che disastro! Sperimenta con il tuo macinacaffè e mettici un po' di passione italiana la prossima volta. Non aver paura di provare qualcosa di nuovo! 🤌💪`
+            }
           } else {
-            suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time. Don't be afraid to try something new, fortune favors the bold! 🤌💪`
+            summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place, like a Vespa in a crowded piazza! 😰🇮🇹`
+            if ((tasting_notes || '').toLowerCase().includes('bitter')) {
+              summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}. My soul is weeping! 😭☕`
+              suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect and it will love you back. It must be as smooth as a gondola ride! 🤌✨`
+            } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
+              summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love for these beans! 🍋☕`
+              suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer. Slow it down, let the flavors bloom like a spring day in Tuscany! 🤌🌸`
+            } else {
+              suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time. Don't be afraid to try something new, fortune favors the bold! 🤌💪`
+            }
           }
         } else if (vibe_rating <= 6) {
           summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}. Not bad, but we can do better! 🙂☕`

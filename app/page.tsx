@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { MokaPotIcon } from '@/components/icons/MokaPotIcon'
 
 export default function Home() {
+  const { language, t } = useLanguage()
   const { user, loading: authLoading } = useAuth()
   const [brews, setBrews] = useState<Brew[]>([])
   const [loading, setLoading] = useState(true)
@@ -62,10 +63,10 @@ export default function Home() {
         {/* Hero Section */}
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2">
-            Brewing Dashboard
+            {t('dashboard.headline')}
           </h1>
           <p className="text-[#8b6f47] text-lg italic">
-            Log your liquid gold. Because life is too short for bad coffee! 🤌🇮🇹
+            {t('dashboard.subtitle')}
           </p>
         </div>
 
@@ -92,10 +93,10 @@ export default function Home() {
                       <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-xl">✨</span>
-                          <h2 className="text-xl font-serif font-bold text-[#d4a574]">Next Brew Guide</h2>
+                          <h2 className="text-xl font-serif font-bold text-[#d4a574]">{t('dashboard.next_brew_guide')}</h2>
                         </div>
                         <p className="text-[#8b6f47] text-sm mb-3">
-                          Based on your last brew ({brews[0].bean?.name ? `${brews[0].bean.name}, ` : ''}{brews[0].vibe_rating}/10 vibe):
+                          {t('dashboard.based_on_last', { bean: brews[0].bean?.name || '?', rating: brews[0].vibe_rating })}
                         </p>
                         <p className="text-[#f5f1ed] text-lg font-medium leading-relaxed mb-6 max-w-3xl">
                           "{parsed.suggestion}"
@@ -104,7 +105,7 @@ export default function Home() {
                           href="/brew"
                           className="inline-block bg-transparent border-2 border-[#d4a574] hover:bg-[#d4a574] hover:text-[#1a1410] text-[#d4a574] font-bold py-2 px-6 rounded transition"
                         >
-                          Log Next Brew →
+                          {t('dashboard.log_next')}
                         </Link>
                       </div>
                     </div>
@@ -119,11 +120,11 @@ export default function Home() {
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
               <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-                <p className="text-[#8b6f47] text-sm mb-2">Total Brews</p>
+                <p className="text-[#8b6f47] text-sm mb-2">{t('dashboard.total_brews')}</p>
                 <p className="text-4xl font-bold text-[#d4a574]">{brews.length}</p>
               </div>
               <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-                <p className="text-[#8b6f47] text-sm mb-2">Avg Vibe Rating</p>
+                <p className="text-[#8b6f47] text-sm mb-2">{t('dashboard.avg_vibe')}</p>
                 <p className="text-4xl font-bold text-[#d4a574]">
                   {brews.length > 0
                     ? (brews.reduce((sum, b) => sum + b.vibe_rating, 0) / brews.length).toFixed(1)
@@ -131,23 +132,23 @@ export default function Home() {
                 </p>
               </div>
               <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
-                <p className="text-[#8b6f47] text-sm mb-2">Quick Action</p>
+                <p className="text-[#8b6f47] text-sm mb-2">{t('dashboard.quick_action')}</p>
                 <Link
                   href="/brew"
                   className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition"
                 >
-                  Log Brew →
+                  {t('nav.log_brew')} →
                 </Link>
               </div>
             </div>
 
             {/* Brews List */}
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-6">Recent Brews</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-6">{t('dashboard.recent_brews')}</h2>
 
               {loading ? (
                 <div className="text-center py-12 text-[#8b6f47]">
-                  <p>Loading your brewing history...</p>
+                  <p>{t('dashboard.loading')}</p>
                 </div>
               ) : error ? (
                 <div className="bg-red-900/30 border border-red-700 text-red-400 px-6 py-4 rounded">
@@ -155,12 +156,12 @@ export default function Home() {
                 </div>
               ) : brews.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-[#8b6f47] mb-4">No brews logged yet.</p>
+                  <p className="text-[#8b6f47] mb-4">{t('dashboard.no_brews')}</p>
                   <Link
                     href="/brew"
                     className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-6 rounded transition"
                   >
-                    Log Your First Brew
+                    + {t('nav.log_brew')}
                   </Link>
                 </div>
               ) : (

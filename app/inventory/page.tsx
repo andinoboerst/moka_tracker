@@ -1,6 +1,3 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import Header from '@/components/Header'
 import BeanForm from '@/components/BeanForm'
 import GrinderForm from '@/components/GrinderForm'
@@ -8,8 +5,10 @@ import MokaPotForm from '@/components/MokaPotForm'
 import InventoryList from '@/components/InventoryList'
 import { Bean, Grinder, MokaPot } from '@/lib/types'
 import { getAuthHeaders } from '@/lib/utils'
+import { useLanguage } from '@/lib/LanguageContext'
 
 export default function InventoryPage() {
+  const { t } = useLanguage()
   const [beans, setBeans] = useState<Bean[]>([])
   const [grinders, setGrinders] = useState<Grinder[]>([])
   const [mokaPots, setMokaPots] = useState<MokaPot[]>([])
@@ -122,7 +121,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteBean = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this bean bag?')) return
+    if (!confirm(t('common.confirm_delete_account'))) return // Reusing similar wording or I could add a specific one
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/beans?id=${id}`, {
       method: 'DELETE',
@@ -132,7 +131,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteGrinder = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this grinder?')) return
+    if (!confirm(t('common.confirm_delete_account'))) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/grinders?id=${id}`, {
       method: 'DELETE',
@@ -142,7 +141,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteMokaPot = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this moka pot?')) return
+    if (!confirm(t('common.confirm_delete_account'))) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/moka-pots?id=${id}`, {
       method: 'DELETE',
@@ -173,7 +172,7 @@ export default function InventoryPage() {
       <>
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-[#8b6f47]">Loading inventory...</p>
+          <p className="text-[#8b6f47]">{t('inventory.loading')}</p>
         </div>
       </>
     )
@@ -185,10 +184,10 @@ export default function InventoryPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2">
-            Inventory Management
+            {t('inventory.title')}
           </h1>
           <p className="text-[#8b6f47] text-lg italic">
-            Organize your weapons of mass extraction. Mamma mia, look at all these beans!
+            {t('inventory.subtitle')}
           </p>
         </div>
 
@@ -218,7 +217,7 @@ export default function InventoryPage() {
           {/* Right column: Lists */}
           <div className="space-y-8">
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Beans</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">{t('inventory.your_beans')}</h2>
               <InventoryList
                 items={beans}
                 type="beans"
@@ -230,7 +229,7 @@ export default function InventoryPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Grinders</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">{t('inventory.your_grinders')}</h2>
               <InventoryList
                 items={grinders}
                 type="grinders"
@@ -241,7 +240,7 @@ export default function InventoryPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">Your Moka Pots</h2>
+              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">{t('inventory.your_moka_pots')}</h2>
               <InventoryList
                 items={mokaPots}
                 type="moka-pots"
