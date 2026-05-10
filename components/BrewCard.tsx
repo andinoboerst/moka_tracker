@@ -122,6 +122,24 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         </div>
       </div>
 
+      {/* Expert Metrics Display */}
+      <div className="flex flex-wrap gap-2 pt-2 border-t border-[#3d3530]/50">
+        <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
+          <span>🌡️</span> {brew.water_temp || 'Boiling'} Start
+        </div>
+        <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
+          <span>🔥</span> {brew.heat_level || 'Medium-Low'} Heat
+        </div>
+        <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
+          <span>🌊</span> {brew.flow_type || 'Steady'} Flow
+        </div>
+        {brew.has_paper_filter && (
+          <div className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded flex items-center gap-1 border border-blue-800/30">
+            <span>📄</span> Paper Filter
+          </div>
+        )}
+      </div>
+
       {/* Tasting Notes */}
       {brew.tasting_notes && (
         <div className="bg-[#1a1410] rounded p-3">

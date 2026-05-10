@@ -76,6 +76,10 @@ export async function POST(request: NextRequest) {
       milk_added_g,
       vibe_rating,
       tasting_notes,
+      water_temp,
+      heat_level,
+      has_paper_filter,
+      flow_type,
     } = body
 
     // Validate required fields
@@ -168,14 +172,19 @@ ${grinder_id ? `- Grinder Setting: ${grinder_setting} clicks` : '- Coffee is Pre
 - Milk Added: ${milk_added_g ? `${milk_added_g}g` : 'None (Black Coffee)'}
 - Brew Ratio: 1:${brew_ratio_input}
 - Extraction Ratio: 1:${extraction_ratio_output}
+- Water Temp: ${water_temp || 'Boiling'}
+- Heat Level: ${heat_level || 'Medium-Low'}
+- Using Paper Filter: ${has_paper_filter ? 'Yes' : 'No'}
+- Flow Observation: ${flow_type || 'Steady'}
 
 HISTORY (Last 3 brews with this setup):
 ${historyText}
 
 Rules:
-- If rating is low (≤5) and notes mention "bitter", suggest finer grind or lower heat.
-- If notes mention "sour", suggest coarser grind or higher heat.
-- IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size.
+- If rating is low (≤5) and notes mention "bitter", suggest coarser grind, lower heat, or starting with cooler water.
+- If notes mention "sour", suggest finer grind, higher heat, or starting with hotter water.
+- If flow_type is "Sputtering", emphasize heat management and the "stop point".
+- IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size. focus on heat and water temp instead!
 - YOU MUST RETURN A VALID JSON OBJECT WITH EXACTLY TWO KEYS: "summary" and "suggestion".
 - Do not use markdown blocks around the JSON. Just return raw JSON.
 
@@ -268,6 +277,10 @@ Example Response:
           extraction_ratio_output,
           vibe_rating: parseInt(vibe_rating),
           tasting_notes: tasting_notes || '',
+          water_temp: water_temp || 'Boiling',
+          heat_level: heat_level || 'Medium-Low',
+          has_paper_filter: has_paper_filter || false,
+          flow_type: flow_type || 'Steady',
           ai_recap,
         },
       ])

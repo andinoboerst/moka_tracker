@@ -49,6 +49,10 @@ export interface Brew {
   extraction_ratio_output?: number
   vibe_rating: number
   tasting_notes: string
+  water_temp?: string
+  heat_level?: string
+  has_paper_filter?: boolean
+  flow_type?: string
   ai_recap?: string
   created_at: string
   updated_at: string
@@ -69,4 +73,8 @@ export interface BrewCreateInput {
   milk_added_g?: number
   vibe_rating: number
   tasting_notes: string
+  water_temp: string
+  heat_level: string
+  has_paper_filter: boolean
+  flow_type: string
 }

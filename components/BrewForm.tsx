@@ -32,6 +32,10 @@ export default function BrewForm({
     milk_added_g: '',
     vibe_rating: '7',
     tasting_notes: '',
+    water_temp: 'Boiling',
+    heat_level: 'Medium-Low',
+    has_paper_filter: false,
+    flow_type: 'Steady',
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -302,6 +306,68 @@ export default function BrewForm({
             step="0.1"
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
           />
+        </div>
+      </div>
+
+      {/* Expert Variables */}
+      <div className="p-6 bg-[#1a1410]/50 border border-[#3d3530] rounded-lg space-y-6">
+        <h3 className="text-lg font-serif font-bold text-[#d4a574] flex items-center gap-2">
+          <span className="text-xl">🤌</span> Expert Variables
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Starting Water Temp</label>
+            <select
+              value={formData.water_temp}
+              onChange={(e) => setFormData({ ...formData, water_temp: e.target.value })}
+              className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            >
+              <option value="Boiling">Boiling (90-100°C)</option>
+              <option value="Warm">Warm (50-80°C)</option>
+              <option value="Cold">Cold (Tap)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Heat Intensity</label>
+            <select
+              value={formData.heat_level}
+              onChange={(e) => setFormData({ ...formData, heat_level: e.target.value })}
+              className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            >
+              <option value="Low">Low (Gentle)</option>
+              <option value="Medium-Low">Medium-Low (Standard)</option>
+              <option value="Medium">Medium (Fast)</option>
+              <option value="High">High (Aggressive)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Flow Observation</label>
+            <select
+              value={formData.flow_type}
+              onChange={(e) => setFormData({ ...formData, flow_type: e.target.value })}
+              className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            >
+              <option value="Honey-like">Honey-like (Perfect)</option>
+              <option value="Steady">Steady (Good)</option>
+              <option value="Sputtering">Sputtering (Too fast/Hot)</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2 pt-6">
+            <input
+              type="checkbox"
+              id="has_paper_filter"
+              checked={formData.has_paper_filter}
+              onChange={(e) => setFormData({ ...formData, has_paper_filter: e.target.checked })}
+              className="w-4 h-4 rounded border-[#5a4f4a] bg-[#1a1410] text-[#d4a574] focus:ring-[#d4a574]"
+            />
+            <label htmlFor="has_paper_filter" className="text-sm font-medium text-[#f5f1ed]">
+              Used Paper Filter (AeroPress hack)
+            </label>
+          </div>
         </div>
       </div>
 
