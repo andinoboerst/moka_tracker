@@ -188,28 +188,28 @@ export default function InventoryPage() {
             Inventory Management
           </h1>
           <p className="text-[#8b6f47] text-lg italic">
-            Organize your weapons of mass extraction. Mamma mia, look at all these beans! 🤌☕
+            Organize your weapons of mass extraction. Mamma mia, look at all these beans!
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left column: Forms */}
           <div className="space-y-6">
-            <BeanForm 
-              onSubmit={handleSaveBean} 
-              isLoading={false} 
+            <BeanForm
+              onSubmit={handleSaveBean}
+              isLoading={false}
               initialData={editingBean}
               onCancel={() => setEditingBean(null)}
             />
-            <GrinderForm 
-              onSubmit={handleSaveGrinder} 
-              isLoading={false} 
+            <GrinderForm
+              onSubmit={handleSaveGrinder}
+              isLoading={false}
               initialData={editingGrinder}
               onCancel={() => setEditingGrinder(null)}
             />
-            <MokaPotForm 
-              onSubmit={handleSaveMokaPot} 
-              isLoading={false} 
+            <MokaPotForm
+              onSubmit={handleSaveMokaPot}
+              isLoading={false}
               initialData={editingMokaPot}
               onCancel={() => setEditingMokaPot(null)}
             />

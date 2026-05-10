@@ -57,9 +57,9 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
       const payload = initialData ? { ...formData, id: initialData.id } : formData
       await onSubmit(payload)
       if (!initialData) {
-        setFormData({ 
-          name: '', 
-          roaster: '', 
+        setFormData({
+          name: '',
+          roaster: '',
           roast_level: 'Medium',
           roast_date: '',
           weight_g: '',
@@ -81,7 +81,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
     >
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-[#d4a574]">
-          {initialData ? 'Edit Bean Bag' : 'Add New Beans 🤌'}
+          {initialData ? 'Edit Bean Bag' : 'Add New Beans'}
         </h3>
         {onCancel && (
           <button type="button" onClick={onCancel} className="text-[#8b6f47] hover:text-[#f5f1ed]">
