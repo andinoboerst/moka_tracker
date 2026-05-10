@@ -178,7 +178,7 @@ If a brew is bad, you are heartbroken and dramatic (use words like "Mamma Mia!",
 Analyze the following CURRENT brew details, and consider the HISTORY of previous brews with this exact same setup, to provide a JSON response with two specific keys:
 
 1. "summary": A short, passionate 1-2 sentence recap in your Italian personality explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Use emojis and mix in Italian flair!
-2. "suggestion": A detailed, passionate 2-3 sentence suggestion for the next brew, delivered with your Italian charm. Give clear, exact instructions on what to change and why it will make the coffee Bellissimo. Use plenty of emojis! 🤌🇮🇹☕
+2. "suggestion": Start by briefly acknowledging the current result in just a few words with genuine Italian flair (e.g., "Auguri, una estrazione eccellente...", "Peccato, un sapore un po' amaro..."), showing the general feeling of the last brew as a bridge. Then immediately continue with a detailed, passionate 2-3 sentence suggestion for the next brew. Give clear, exact instructions on what to change and why it will make the coffee Bellissimo. Use plenty of emojis! 🤌🇮🇹☕
 
 CONTEXT:
 - This is for a MOKA POT brew. This is not espresso or pour-over.
@@ -222,7 +222,7 @@ Rules:
 - Do not use markdown blocks around the JSON. Just return raw JSON.
 
 Example Response:
-{"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the profile sour and weak! 😰☕", "suggestion": "For the next time, Ottimo! Use a finer grind to slow down the water and find the sweetness. It will be like a kiss from an angel! 🤌✨"}`
+{"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the profile sour and weak! 😰☕", "suggestion": "Peccato, una estrazione un po' debole e acida... For the next time, Ottimo! Use a finer grind to slow down the water and find the sweetness. It will be like a kiss from an angel! 🤌✨"}`
 
         const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
           method: 'POST',
