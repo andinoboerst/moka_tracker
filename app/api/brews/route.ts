@@ -120,6 +120,22 @@ export async function POST(request: NextRequest) {
       final_yield_g
     )
 
+    // Fetch entity details for richer AI context
+    const [beanRes, grinderRes, mokaPotRes] = await Promise.all([
+      userClient.from('beans').select('*').eq('id', bean_id).single(),
+      grinder_id ? userClient.from('grinders').select('*').eq('id', grinder_id).single() : Promise.resolve({ data: null }),
+      userClient.from('moka_pots').select('*').eq('id', moka_pot_id).single()
+    ])
+
+    const bean = beanRes.data
+    const grinder = grinderRes.data
+    const mokaPot = mokaPotRes.data
+
+    const totalMicrons = (grinder?.microns_per_click && grinder_setting) 
+      ? grinder.microns_per_click * grinder_setting 
+      : null
+
+
     // Fetch up to 3 previous brews with exactly the same setup
     let query = userClient
       .from('brews')
@@ -145,6 +161,7 @@ Previous Brew ${i + 1}:
 ${b.grinder_id ? `- Grinder Setting: ${b.grinder_setting} clicks` : '- Coffee was Pre-ground'}
 - Coffee/Water/Yield: ${b.coffee_weight_g}g / ${b.water_added_g}g / ${b.final_yield_g}g
 - Extraction Time: ${b.extraction_time_s}s
+- Expert Vars: ${b.water_temp || 'Boiling'} Start, ${b.heat_level || 'Med'} Heat, ${b.flow_type || 'Steady'} Flow, Filter: ${b.has_paper_filter ? 'Yes' : 'No'}
 - Tasting Notes: "${b.tasting_notes || 'None'}"`).join('\n')
     }
 
@@ -163,11 +180,21 @@ Analyze the following CURRENT brew details, and consider the HISTORY of previous
 1. "summary": A short, passionate 1-2 sentence recap in your Italian personality explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Use emojis and mix in Italian flair!
 2. "suggestion": A detailed, passionate 2-3 sentence suggestion for the next brew, delivered with your Italian charm. Give clear, exact instructions on what to change and why it will make the coffee Bellissimo. Use plenty of emojis! 🤌🇮🇹☕
 
+CONTEXT:
+- This is for a MOKA POT brew. This is not espresso or pour-over.
+- Suggestions about water should refer to "Starting Water Temp" (the water you put in the boiler).
+- Do not be too exact with temperature degrees (e.g., don't say "use exactly 82°C"), use general terms like "warmer", "cooler", "near boiling", etc.
+
 IMPORTANT: YOU MUST PROVIDE THE ENTIRE RESPONSE IN ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}. Use Italian culinary terms and passion regardless of the language choice.
 
 CURRENT Brew Details:
+- Bean: ${bean?.name} (${bean?.roaster}) - Roast Level: ${bean?.roast_level}
+- Moka Pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} Cup, ${mokaPot?.type})
+${grinder 
+  ? `- Grinder: ${grinder.brand} ${grinder.model}
+- Grinder Setting: ${grinder_setting} clicks ${totalMicrons ? `(~${totalMicrons} microns)` : ''}` 
+  : '- Coffee: Pre-ground (No grinder used)'}
 - Vibe Rating: ${vibe_rating}/10
-${grinder_id ? `- Grinder Setting: ${grinder_setting} clicks` : '- Coffee is Pre-ground (No grinder)'}
 - Tasting Notes: "${tasting_notes || 'None provided'}"
 - Coffee: ${coffee_weight_g}g
 - Water In: ${water_added_g}g
@@ -176,7 +203,7 @@ ${grinder_id ? `- Grinder Setting: ${grinder_setting} clicks` : '- Coffee is Pre
 - Milk Added: ${milk_added_g ? `${milk_added_g}g (${milk_type || 'Unknown type'})` : 'None (Black Coffee)'}
 - Brew Ratio: 1:${brew_ratio_input}
 - Extraction Ratio: 1:${extraction_ratio_output}
-- Water Temp: ${water_temp || 'Boiling'}
+- Starting Water Temp: ${water_temp || 'Boiling'}
 - Heat Level: ${heat_level || 'Medium-Low'}
 - Using Paper Filter: ${has_paper_filter ? 'Yes' : 'No'}
 - Flow Observation: ${flow_type || 'Steady'}
@@ -188,7 +215,9 @@ Rules:
 - If rating is low (≤5) and notes mention "bitter", suggest coarser grind, lower heat, or starting with cooler water.
 - If notes mention "sour", suggest finer grind, higher heat, or starting with hotter water.
 - If flow_type is "Sputtering", emphasize heat management and the "stop point".
-- IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size. focus on heat and water temp instead!
+- IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size. Focus on heat and starting water temp instead!
+- ROAST AWARENESS: For DARK roasts, generally suggest starting with cooler water to avoid bitterness. For LIGHT roasts, suggest warmer water to ensure full extraction.
+- WATER TEMP: Always refer to it as "Starting Water Temp" and use general terms (warmer, cooler, near boiling) instead of exact degrees.
 - YOU MUST RETURN A VALID JSON OBJECT WITH EXACTLY TWO KEYS: "summary" and "suggestion".
 - Do not use markdown blocks around the JSON. Just return raw JSON.
 
