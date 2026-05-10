@@ -54,7 +54,7 @@ export default function BrewForm({
       const selectedBeanId = prev.bean_id || (activeBeans[0]?.id ?? '')
       const selectedBean = beans.find(b => b.id === selectedBeanId)
       const isPreGround = selectedBean?.is_pre_ground === true
-      
+
       // We want to re-select a grinder if:
       // 1. No grinder is currently selected AND it's not pre-ground
       // 2. We just switched from a pre-ground bean to a whole bean
@@ -142,7 +142,7 @@ export default function BrewForm({
       onSubmit={handleSubmit}
       className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-6"
     >
-      <h2 className="text-3xl font-serif font-bold text-[#d4a574]">The Daily Ritual (Log Brew) 🤌</h2>
+      <h2 className="text-3xl font-serif font-bold text-[#d4a574]">The Daily Ritual (Log Brew)</h2>
 
       {error && (
         <div className="bg-red-900/30 border border-red-700 text-red-400 px-4 py-2 rounded flex items-center justify-between">
@@ -320,9 +320,9 @@ export default function BrewForm({
       {/* Expert Variables */}
       <div className="p-6 bg-[#1a1410]/50 border border-[#3d3530] rounded-lg space-y-6">
         <h3 className="text-lg font-serif font-bold text-[#d4a574] flex items-center gap-2">
-          <span className="text-xl">🤌</span> Expert Variables
+          <span className="text-xl">🔬</span> Expert Variables
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-[#f5f1ed] mb-1">Starting Water Temp</label>
