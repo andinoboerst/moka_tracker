@@ -79,4 +79,5 @@ export interface BrewCreateInput {
   heat_level: string
   has_paper_filter: boolean
   flow_type: string
+  language?: string
 }
