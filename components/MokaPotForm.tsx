@@ -129,9 +129,11 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
             <option value={1}>1 Cup</option>
             <option value={2}>2 Cups</option>
             <option value={3}>3 Cups</option>
+            <option value={4}>4 Cups</option>
             <option value={6}>6 Cups</option>
             <option value={9}>9 Cups</option>
             <option value={12}>12 Cups</option>
+            <option value={18}>18 Cups</option>
           </select>
         </div>
       </div>
