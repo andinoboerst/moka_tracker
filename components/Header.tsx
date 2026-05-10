@@ -63,7 +63,7 @@ export default function Header() {
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="text-[#d4a574] transition-transform group-hover:scale-110 group-hover:rotate-6">
-                <MokaPotIcon className="w-8 h-8" />
+                <MokaPotIcon className="w-12 h-12" />
               </div>
               <div className="relative">
                 <h1 className="text-2xl font-serif font-bold text-[#d4a574]">Moka Tracker</h1>
