@@ -201,6 +201,8 @@ export default function Header() {
               >
                 {t('common.sign_in')}
               </button>
+            )}
+
             {/* Language Toggle (Mobile) */}
             <button
               onClick={() => {
