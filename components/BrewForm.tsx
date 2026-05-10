@@ -108,6 +108,10 @@ export default function BrewForm({
         milk_added_g: formData.milk_added_g ? parseFloat(formData.milk_added_g) : undefined,
         vibe_rating: parseInt(formData.vibe_rating),
         tasting_notes: formData.tasting_notes,
+        water_temp: formData.water_temp,
+        heat_level: formData.heat_level,
+        has_paper_filter: formData.has_paper_filter,
+        flow_type: formData.flow_type,
       })
       setFormData({
         bean_id: '',
@@ -121,6 +125,10 @@ export default function BrewForm({
         milk_added_g: '',
         vibe_rating: '7',
         tasting_notes: '',
+        water_temp: 'Boiling',
+        heat_level: 'Medium-Low',
+        has_paper_filter: false,
+        flow_type: 'Steady',
       })
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
