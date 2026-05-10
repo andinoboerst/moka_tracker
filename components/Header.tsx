@@ -91,10 +91,10 @@ export default function Header() {
                 </Link>
               </nav>
 
-              {/* Language Toggle */}
+              {/* Language Toggle (Desktop) */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'it' : 'en')}
-                className="text-2xl hover:scale-110 transition-transform p-1 rounded-full hover:bg-[#3d3530]"
+                className="hidden md:block text-2xl hover:scale-110 transition-transform p-1 rounded-full hover:bg-[#3d3530]"
                 title={language === 'en' ? 'Switch to Italian' : 'Cambia in Inglese'}
               >
                 {language === 'en' ? '🇺🇸' : '🇮🇹'}
@@ -201,7 +201,17 @@ export default function Header() {
               >
                 {t('common.sign_in')}
               </button>
-            )}
+            {/* Language Toggle (Mobile) */}
+            <button
+              onClick={() => {
+                setLanguage(language === 'en' ? 'it' : 'en')
+                setIsMobileMenuOpen(false)
+              }}
+              className="w-full flex items-center justify-between px-3 py-3 rounded-md text-base font-medium text-[#f5f1ed] hover:text-[#d4a574] hover:bg-[#2d2520] transition border-t border-[#3d3530] mt-2"
+            >
+              <span>{language === 'en' ? 'Switch to Italian' : 'Cambia in Inglese'}</span>
+              <span className="text-2xl">{language === 'en' ? '🇺🇸' : '🇮🇹'}</span>
+            </button>
           </div>
         )}
       </header>
