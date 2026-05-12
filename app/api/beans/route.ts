@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, roaster, roast_level, roast_date, weight_g, is_active, is_pre_ground } = body
+    const { name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground } = body
 
     if (!name || !roaster || !roast_level) {
       return NextResponse.json(
@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
           roaster,
           roast_level,
           roast_date: roast_date || null,
+          origin: origin || null,
           weight_g: weight_g ? parseInt(weight_g) : null,
           is_active: is_active !== undefined ? is_active : true,
           is_pre_ground: !!is_pre_ground,
@@ -120,7 +121,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { id, name, roaster, roast_level, roast_date, weight_g, is_active, is_pre_ground } = body
+    const { id, name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground } = body
 
     if (!id || !name || !roaster || !roast_level) {
       return NextResponse.json(
@@ -148,6 +149,7 @@ export async function PUT(request: NextRequest) {
         roaster,
         roast_level,
         roast_date: roast_date || null,
+        origin: origin || null,
         weight_g: weight_g ? parseInt(weight_g) : null,
         is_active: is_active !== undefined ? is_active : true,
         is_pre_ground: !!is_pre_ground,
