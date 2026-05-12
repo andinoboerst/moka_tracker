@@ -2,8 +2,11 @@
 
 import { Brew } from '@/lib/types'
 import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
-import { Trash2, Sparkles } from 'lucide-react'
+import { Trash2, Sparkles, Share2 } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
+import { toPng } from 'html-to-image'
+import BrewShareTemplate from './BrewShareTemplate'
+import { useRef, useState } from 'react'
 
 interface BrewCardProps {
   brew: Brew
@@ -13,6 +16,29 @@ interface BrewCardProps {
 
 export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) {
   const { t } = useLanguage()
+  const shareRef = useRef<HTMLDivElement>(null)
+  const [isSharing, setIsSharing] = useState(false)
+
+  const handleShare = async () => {
+    if (!shareRef.current) return
+    setIsSharing(true)
+    try {
+      const dataUrl = await toPng(shareRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        width: 1080,
+        height: 1920,
+      })
+      const link = document.createElement('a')
+      link.download = `moka-brew-${brew.created_at.split('T')[0]}.png`
+      link.href = dataUrl
+      link.click()
+    } catch (err) {
+      console.error('Share failed:', err)
+    } finally {
+      setIsSharing(false)
+    }
+  }
   return (
     <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-4 hover:border-[#5a4f4a] transition">
       {/* Header with date and delete */}
@@ -23,8 +49,16 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
             {brew.bean?.name}
           </h3>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <span className="text-2xl" title={getVibeName(brew.vibe_rating)}>{getVibeEmoji(brew.vibe_rating)}</span>
+          <button
+            onClick={handleShare}
+            disabled={isSharing}
+            className="p-2 hover:bg-[#3d3530] rounded transition disabled:opacity-50 text-[#d4a574]"
+            title={t('common.share')}
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
           <button
             onClick={() => onDelete(brew.id)}
             disabled={isDeleting}
@@ -152,25 +186,28 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
 
       {/* AI Recap */}
       {brew.ai_recap && (
-        <div className="bg-gradient-to-r from-[#5a4f4a] to-[#3d3530] rounded p-4 border border-[#d4a574]/20">
-          <div className="flex items-start gap-2">
-            <Sparkles className="w-5 h-5 text-[#d4a574] flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-xs text-[#d4a574] font-semibold mb-1">Brew Master Recap</p>
-              <p className="text-sm text-[#f5f1ed]">
-                {(() => {
-                  try {
-                    const parsed = JSON.parse(brew.ai_recap);
-                    return parsed.summary || brew.ai_recap;
-                  } catch (e) {
-                    return brew.ai_recap;
-                  }
-                })()}
-              </p>
-            </div>
+        <div className="bg-gradient-to-r from-[#3d3530] to-[#1a1410] rounded-lg p-4 border-l-4 border-[#d4a574]">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-4 h-4 text-[#d4a574]" />
+            <h4 className="text-sm font-bold text-[#d4a574]">Brew Master Recap</h4>
           </div>
+          <p className="text-sm text-[#f5f1ed] italic">
+            "{(() => {
+              try {
+                const parsed = JSON.parse(brew.ai_recap);
+                return parsed.summary || parsed.suggestion || brew.ai_recap;
+              } catch (e) {
+                return brew.ai_recap;
+              }
+            })()}"
+          </p>
         </div>
       )}
+
+      {/* Hidden Share Template */}
+      <div className="fixed -left-[4000px] -top-[4000px]">
+        <BrewShareTemplate brew={brew} ref={shareRef} />
+      </div>
     </div>
   )
 }

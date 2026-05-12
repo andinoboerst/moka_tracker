@@ -18,6 +18,7 @@ export const translations = {
       continue_as_guest: "Continue as Guest",
       guest_mode_warning: "Guest Mode: Data is stored locally on this device.",
       guest_mode_description: "Your brewing rituals are saved on this device only. To access them from anywhere, please sign up for a permanent account!",
+      share: "Share",
     },
     nav: {
       dashboard: "Dashboard",
@@ -192,6 +193,7 @@ export const translations = {
       continue_as_guest: "Continua come Ospite",
       guest_mode_warning: "Modalità Ospite: I dati sono salvati localmente su questo dispositivo.",
       guest_mode_description: "I tuoi rituali sono salvati solo su questo dispositivo. Per accedervi da ovunque, crea un account permanente!",
+      share: "Condividi",
     },
     nav: {
       dashboard: "Bacheca",

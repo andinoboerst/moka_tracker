@@ -74,9 +74,9 @@ export default function Header({ onSignInClick }: HeaderProps) {
               <div className="relative">
                 <h1 className="text-2xl font-serif font-bold text-[#d4a574]">Moka Tracker</h1>
                 <div className="absolute -bottom-1 left-0 w-full h-[2px] flex">
-                  <div className="flex-1 bg-italy-green"></div>
+                  <div className="flex-1 bg-[#009246]"></div>
                   <div className="flex-1 bg-white"></div>
-                  <div className="flex-1 bg-italy-red"></div>
+                  <div className="flex-1 bg-[#ce2b37]"></div>
                 </div>
               </div>
             </Link>
@@ -101,10 +101,10 @@ export default function Header({ onSignInClick }: HeaderProps) {
               {/* Language Toggle (Desktop) */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'it' : 'en')}
-                className="hidden md:block text-2xl hover:scale-110 transition-transform p-1 rounded-full hover:bg-[#3d3530]"
+                className="hidden md:flex items-center justify-center w-10 h-10 text-2xl hover:scale-110 transition-transform rounded-full hover:bg-[#3d3530]"
                 title={language === 'en' ? 'Switch to Italian' : 'Cambia in Inglese'}
               >
-                {language === 'en' ? '🇺🇸' : '🇮🇹'}
+                <span>{language === 'en' ? '🇺🇸' : '🇮🇹'}</span>
               </button>
 
               <div className="flex items-center gap-4">
