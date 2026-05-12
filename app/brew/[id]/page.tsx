@@ -8,17 +8,27 @@ import { toPng } from 'html-to-image'
 import { ArrowLeft, Download, Share2 } from 'lucide-react'
 import Link from 'next/link'
 
-export default function BrewSharePage({ params }: { params: { id: string } }) {
+export default function BrewSharePage({ params }: { params: Promise<{ id: string }> }) {
   const [brew, setBrew] = useState<Brew | null>(null)
   const [loading, setLoading] = useState(true)
   const [isDownloading, setIsDownloading] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
   const shareRef = useRef<HTMLDivElement>(null)
+  const [paramsId, setParamsId] = useState<string | null>(null)
 
   useEffect(() => {
+    // Unwrap async params
+    params.then(({ id }) => {
+      setParamsId(id)
+    })
+  }, [params])
+
+  useEffect(() => {
+    if (!paramsId) return
+
     const fetchBrew = async () => {
       try {
-        const response = await fetch(`/api/brews/${params.id}`)
+        const response = await fetch(`/api/brews/${paramsId}`)
         if (!response.ok) throw new Error('Brew not found')
         const data = await response.json()
         setBrew(data)
@@ -30,7 +40,7 @@ export default function BrewSharePage({ params }: { params: { id: string } }) {
     }
 
     fetchBrew()
-  }, [params.id])
+  }, [paramsId])
 
   const handleDownload = async () => {
     if (!shareRef.current) return

@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'Supabase admin client not configured' }, { status: 500 })
     }
@@ -31,7 +33,7 @@ export async function GET(
         grinder:grinders(id, brand, model, microns_per_click),
         moka_pot:moka_pots(id, brand, model, size_cups)
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', user.id)
       .single()
 
