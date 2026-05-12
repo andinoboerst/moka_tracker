@@ -2,7 +2,7 @@
 
 import { Brew } from '@/lib/types'
 import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
-import { Trash2, Sparkles, Share2 } from 'lucide-react'
+import { Trash2, Sparkles, Share2, Download } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
 import { toPng } from 'html-to-image'
 import BrewShareTemplate from './BrewShareTemplate'
@@ -18,6 +18,32 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
   const { t } = useLanguage()
   const shareRef = useRef<HTMLDivElement>(null)
   const [isSharing, setIsSharing] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  const downloadImage = async (dataUrl: string) => {
+    const link = document.createElement('a')
+    link.download = `moka-brew-${brew.created_at.split('T')[0]}.png`
+    link.href = dataUrl
+    link.click()
+  }
+
+  const handleDownload = async () => {
+    if (!shareRef.current) return
+    setIsDownloading(true)
+    try {
+      const dataUrl = await toPng(shareRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        width: 1080,
+        height: 1920,
+      })
+      await downloadImage(dataUrl)
+    } catch (err) {
+      console.error('Download failed:', err)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   const handleShare = async () => {
     if (!shareRef.current) return
@@ -29,10 +55,38 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         width: 1080,
         height: 1920,
       })
-      const link = document.createElement('a')
-      link.download = `moka-brew-${brew.created_at.split('T')[0]}.png`
-      link.href = dataUrl
-      link.click()
+
+      // Convert data URL to blob
+      const response = await fetch(dataUrl)
+      const blob = await response.blob()
+      const file = new File([blob], `moka-brew-${brew.created_at.split('T')[0]}.png`, { type: 'image/png' })
+
+      // Get the current origin for the brew link
+      const brewUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/brew/${brew.id}`
+
+      // Try Web Share API on mobile
+      if (navigator.share && navigator.canShare) {
+        try {
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: `Moka Tracker - ${brew.bean?.name || 'Brew'}`,
+              text: `Check out my brew! ${getVibeName(brew.vibe_rating)} vibe ☕\n\n${brewUrl}`,
+              files: [file],
+            })
+            return
+          }
+        } catch (err) {
+          // User cancelled share, not an error
+          if (err instanceof Error && err.name === 'AbortError') {
+            console.log('Share cancelled')
+            return
+          }
+          console.error('Web Share failed:', err)
+        }
+      }
+
+      // Fallback: download the image on desktop or unsupported browsers
+      await downloadImage(dataUrl)
     } catch (err) {
       console.error('Share failed:', err)
     } finally {
@@ -58,6 +112,14 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
             title={t('common.share')}
           >
             <Share2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="p-2 hover:bg-[#3d3530] rounded transition disabled:opacity-50 text-[#d4a574]"
+            title="Download image"
+          >
+            <Download className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDelete(brew.id)}
