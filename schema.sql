@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.moka_pots (
   brand VARCHAR(255) NOT NULL,
   model VARCHAR(255) NOT NULL,
   type VARCHAR(100) NOT NULL, -- e.g., "Stovetop", "Electric", "Induction"
-  size_cups INTEGER NOT NULL CHECK (size_cups IN (1, 2, 3, 6, 9, 12)),
+  size_cups INTEGER NOT NULL CHECK (size_cups IN (1, 2, 3, 4, 6, 9, 12, 18)),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

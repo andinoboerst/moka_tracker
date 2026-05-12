@@ -13,7 +13,7 @@ DROP CONSTRAINT IF EXISTS moka_pots_size_cups_check;
 
 ALTER TABLE public.moka_pots 
 ADD CONSTRAINT moka_pots_size_cups_check 
-CHECK (size_cups IN (1, 2, 3, 6, 9, 12));
+CHECK (size_cups IN (1, 2, 3, 4, 6, 9, 12, 18));
 
 -- Set default values for existing records (optional)
 UPDATE public.moka_pots 
