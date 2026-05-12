@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -6,16 +6,24 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: 'Supabase admin client not configured' }, { status: 500 })
+    }
 
-    if (!user) {
+    // Get user from auth header
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: brew, error } = await supabase
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { data: brew, error } = await supabaseAdmin
       .from('brews')
       .select(`
         *,
