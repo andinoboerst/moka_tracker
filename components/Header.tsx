@@ -104,7 +104,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 className="hidden md:flex items-center justify-center w-10 h-10 text-2xl hover:scale-110 transition-transform rounded-full hover:bg-[#3d3530]"
                 title={language === 'en' ? 'Switch to Italian' : 'Cambia in Inglese'}
               >
-                <span>{language === 'en' ? '🇺🇸' : '🇮🇹'}</span>
+                <span>{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
               </button>
 
               <div className="flex items-center gap-4">
@@ -243,7 +243,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
               className="w-full flex items-center justify-between px-3 py-3 rounded-md text-base font-medium text-[#f5f1ed] hover:text-[#d4a574] hover:bg-[#2d2520] transition border-t border-[#3d3530] mt-2"
             >
               <span>{language === 'en' ? 'Switch to Italian' : 'Cambia in Inglese'}</span>
-              <span className="text-2xl">{language === 'en' ? '🇺🇸' : '🇮🇹'}</span>
+              <span className="text-2xl">{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
             </button>
           </div>
         )}
