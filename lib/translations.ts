@@ -14,6 +14,9 @@ export const translations = {
       sign_out: "Sign Out",
       delete_account: "Delete Account",
       confirm_delete_account: "Are you absolutely sure? This will permanently delete your account and all your brewing data.",
+      continue_as_guest: "Continue as Guest",
+      guest_mode_warning: "Guest Mode: Data is stored locally on this device.",
+      guest_mode_description: "Your brewing rituals are saved on this device only. To access them from anywhere, please sign up for a permanent account!",
     },
     nav: {
       dashboard: "Dashboard",
@@ -184,6 +187,9 @@ export const translations = {
       sign_out: "Esci",
       delete_account: "Elimina Account",
       confirm_delete_account: "Sei assolutamente sicuro? Questo eliminerà permanentemente il tuo account e tutti i dati.",
+      continue_as_guest: "Continua come Ospite",
+      guest_mode_warning: "Modalità Ospite: I dati sono salvati localmente su questo dispositivo.",
+      guest_mode_description: "I tuoi rituali sono salvati solo su questo dispositivo. Per accedervi da ovunque, crea un account permanente!",
     },
     nav: {
       dashboard: "Bacheca",

@@ -9,7 +9,11 @@ import { MokaPotIcon } from './icons/MokaPotIcon'
 import { getAuthHeaders } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
 
-export default function Header() {
+interface HeaderProps {
+  onSignInClick?: () => void
+}
+
+export default function Header({ onSignInClick }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage()
   const { user, signOut } = useAuth()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
@@ -148,7 +152,7 @@ export default function Header() {
                   </div>
                 ) : (
                   <button
-                    onClick={() => setIsAuthModalOpen(true)}
+                    onClick={() => onSignInClick ? onSignInClick() : setIsAuthModalOpen(true)}
                     className="bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition text-sm hidden md:block"
                   >
                     {t('common.sign_in')}

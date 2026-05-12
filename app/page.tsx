@@ -12,7 +12,8 @@ import { useLanguage } from '@/lib/LanguageContext'
 
 export default function Home() {
   const { language, t } = useLanguage()
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading, signInAnonymously } = useAuth()
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [brews, setBrews] = useState<Brew[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -59,7 +60,8 @@ export default function Home() {
 
   return (
     <>
-      <Header />
+      <Header onSignInClick={() => setIsAuthModalOpen(true)} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="mb-12">
@@ -71,13 +73,60 @@ export default function Home() {
           </p>
         </div>
 
+        {/* Guest Mode Warning */}
+        {user?.is_anonymous && (
+          <div className="mb-8 bg-yellow-900/20 border border-yellow-700/50 rounded-xl p-4 flex items-start gap-3">
+            <span className="text-xl mt-0.5">⚠️</span>
+            <div>
+              <p className="text-[#f5f1ed] font-bold text-sm">{t('common.guest_mode_warning')}</p>
+              <p className="text-[#8b6f47] text-xs mt-1">{t('common.guest_mode_description')}</p>
+            </div>
+          </div>
+        )}
+
         {/* Not signed in */}
         {!authLoading && !user ? (
-          <div className="text-center py-20 bg-[#2d2520] border border-[#3d3530] rounded-lg">
-            <div className="text-6xl mb-4">☕</div>
-            <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-2">Benvenuto! Welcome to Moka Tracker</h2>
-            <p className="text-[#8b6f47] mb-6">Sign in to start logging your brews.</p>
-            <p className="text-[#8b6f47] text-sm">Click <strong className="text-[#d4a574]">Sign In</strong> in the top right corner.</p>
+          <div className="text-center py-20 bg-[#2d2520] border border-[#3d3530] rounded-xl px-6 relative overflow-hidden">
+            {/* Background design element */}
+            <div className="absolute top-0 left-0 w-full h-1 flex">
+              <div className="flex-1 bg-italy-green"></div>
+              <div className="flex-1 bg-white"></div>
+              <div className="flex-1 bg-italy-red"></div>
+            </div>
+            
+            <div className="max-w-2xl mx-auto">
+              <div className="text-7xl mb-6">☕</div>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#d4a574] mb-4">
+                {language === 'it' ? 'Il tuo rituale, elevato.' : 'Your ritual, elevated.'}
+              </h2>
+              <p className="text-[#8b6f47] text-lg mb-10 leading-relaxed">
+                {language === 'it' 
+                  ? 'Traccia ogni dettaglio della tua Moka. Dalla macinatura alla temperatura, perfeziona il tuo caffè con l\'aiuto dell\'AI.' 
+                  : 'Track every detail of your Moka ritual. From grind size to water temperature, perfect your coffee with AI-driven insights.'}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button 
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="w-full sm:w-auto bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-3 px-10 rounded-lg transition shadow-lg text-lg"
+                >
+                  {t('common.sign_in')}
+                </button>
+                <button 
+                  onClick={signInAnonymously}
+                  className="w-full sm:w-auto bg-transparent border-2 border-[#3d3530] hover:border-[#5a4f4a] text-[#f5f1ed] font-bold py-3 px-10 rounded-lg transition text-lg"
+                >
+                  {t('common.continue_as_guest')}
+                </button>
+              </div>
+              
+              <div className="mt-12 p-4 bg-[#1a1410]/50 rounded-lg border border-yellow-900/30">
+                <p className="text-yellow-600 font-bold text-sm mb-1">⚠️ {t('common.guest_mode_warning')}</p>
+                <p className="text-[#8b6f47] text-xs">
+                  {t('common.guest_mode_description')}
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           <>

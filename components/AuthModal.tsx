@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth'
-import { Mail } from 'lucide-react'
+import { Mail, User as UserIcon } from 'lucide-react'
+import { useLanguage } from '@/lib/LanguageContext'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -15,7 +16,20 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const { signIn, signUp, signInWithGoogle } = useAuth()
+  const { signIn, signUp, signInWithGoogle, signInAnonymously } = useAuth()
+  const { t } = useLanguage()
+
+  const handleGuestSignIn = async () => {
+    setLoading(true)
+    setError('')
+    const { error } = await signInAnonymously()
+    if (error) {
+      setError(error.message)
+    } else {
+      onClose()
+    }
+    setLoading(false)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -121,6 +135,15 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <path d="M1 1h22v22H1z" fill="none" />
           </svg>
           <span>Continue with Google</span>
+        </button>
+
+        <button
+          onClick={handleGuestSignIn}
+          disabled={loading}
+          className="w-full mt-3 flex items-center justify-center gap-3 bg-[#1a1410] hover:bg-[#251e1a] text-[#f5f1ed] font-medium py-2 px-4 rounded transition disabled:opacity-50 border border-[#3d3530]"
+        >
+          <UserIcon className="w-5 h-5 text-[#8b6f47]" />
+          <span>{t('common.continue_as_guest')}</span>
         </button>
 
         <div className="mt-4 text-center">
