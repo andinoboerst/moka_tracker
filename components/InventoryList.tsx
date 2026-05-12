@@ -39,7 +39,7 @@ export default function InventoryList({
             )}
           </div>
           <p className="text-sm text-[#8b6f47] flex items-center gap-2">
-            {bean.roaster} • {bean.roast_level}
+            {bean.roaster} • {bean.origin ? `${bean.origin} • ` : ''}{bean.roast_level}
           </p>
           <div className={`flex gap-4 mt-1 transition-opacity ${bean.is_active !== false ? 'opacity-100' : 'opacity-40'}`}>
             {bean.roast_date && (

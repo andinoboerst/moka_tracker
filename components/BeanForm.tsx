@@ -19,6 +19,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
     roaster: '',
     roast_level: 'Medium',
     roast_date: '',
+    origin: '',
     weight_g: '',
     is_active: true,
     is_pre_ground: false,
@@ -33,6 +34,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
         roaster: initialData.roaster,
         roast_level: initialData.roast_level,
         roast_date: initialData.roast_date || '',
+        origin: initialData.origin || '',
         weight_g: initialData.weight_g?.toString() || '',
         is_active: initialData.is_active !== false,
         is_pre_ground: initialData.is_pre_ground === true,
@@ -43,6 +45,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
         roaster: '',
         roast_level: 'Medium',
         roast_date: '',
+        origin: '',
         weight_g: '',
         is_active: true,
         is_pre_ground: false,
@@ -64,6 +67,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
           roaster: '',
           roast_level: 'Medium',
           roast_date: '',
+          origin: '',
           weight_g: '',
           is_active: true,
           is_pre_ground: false,
@@ -151,6 +155,17 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             value={formData.roast_date}
             onChange={(e) => setFormData({ ...formData, roast_date: e.target.value })}
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('bean_form.origin')}</label>
+          <input
+            type="text"
+            value={formData.origin}
+            onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+            placeholder={t('bean_form.origin_hint')}
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
           />
         </div>
 

@@ -41,7 +41,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.bean')}</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
-            {brew.bean?.roast_level} Roast
+            {brew.bean?.origin ? `${brew.bean.origin} • ` : ''}{brew.bean?.roast_level} Roast
           </p>
           <p className="text-xs text-[#8b6f47]">{brew.bean?.roaster}</p>
         </div>

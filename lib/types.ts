@@ -5,6 +5,7 @@ export interface Bean {
   roaster: string
   roast_level: string
   roast_date?: string
+  origin?: string
   weight_g?: number
   is_active?: boolean
   is_pre_ground?: boolean

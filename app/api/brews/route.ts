@@ -188,7 +188,7 @@ CONTEXT:
 IMPORTANT: YOU MUST PROVIDE THE ENTIRE RESPONSE IN ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}. Use Italian culinary terms and passion regardless of the language choice.
 
 CURRENT Brew Details:
-- Bean: ${bean?.name} (${bean?.roaster}) - Roast Level: ${bean?.roast_level}
+- Bean: ${bean?.name} (${bean?.roaster}) - Origin: ${bean?.origin || 'Unknown'} - Roast Level: ${bean?.roast_level}
 - Moka Pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} Cup, ${mokaPot?.type})
 ${grinder 
   ? `- Grinder: ${grinder.brand} ${grinder.model}
