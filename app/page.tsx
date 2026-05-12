@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Header from '@/components/Header'
+import AuthModal from '@/components/AuthModal'
 import BrewCard from '@/components/BrewCard'
 import { Brew } from '@/lib/types'
 import { getAuthHeaders } from '@/lib/utils'
