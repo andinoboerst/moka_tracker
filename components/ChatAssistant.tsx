@@ -13,13 +13,12 @@ interface ChatMessage {
 
 export default function ChatAssistant() {
   const { user, loading } = useAuth()
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content:
-        'Ask me about your Moka setup, beans, grind, water temp, or extraction and I will give advice tailored to your equipment.',
+      content: t('chat.initial_message'),
     },
   ])
   const [input, setInput] = useState('')
@@ -81,8 +80,8 @@ export default function ChatAssistant() {
         <div className="w-[360px] max-w-full rounded-3xl bg-[#1a1410]/95 border border-[#3d3530] shadow-2xl backdrop-blur-xl text-[#f5f1ed] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 bg-[#2d2520] border-b border-[#3d3530]">
             <div>
-              <p className="text-base font-semibold">Moka Brew Assistant</p>
-              <p className="text-xs text-[#8b6f47]">Ask about your moka setup or inventory.</p>
+              <p className="text-base font-semibold">{t('chat.title')}</p>
+              <p className="text-xs text-[#8b6f47]">{t('chat.description')}</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -116,7 +115,7 @@ export default function ChatAssistant() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about your moka brew..."
+              placeholder={t('chat.input_placeholder')}
               className="flex-1 rounded-2xl border border-[#3d3530] bg-[#121212] px-3 py-2 text-sm text-[#f5f1ed] outline-none focus:border-[#d4a574]"
               disabled={isSending}
             />

@@ -183,6 +183,12 @@ export const translations = {
       top_brews_subtitle: "Your highest rated rituals, ordered by recency",
       expand_details: "Show Settings",
       hide_details: "Hide Settings",
+    },
+    chat: {
+      title: "Moka Brew Assistant",
+      description: "Ask about your moka setup, beans, grind, water temp, or extraction.",
+      initial_message: "Ask me about your Moka setup, beans, grind, water temp, or extraction and I will give advice tailored to your equipment.",
+      input_placeholder: "Ask your Moka assistant...",
     }
   },
   it: {
@@ -369,6 +375,12 @@ export const translations = {
       top_brews_subtitle: "I tuoi rituali con il voto più alto, ordinati per data",
       expand_details: "Mostra Impostazioni",
       hide_details: "Nascondi Impostazioni",
+    },
+    chat: {
+      title: "Assistente Moka",
+      description: "Chiedimi del tuo setup, chicchi, macinatura, temperatura dell'acqua o estrazione.",
+      initial_message: "Chiedimi del tuo setup Moka, dei chicchi, della macinatura o dell'estrazione e ti darò consigli su misura per la tua attrezzatura.",
+      input_placeholder: "Chiedi al tuo assistente Moka...",
     }
   }
 }
