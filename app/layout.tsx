@@ -22,7 +22,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Moka Pot Brewing Tracker",
+  title: "Moka Tracker",
   description: "A modern coffee brewing tracker for moka pot enthusiasts",
   icons: {
     icon: "/icon.png",
