@@ -17,7 +17,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
   const recapText = aiRecap ? (aiRecap.summary || aiRecap.suggestion || brew.ai_recap) : null
 
   return (
-    <div 
+    <div
       id={id}
       ref={ref}
       className="bg-[#1a1410] w-[1080px] h-[1920px] flex flex-col items-center justify-between p-16 pb-32 text-[#f5f1ed] relative overflow-hidden"
@@ -55,7 +55,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
             </p>
           </div>
         )}
-        
+
         <div className="mb-12 border-b border-[#3d3530] pb-10">
           <h2 className="text-6xl font-bold text-[#f5f1ed] mb-4">
             {brew.bean?.name}
@@ -93,8 +93,8 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
               <div>
                 <p className="text-2xl text-[#8b6f47] mb-2">Grind Size</p>
                 <p className="text-4xl font-bold">
-                  {brew.grinder?.microns_per_click 
-                    ? `${brew.grinder_setting * brew.grinder.microns_per_click}μm` 
+                  {brew.grinder?.microns_per_click
+                    ? `${brew.grinder_setting * brew.grinder.microns_per_click}μm`
                     : `${brew.grinder_setting} clicks`}
                 </p>
               </div>
@@ -131,7 +131,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
       {/* Footer */}
       <div className="w-full flex justify-between items-center z-10 text-[#8b6f47]">
         <p className="text-3xl">Shared via Moka Tracker</p>
-        <p className="text-3xl tracking-tighter italic font-serif">Buon Caffè! 🤌☕</p>
+        <p className="text-3xl tracking-tighter italic font-serif">Buon Caffè! ☕</p>
       </div>
     </div>
   )
