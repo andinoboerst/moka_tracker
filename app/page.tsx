@@ -45,6 +45,13 @@ export default function Home() {
     }
   }
 
+  const handleGuestSignIn = async () => {
+    const { error } = await signInAnonymously()
+    if (error) {
+      alert(error.message)
+    }
+  }
+
   const handleDelete = async (id: string) => {
     try {
       const headers = await getAuthHeaders()
@@ -114,7 +121,7 @@ export default function Home() {
                   {t('common.sign_in')}
                 </button>
                 <button 
-                  onClick={signInAnonymously}
+                  onClick={handleGuestSignIn}
                   className="w-full sm:w-auto bg-transparent border-2 border-[#3d3530] hover:border-[#5a4f4a] text-[#f5f1ed] font-bold py-3 px-10 rounded-lg transition text-lg"
                 >
                   {t('common.continue_as_guest')}
