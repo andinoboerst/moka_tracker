@@ -51,7 +51,7 @@ export const translations = {
       your_moka_pots: "Your Moka Pots",
       loading: "Loading your equipment...",
       complete_inventory: "Complete Your Inventory First",
-      inventory_requirement: "You need at least one bean, grinder, and moka pot to log a brew.",
+      inventory_requirement: "You need at least one bag of coffee and one moka pot in your inventory to log a brew.",
       go_to_inventory: "Go to Inventory",
     },
     brew_form: {
@@ -225,7 +225,7 @@ export const translations = {
       your_moka_pots: "Le Tue Moka",
       loading: "Caricamento della tua attrezzatura...",
       complete_inventory: "Completa prima il tuo inventario",
-      inventory_requirement: "Hai bisogno di almeno un tipo di caffè, un macinacaffè e una moka per registrare una preparazione.",
+      inventory_requirement: "Hai bisogno di almeno un caffè e una moka nel tuo inventario per registrare un caffè.",
       go_to_inventory: "Vai all'Inventario",
     },
     brew_form: {

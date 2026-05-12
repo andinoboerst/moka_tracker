@@ -87,7 +87,7 @@ export default function BrewPage() {
     )
   }
 
-  if (beans.length === 0 || grinders.length === 0 || mokaPots.length === 0) {
+  if (beans.length === 0 || mokaPots.length === 0) {
     return (
       <>
         <Header />
