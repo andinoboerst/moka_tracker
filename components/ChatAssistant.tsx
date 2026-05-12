@@ -15,12 +15,7 @@ export default function ChatAssistant() {
   const { user, loading } = useAuth()
   const { language, t } = useLanguage()
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'assistant',
-      content: t('chat.initial_message'),
-    },
-  ])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState('')
@@ -31,6 +26,24 @@ export default function ChatAssistant() {
       inputRef.current?.focus()
     }
   }, [open])
+
+  useEffect(() => {
+    setMessages((current) => {
+      if (current.length === 0) {
+        return [{ role: 'assistant', content: t('chat.initial_message') }]
+      }
+
+      if (
+        current.length === 1 &&
+        current[0].role === 'assistant' &&
+        current[0].content !== t('chat.initial_message')
+      ) {
+        return [{ role: 'assistant', content: t('chat.initial_message') }]
+      }
+
+      return current
+    })
+  }, [language, t])
 
   const handleSend = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
