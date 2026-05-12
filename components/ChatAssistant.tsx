@@ -39,7 +39,8 @@ export default function ChatAssistant() {
     const trimmed = input.trim()
     if (!trimmed || !user) return
 
-    const nextMessages = [...messages, { role: 'user', content: trimmed }]
+    const userMessage: ChatMessage = { role: 'user', content: trimmed }
+    const nextMessages = [...messages, userMessage]
     setMessages(nextMessages)
     setInput('')
     setIsSending(true)
