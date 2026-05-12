@@ -61,8 +61,8 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       const blob = await response.blob()
       const file = new File([blob], `moka-brew-${brew.created_at.split('T')[0]}.png`, { type: 'image/png' })
 
-      // Get the current origin for the brew link
-      const brewUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/brew/${brew.id}`
+      // Get the current origin for the main app link
+      const appUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}`
 
       // Try Web Share API on mobile
       if (navigator.share && navigator.canShare) {
@@ -70,7 +70,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
           if (navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: `Moka Tracker - ${brew.bean?.name || 'Brew'}`,
-              text: `Check out my brew! ${getVibeName(brew.vibe_rating)} vibe ☕\n\n${brewUrl}`,
+              text: `Check out my brew! ${getVibeName(brew.vibe_rating)} vibe ☕\n\n${appUrl}`,
               files: [file],
             })
             return
