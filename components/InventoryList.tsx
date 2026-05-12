@@ -1,7 +1,7 @@
 'use client'
 
 import { Bean, Grinder, MokaPot } from '@/lib/types'
-import { Trash2, Edit2, Package, Scale, Calendar, Zap, ZapOff } from 'lucide-react'
+import { Trash2, Edit2, Package, Scale, Calendar, Zap, ZapOff, Globe } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
 
@@ -39,12 +39,17 @@ export default function InventoryList({
             )}
           </div>
           <p className="text-sm text-[#8b6f47] flex items-center gap-2">
-            {bean.roaster} • {bean.origin ? `${bean.origin} • ` : ''}{bean.roast_level}
+            {bean.roaster} • {bean.roast_level}
           </p>
           <div className={`flex gap-4 mt-1 transition-opacity ${bean.is_active !== false ? 'opacity-100' : 'opacity-40'}`}>
             {bean.roast_date && (
               <span className="text-[10px] text-[#8b6f47] flex items-center gap-1">
                 <Calendar className="w-3 h-3" /> {formatDate(bean.roast_date)}
+              </span>
+            )}
+            {bean.origin && (
+              <span className="text-[10px] text-[#8b6f47] flex items-center gap-1">
+                <Globe className="w-3 h-3" /> {bean.origin}
               </span>
             )}
             {bean.weight_g && (
