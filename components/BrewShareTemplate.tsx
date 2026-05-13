@@ -43,7 +43,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
           <p className="text-3xl text-[#8b6f47] italic">{t('brew_share.ritual')} • {formatDate(brew.created_at)}</p>
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-[120px] mb-2 leading-none">{getVibeEmoji(brew.vibe_rating)}</span>
+          <span className="text-[120px] mb-4 leading-none">{getVibeEmoji(brew.vibe_rating)}</span>
           <span className="text-4xl font-serif text-[#d4a574] uppercase tracking-[0.2em]">{getVibeName(brew.vibe_rating)}</span>
         </div>
       </div>
