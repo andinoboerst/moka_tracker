@@ -181,8 +181,8 @@ export default function AnalyticsPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <div className="hidden sm:flex flex-col items-end">
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-end">
                       <span className="text-xs text-[#8b6f47] uppercase tracking-wider">{t('brew_card.time')}</span>
                       <span className="font-mono text-[#d4a574]">{brew.extraction_time_s}s</span>
                     </div>
