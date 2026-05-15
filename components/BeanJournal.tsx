@@ -88,15 +88,6 @@ export default function BeanJournal() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-        <div>
-          <h2 className="text-3xl font-serif font-bold text-[#d4a574] mb-1">
-            {t('bean_journal.title')}
-          </h2>
-          <p className="text-[#8b6f47] italic text-sm max-w-2xl">{t('bean_journal.subtitle')}</p>
-        </div>
-      </div>
-
       {/* Simplified controls: rating sort + roast filter dropdown */}
       <div className="flex items-center gap-3 flex-wrap">
         <button

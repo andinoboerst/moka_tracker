@@ -95,6 +95,16 @@ export default function AnalyticsPage() {
             {t('analytics.tab_beans')}
           </button>
           <button
+            onClick={() => setActiveTab('top_brews')}
+            className={`px-5 py-2 rounded-md text-sm font-bold transition ${
+              activeTab === 'top_brews'
+                ? 'bg-[#d4a574] text-[#1a1410]'
+                : 'text-[#8b6f47] hover:text-[#f5f1ed]'
+            }`}
+          >
+            {t('analytics.tab_top_brews')}
+          </button>
+          <button
             onClick={() => setActiveTab('brews')}
             className={`px-5 py-2 rounded-md text-sm font-bold transition ${
               activeTab === 'brews'
@@ -103,16 +113,6 @@ export default function AnalyticsPage() {
             }`}
           >
             {t('analytics.tab_brews')}
-          </button>
-          <button
-            onClick={() => setActiveTab('top_brews')}
-            className={`px-5 py-2 rounded-md text-sm font-bold transition ${
-              activeTab === 'top_brews'
-                ? 'bg-[#d4a574] text-[#1a1410]'
-                : 'text-[#8b6f47] hover:text-[#f5f1ed]'
-            }`}
-          >
-            Top Brews
           </button>
         </div>
 

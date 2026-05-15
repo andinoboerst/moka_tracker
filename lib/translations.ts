@@ -212,8 +212,9 @@ export const translations = {
       expand_details: "Show Settings",
       hide_details: "Hide Settings",
       vibe_score: "{rating}/10 Vibe",
-      tab_brews: "Brew Analytics",
+      tab_brews: "Data Trends",
       tab_beans: "Bean Journal",
+      tab_top_brews: "Hall of Fame",
     },
     bean_journal: {
       title: "Bean Journal",
@@ -481,8 +482,9 @@ export const translations = {
       expand_details: "Mostra Impostazioni",
       hide_details: "Nascondi Impostazioni",
       vibe_score: "{rating}/10 Voto",
-      tab_brews: "Analisi Estrazioni",
+      tab_brews: "Tendenze Dati",
       tab_beans: "Diario Chicchi",
+      tab_top_brews: "Hall of Fame",
     },
     bean_journal: {
       title: "Diario dei Chicchi",
