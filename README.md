@@ -4,7 +4,7 @@ Welcome to the **Moka Pot Brewing Tracker** — a modern, mobile-first web appli
 
 By tracking every crucial variable and utilizing AI to analyze your historical data, this application helps you move from guesswork to precision brewing.
 
-Access the live website and start tracking your own moka brews here: [mokatracker.com](mokatracker.com)
+Access the live website and start tracking your own moka brews here: [mokatracker.com](https://www.mokatracker.com/)
 
 ![Tech Stack](https://img.shields.io/badge/Next.js_15-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
