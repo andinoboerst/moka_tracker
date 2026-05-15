@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import { Brew, Bean, Grinder } from '@/lib/types'
 import { getAuthHeaders } from '@/lib/utils'
+import { translateStoredExpertValue } from '@/lib/dbValues'
 import { useLanguage } from '@/lib/LanguageContext'
 import { AnalyticsScatterPlot, AnalyticsLineGraph } from '@/components/AnalyticsChart'
 import { ChevronDown, ChevronUp, Star, Clock, Coffee, Thermometer, Flame, Droplets, Filter } from 'lucide-react'
@@ -177,7 +178,7 @@ export default function AnalyticsPage() {
                     <div>
                       <h3 className="font-bold text-[#f5f1ed]">{brew.bean?.name}</h3>
                       <p className="text-xs text-[#8b6f47]">
-                        {new Date(brew.created_at).toLocaleDateString()} • {brew.vibe_rating}/10 Vibe
+                        {new Date(brew.created_at).toLocaleDateString()} • {t('analytics.vibe_score', { rating: brew.vibe_rating })}
                       </p>
                     </div>
                   </div>
@@ -214,35 +215,35 @@ export default function AnalyticsPage() {
                           <Thermometer className="w-3 h-3" />
                           <span>{t('brew_card.start_temp')}</span>
                         </div>
-                        <p className="font-medium text-[#f5f1ed]">{brew.water_temp}</p>
+                        <p className="font-medium text-[#f5f1ed]">{translateStoredExpertValue(brew.water_temp, t, 'Boiling')}</p>
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-[#8b6f47] text-xs uppercase">
                           <Flame className="w-3 h-3" />
                           <span>{t('brew_card.heat')}</span>
                         </div>
-                        <p className="font-medium text-[#f5f1ed]">{brew.heat_level}</p>
+                        <p className="font-medium text-[#f5f1ed]">{translateStoredExpertValue(brew.heat_level, t, 'Medium-Low')}</p>
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-[#8b6f47] text-xs uppercase">
                           <Clock className="w-3 h-3" />
                           <span>{t('brew_card.flow')}</span>
                         </div>
-                        <p className="font-medium text-[#f5f1ed]">{brew.flow_type}</p>
+                        <p className="font-medium text-[#f5f1ed]">{translateStoredExpertValue(brew.flow_type, t, 'Steady')}</p>
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-[#8b6f47] text-xs uppercase">
                           <Filter className="w-3 h-3" />
                           <span>{t('brew_card.paper_filter')}</span>
                         </div>
-                        <p className="font-medium text-[#f5f1ed]">{brew.has_paper_filter ? 'Yes' : 'No'}</p>
+                        <p className="font-medium text-[#f5f1ed]">{brew.has_paper_filter ? t('common.yes') : t('common.no')}</p>
                       </div>
                       <div className="col-span-2 space-y-1">
                         <div className="flex items-center gap-2 text-[#8b6f47] text-xs uppercase">
                           <span>{t('brew_card.notes')}</span>
                         </div>
                         <p className="text-sm italic text-[#f5f1ed] leading-relaxed">
-                          "{brew.tasting_notes || 'No notes'}"
+                          "{brew.tasting_notes || t('common.no_notes')}"
                         </p>
                       </div>
                     </div>

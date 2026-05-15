@@ -128,14 +128,11 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
             onChange={(e) => setFormData({ ...formData, size_cups: parseInt(e.target.value) })}
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
           >
-            <option value={1}>1 Cup</option>
-            <option value={2}>2 Cups</option>
-            <option value={3}>3 Cups</option>
-            <option value={4}>4 Cups</option>
-            <option value={6}>6 Cups</option>
-            <option value={9}>9 Cups</option>
-            <option value={12}>12 Cups</option>
-            <option value={18}>18 Cups</option>
+            {[1, 2, 3, 4, 6, 9, 12, 18].map((cups) => (
+              <option key={cups} value={cups}>
+                {t('moka_form.cup_count', { count: cups })}
+              </option>
+            ))}
           </select>
         </div>
       </div>

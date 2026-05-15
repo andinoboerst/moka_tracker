@@ -7,8 +7,11 @@ import { useRef } from 'react'
 import { toPng } from 'html-to-image'
 import { ArrowLeft, Download, Share2 } from 'lucide-react'
 import Link from 'next/link'
+import { useLanguage } from '@/lib/LanguageContext'
+import { getVibeName } from '@/lib/utils'
 
 export default function BrewSharePage({ params }: { params: Promise<{ id: string }> }) {
+  const { language, t } = useLanguage()
   const [brew, setBrew] = useState<Brew | null>(null)
   const [loading, setLoading] = useState(true)
   const [isDownloading, setIsDownloading] = useState(false)
@@ -17,7 +20,6 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
   const [paramsId, setParamsId] = useState<string | null>(null)
 
   useEffect(() => {
-    // Unwrap async params
     params.then(({ id }) => {
       setParamsId(id)
     })
@@ -85,7 +87,10 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
           if (navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: `Moka Tracker - ${brew.bean?.name || 'Brew'}`,
-              text: `Check out my brew! ☕\n\n${brewUrl}`,
+              text: t('brew_card.share_message', {
+                vibe: getVibeName(brew.vibe_rating, language),
+                url: brewUrl,
+              }),
               files: [file],
             })
             return
@@ -108,7 +113,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-[#8b6f47]">Loading brew...</p>
+        <p className="text-[#8b6f47]">{t('brew_share_page.loading')}</p>
       </div>
     )
   }
@@ -116,9 +121,9 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
   if (!brew) {
     return (
       <div className="min-h-screen bg-[#0f0d0a] text-[#f5f1ed] flex flex-col items-center justify-center p-4">
-        <h1 className="text-4xl font-bold mb-4">Brew not found</h1>
+        <h1 className="text-4xl font-bold mb-4">{t('brew_share_page.not_found')}</h1>
         <Link href="/brew" className="text-[#d4a574] hover:underline">
-          Back to brews
+          {t('brew_share_page.back_to_brews')}
         </Link>
       </div>
     )
@@ -133,7 +138,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
             className="flex items-center gap-2 text-[#d4a574] hover:text-[#f5f1ed] transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            {t('brew_share_page.back')}
           </Link>
           <div className="flex items-center gap-3">
             <button
@@ -142,7 +147,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
               className="flex items-center gap-2 px-4 py-2 bg-[#d4a574] text-[#1a1410] rounded-lg hover:bg-[#e5b886] transition disabled:opacity-50 font-medium"
             >
               <Share2 className="w-4 h-4" />
-              Share
+              {t('common.share')}
             </button>
             <button
               onClick={handleDownload}
@@ -150,7 +155,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
               className="flex items-center gap-2 px-4 py-2 bg-[#2d2520] border border-[#3d3530] text-[#d4a574] rounded-lg hover:bg-[#3d3530] transition disabled:opacity-50 font-medium"
             >
               <Download className="w-4 h-4" />
-              Download
+              {t('brew_share_page.download')}
             </button>
           </div>
         </div>
@@ -162,26 +167,26 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
         </div>
 
         <div className="mt-8 p-6 bg-[#2d2520] border border-[#3d3530] rounded-lg">
-          <h2 className="text-2xl font-bold text-[#d4a574] mb-4">📱 Share Your Brew</h2>
+          <h2 className="text-2xl font-bold text-[#d4a574] mb-4">{t('brew_share_page.title')}</h2>
           <div className="space-y-4 text-[#f5f1ed]">
             <div>
-              <h3 className="font-semibold text-lg mb-2">On Mobile:</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('brew_share_page.on_mobile')}</h3>
               <ol className="space-y-2 ml-4 list-decimal">
-                <li>Tap the "Share" button above</li>
-                <li>Select Instagram Stories or your preferred app</li>
-                <li>The image and link will be shared directly</li>
+                <li>{t('brew_share_page.mobile_step_1')}</li>
+                <li>{t('brew_share_page.mobile_step_2')}</li>
+                <li>{t('brew_share_page.mobile_step_3')}</li>
               </ol>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-2">On Desktop:</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('brew_share_page.on_desktop')}</h3>
               <ol className="space-y-2 ml-4 list-decimal">
-                <li>Click "Download" to save the image</li>
-                <li>Share it to Instagram Stories or other apps</li>
+                <li>{t('brew_share_page.desktop_step_1')}</li>
+                <li>{t('brew_share_page.desktop_step_2')}</li>
               </ol>
             </div>
             <div className="pt-4 border-t border-[#3d3530]">
               <p className="text-sm text-[#8b6f47] italic">
-                💡 Tip: When sharing via Instagram Stories on mobile, Instagram will automatically add a "View on Moka Tracker" link at the top!
+                {t('brew_share_page.share_tip')}
               </p>
             </div>
           </div>

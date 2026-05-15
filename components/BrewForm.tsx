@@ -21,7 +21,7 @@ export default function BrewForm({
   onSubmit,
   isLoading,
 }: BrewFormProps) {
-  const { language, t } = useLanguage()
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     bean_id: '',
     grinder_id: '',
@@ -116,7 +116,6 @@ export default function BrewForm({
         heat_level: formData.heat_level,
         has_paper_filter: formData.has_paper_filter,
         flow_type: formData.flow_type,
-        language,
       })
       setFormData({
         bean_id: '',
@@ -218,7 +217,7 @@ export default function BrewForm({
             <option value="">{t('brew_form.select_moka')}</option>
             {mokaPots.map((pot) => (
               <option key={pot.id} value={pot.id}>
-                {pot.brand} {pot.model} ({pot.size_cups} Cup)
+                {pot.brand} {pot.model} ({t('moka_form.cup_count', { count: pot.size_cups })})
               </option>
             ))}
           </select>

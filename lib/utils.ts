@@ -1,3 +1,5 @@
+import { translations, Language } from './translations'
+
 /**
  * Calculate brew ratio: Coffee : Water In
  * Returns as a formatted string (e.g., "1:2.5")
@@ -51,19 +53,20 @@ export const getVibeEmoji = (rating: number): string => {
   if (rating <= 2) return '🫠' // Mamma Mia...
   if (rating <= 4) return '🤷‍♂️' // Così così
   if (rating <= 6) return '☕' // Bene
-  if (rating <= 8) return '🇮🇹' // Bellissimo
+  if (rating <= 8) return '🇮🇹' // Buonissimo
   return '🤌' // Ottimo!
 }
 
 /**
- * Get vibe name based on rating
+ * Get vibe name based on rating and language
  */
-export const getVibeName = (rating: number): string => {
-  if (rating <= 2) return 'Mamma Mia...'
-  if (rating <= 4) return 'Così così'
-  if (rating <= 6) return 'Bene'
-  if (rating <= 8) return 'Bellissimo'
-  return 'Ottimo!'
+export const getVibeName = (rating: number, language: Language = 'en'): string => {
+  const labels = translations[language].dashboard
+  if (rating <= 2) return labels.vibe_low
+  if (rating <= 4) return labels.vibe_med_low
+  if (rating <= 6) return labels.vibe_med
+  if (rating <= 8) return labels.vibe_high
+  return labels.vibe_max
 }
 
 /**

@@ -80,5 +80,6 @@ export interface BrewCreateInput {
   heat_level: string
   has_paper_filter: boolean
   flow_type: string
+  /** UI locale only — not persisted; all DB enum fields use English canonical values */
   language?: string
 }

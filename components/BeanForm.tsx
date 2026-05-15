@@ -144,7 +144,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             <option value="Light">{t('bean_form.light')}</option>
             <option value="Medium">{t('bean_form.medium')}</option>
             <option value="Dark">{t('bean_form.dark')}</option>
-            <option value="French">French</option>
+            <option value="French">{t('bean_form.french')}</option>
           </select>
         </div>
 

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { normalizeMokaPotType } from '@/lib/dbValues'
 
 export async function GET(request: NextRequest) {
   try {
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           brand,
           model,
-          type,
+          type: normalizeMokaPotType(type),
           size_cups,
         },
       ])
@@ -123,7 +124,7 @@ export async function PUT(request: NextRequest) {
 
     const { data, error } = await userClient
       .from('moka_pots')
-      .update({ brand, model, type, size_cups })
+      .update({ brand, model, type: normalizeMokaPotType(type), size_cups })
       .eq('id', id)
       .select()
 

@@ -2,6 +2,12 @@ import { supabase } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { calculateBrewRatio, calculateExtractionRatio } from '@/lib/utils'
+import {
+  normalizeFlowType,
+  normalizeHeatLevel,
+  normalizeMilkType,
+  normalizeWaterTemp,
+} from '@/lib/dbValues'
 
 export async function GET(request: NextRequest) {
   try {
@@ -75,7 +81,6 @@ export async function POST(request: NextRequest) {
       extraction_time_s,
       milk_added_g,
       milk_type,
-      language,
       vibe_rating,
       tasting_notes,
       water_temp,
@@ -192,7 +197,7 @@ CONTEXT:
 - Suggestions about water should refer to "Starting Water Temp" (the water you put in the boiler).
 - Do not be too exact with temperature degrees (e.g., don't say "use exactly 82°C"), use general terms like "warmer", "cooler", "near boiling", etc.
 
-IMPORTANT: YOU MUST PROVIDE THE ENTIRE RESPONSE IN ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}. Use Italian culinary terms and passion regardless of the language choice.
+IMPORTANT: YOU MUST PROVIDE THE ENTIRE RESPONSE IN ENGLISH ONLY (this text is stored in a database for analytics). You may sprinkle in Italian flair words (Ottimo!, Mamma Mia!, etc.) but the sentences must be English.
 
 CURRENT Brew Details:
 - Bean: ${bean?.name} (${bean?.roaster}) - Origin: ${bean?.origin || 'Unknown'} - Roast Level: ${bean?.roast_level} ${bean?.roast_date ? `(Roast Date: ${bean.roast_date}, Freshness: ${daysPastRoast} days)` : ''}
@@ -275,28 +280,15 @@ Example Response:
         let suggestion = ''
 
         if (vibe_rating <= 3) {
-          if (language === 'it') {
-            summary = `Mamma Mia! Che disastro! Il tuo rapporto di estrazione di 1:${extraction_ratio_output} era tutto sballato, come una Vespa in una piazza affollata! 😰🇮🇹`
-            if ((tasting_notes || '').toLowerCase().includes('bitter')) {
-              summary = `Sacrilegio! Questo caffè è amaro come un cuore spezzato a causa della sovra-estrazione a 1:${extraction_ratio_output}. La mia anima piange! 😭☕`
-              suggestion = `Per la prossima volta, macina più grossolana e calore più basso, per favore! Dai al caffè un po' di rispetto e ti amerà a sua volta. Deve essere fluido come un giro in gondola! 🤌✨`
-            } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
-              summary = `Che peccato! L'acidità mi dice che hai affrettato l'estrazione. Un rapporto 1:${brew_ratio_input} non è abbastanza amore per questi chicchi! 🍋☕`
-              suggestion = `Ottimo! Usa una macinatura più fine la prossima volta per far ballare l'acqua con il caffè più a lungo. Rallenta, lascia che i sapori sboccino come un giorno di primavera in Toscana! 🤌🌸`
-            } else {
-              suggestion = `Che disastro! Sperimenta con il tuo macinacaffè e mettici un po' di passione italiana la prossima volta. Non aver paura di provare qualcosa di nuovo! 🤌💪`
-            }
+          summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place, like a Vespa in a crowded piazza! 😰🇮🇹`
+          if ((tasting_notes || '').toLowerCase().includes('bitter')) {
+            summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}. My soul is weeping! 😭☕`
+            suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect and it will love you back. It must be as smooth as a gondola ride! 🤌✨`
+          } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
+            summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love for these beans! 🍋☕`
+            suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer. Slow it down, let the flavors bloom like a spring day in Tuscany! 🤌🌸`
           } else {
-            summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place, like a Vespa in a crowded piazza! 😰🇮🇹`
-            if ((tasting_notes || '').toLowerCase().includes('bitter')) {
-              summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}. My soul is weeping! 😭☕`
-              suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect and it will love you back. It must be as smooth as a gondola ride! 🤌✨`
-            } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
-              summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love for these beans! 🍋☕`
-              suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer. Slow it down, let the flavors bloom like a spring day in Tuscany! 🤌🌸`
-            } else {
-              suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time. Don't be afraid to try something new, fortune favors the bold! 🤌💪`
-            }
+            suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time. Don't be afraid to try something new, fortune favors the bold! 🤌💪`
           }
         } else if (vibe_rating <= 6) {
           summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}. Not bad, but we can do better! 🙂☕`
@@ -326,15 +318,15 @@ Example Response:
           final_yield_g: parseFloat(final_yield_g),
           extraction_time_s: parseInt(extraction_time_s),
           milk_added_g: milk_added_g ? parseFloat(milk_added_g) : null,
-          milk_type: milk_type || null,
+          milk_type: milk_added_g ? normalizeMilkType(milk_type) : null,
           brew_ratio_input,
           extraction_ratio_output,
           vibe_rating: parseInt(vibe_rating),
           tasting_notes: tasting_notes || '',
-          water_temp: water_temp || 'Boiling',
-          heat_level: heat_level || 'Medium-Low',
+          water_temp: normalizeWaterTemp(water_temp),
+          heat_level: normalizeHeatLevel(heat_level),
           has_paper_filter: has_paper_filter || false,
-          flow_type: flow_type || 'Steady',
+          flow_type: normalizeFlowType(flow_type),
           ai_recap,
         },
       ])

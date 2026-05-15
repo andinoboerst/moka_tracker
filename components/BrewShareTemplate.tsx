@@ -2,6 +2,7 @@
 
 import { Brew } from '@/lib/types'
 import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
+import { translateRoastLevel } from '@/lib/dbValues'
 import { MokaPotIcon } from './icons/MokaPotIcon'
 import { Scale, Thermometer, Timer, Sparkles, Droplets, Settings } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -14,7 +15,7 @@ interface BrewShareTemplateProps {
 }
 
 const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ brew, id }, ref) => {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
   const aiRecap = brew.ai_recap ? JSON.parse(brew.ai_recap) : null
   const recapText = aiRecap ? (aiRecap.summary || aiRecap.suggestion || brew.ai_recap) : null
 
@@ -44,7 +45,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
         </div>
         <div className="flex flex-col items-end">
           <span className="text-[120px] mb-4 leading-none">{getVibeEmoji(brew.vibe_rating)}</span>
-          <span className="text-4xl font-serif text-[#d4a574] uppercase tracking-[0.2em]">{getVibeName(brew.vibe_rating)}</span>
+          <span className="text-4xl font-serif text-[#d4a574] uppercase tracking-[0.2em]">{getVibeName(brew.vibe_rating, language)}</span>
         </div>
       </div>
 
@@ -63,7 +64,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
             {brew.bean?.name}
           </h2>
           <p className="text-4xl text-[#d4a574]">
-            {brew.bean?.origin ? `${brew.bean.origin} • ` : ''}{brew.bean?.roast_level} {t('brew_share.roast')}
+            {brew.bean?.origin ? `${brew.bean.origin} • ` : ''}{translateRoastLevel(brew.bean?.roast_level, t)} {t('brew_share.roast')}
           </p>
           <p className="text-2xl text-[#8b6f47] mt-4 italic">{brew.bean?.roaster}</p>
         </div>
@@ -97,7 +98,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
                 <p className="text-4xl font-bold">
                   {brew.grinder?.microns_per_click
                     ? `${brew.grinder_setting * brew.grinder.microns_per_click}μm`
-                    : `${brew.grinder_setting} clicks`}
+                    : `${brew.grinder_setting} ${t('brew_card.clicks')}`}
                 </p>
               </div>
             </div>

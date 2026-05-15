@@ -117,7 +117,7 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
             placeholder="e.g., 30"
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
           />
-          <p className="text-xs text-[#8b6f47] mt-1">Used to calculate total grind size for easy comparisons.</p>
+          <p className="text-xs text-[#8b6f47] mt-1">{t('grinder_form.microns_hint')}</p>
         </div>
       </div>
 

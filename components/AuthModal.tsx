@@ -70,13 +70,13 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-[#d4a574] mb-6">
-          {isSignUp ? 'Create Account' : 'Sign In'}
+          {isSignUp ? t('common.create_account') : t('common.sign_in')}
         </h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-[#f5f1ed] mb-2">
-              Email
+              {t('common.email')}
             </label>
             <input
               type="email"
@@ -89,7 +89,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           
           <div>
             <label className="block text-sm font-medium text-[#f5f1ed] mb-2">
-              Password
+              {t('common.password')}
             </label>
             <input
               type="password"
@@ -109,7 +109,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             disabled={loading}
             className="w-full bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition disabled:opacity-50"
           >
-            {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+            {loading ? t('common.loading') : (isSignUp ? t('common.sign_up') : t('common.sign_in'))}
           </button>
         </form>
 
@@ -118,7 +118,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <div className="w-full border-t border-[#3d3530]"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-[#2d2520] text-[#8b6f47]">Or continue with</span>
+            <span className="px-2 bg-[#2d2520] text-[#8b6f47]">{t('common.or_continue_with')}</span>
           </div>
         </div>
 
@@ -134,7 +134,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
             <path d="M1 1h22v22H1z" fill="none" />
           </svg>
-          <span>Continue with Google</span>
+          <span>{t('common.continue_with_google')}</span>
         </button>
 
         <button
@@ -151,7 +151,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             onClick={() => setIsSignUp(!isSignUp)}
             className="text-[#8b6f47] hover:text-[#d4a574] text-sm"
           >
-            {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+            {isSignUp ? t('common.already_have_account') : t('common.dont_have_account')}
           </button>
         </div>
 
@@ -159,7 +159,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           onClick={onClose}
           className="mt-4 w-full text-[#8b6f47] hover:text-[#d4a574] text-sm"
         >
-          Cancel
+          {t('common.cancel')}
         </button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { normalizeRoastLevel } from '@/lib/dbValues'
 
 export async function GET(request: NextRequest) {
   try {
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           name,
           roaster,
-          roast_level,
+          roast_level: normalizeRoastLevel(roast_level),
           roast_date: roast_date || null,
           origin: origin || null,
           weight_g: weight_g ? parseInt(weight_g) : null,
@@ -147,7 +148,7 @@ export async function PUT(request: NextRequest) {
       .update({
         name,
         roaster,
-        roast_level,
+        roast_level: normalizeRoastLevel(roast_level),
         roast_date: roast_date || null,
         origin: origin || null,
         weight_g: weight_g ? parseInt(weight_g) : null,

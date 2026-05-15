@@ -69,7 +69,7 @@ export default function InventoryList({
           </h4>
           {grinder.microns_per_click && (
             <p className="text-[10px] text-[#8b6f47] flex items-center gap-1 mt-0.5">
-              <Zap className="w-3 h-3" /> {grinder.microns_per_click} microns/click
+              <Zap className="w-3 h-3" /> {t('inventory.microns_per_click', { microns: grinder.microns_per_click })}
             </p>
           )}
         </div>
@@ -90,10 +90,15 @@ export default function InventoryList({
   }
 
   if (items.length === 0) {
-    const itemLabel = type === 'beans' ? t('inventory.your_beans') : type === 'grinders' ? t('inventory.your_grinders') : t('inventory.your_moka_pots')
+    const emptyKey =
+      type === 'beans'
+        ? 'inventory.empty_beans'
+        : type === 'grinders'
+          ? 'inventory.empty_grinders'
+          : 'inventory.empty_moka_pots'
     return (
       <div className="text-center py-8 text-[#8b6f47] italic">
-        {t('dashboard.no_brews').replace('brews logged', itemLabel.toLowerCase())}
+        {t(emptyKey)}
       </div>
     )
   }

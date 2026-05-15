@@ -2,6 +2,7 @@
 
 import { Brew } from '@/lib/types'
 import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
+import { translateStoredExpertValue, translateMilkType, translateRoastLevel } from '@/lib/dbValues'
 import { Trash2, Sparkles, Share2, Download } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
 import { toPng } from 'html-to-image'
@@ -15,7 +16,7 @@ interface BrewCardProps {
 }
 
 export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
   const shareRef = useRef<HTMLDivElement>(null)
   const [isSharing, setIsSharing] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
@@ -70,7 +71,10 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
           if (navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: `Moka Tracker - ${brew.bean?.name || 'Brew'}`,
-              text: `Check out my brew! ${getVibeName(brew.vibe_rating)} vibe ☕\n\n${appUrl}`,
+              text: t('brew_card.share_message', {
+                vibe: getVibeName(brew.vibe_rating, language),
+                url: appUrl,
+              }),
               files: [file],
             })
             return
@@ -104,7 +108,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
           </h3>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-2xl" title={getVibeName(brew.vibe_rating)}>{getVibeEmoji(brew.vibe_rating)}</span>
+          <span className="text-2xl" title={getVibeName(brew.vibe_rating, language)}>{getVibeEmoji(brew.vibe_rating)}</span>
           <button
             onClick={handleShare}
             disabled={isSharing}
@@ -117,7 +121,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
             onClick={handleDownload}
             disabled={isDownloading}
             className="p-2 hover:bg-[#3d3530] rounded transition disabled:opacity-50 text-[#d4a574]"
-            title="Download image"
+            title={t('brew_card.download_image')}
           >
             <Download className="w-4 h-4" />
           </button>
@@ -137,7 +141,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.bean')}</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
-            {brew.bean?.origin ? `${brew.bean.origin} • ` : ''}{brew.bean?.roast_level} Roast
+            {brew.bean?.origin ? `${brew.bean.origin} • ` : ''}{translateRoastLevel(brew.bean?.roast_level, t)} {t('brew_card.roast_suffix')}
           </p>
           <p className="text-xs text-[#8b6f47]">{brew.bean?.roaster}</p>
         </div>
@@ -147,7 +151,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
           <p className="text-sm font-medium text-[#f5f1ed]">
             {brew.grinder_id ? (
               <>
-                {brew.grinder_setting} clicks
+                {brew.grinder_setting} {t('brew_card.clicks')}
                 {brew.grinder?.microns_per_click && (
                   <span className="text-xs text-[#8b6f47] ml-1">
                     ({brew.grinder_setting! * brew.grinder.microns_per_click}μm)
@@ -159,21 +163,21 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
             )}
           </p>
           <p className="text-xs text-[#8b6f47]">
-            {brew.grinder_id ? `${brew.grinder?.brand} ${brew.grinder?.model}` : 'No grinder used'}
+            {brew.grinder_id ? `${brew.grinder?.brand} ${brew.grinder?.model}` : t('brew_card.no_grinder_used')}
           </p>
         </div>
 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.moka_pot')}</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
-            {brew.moka_pot?.brand} {brew.moka_pot?.model} ({brew.moka_pot?.size_cups} Cup)
+            {brew.moka_pot?.brand} {brew.moka_pot?.model} ({t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})
           </p>
         </div>
 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.vibe')}</p>
           <p className="text-sm font-medium text-[#d4a574]">
-            {brew.vibe_rating}/10 — {getVibeName(brew.vibe_rating)}
+            {brew.vibe_rating}/10 — {getVibeName(brew.vibe_rating, language)}
           </p>
         </div>
       </div>
@@ -215,7 +219,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.style')}</p>
           <p className="text-sm font-semibold text-[#f5f1ed]">
-            {brew.milk_added_g ? `${brew.milk_type || 'Milk'} (${brew.milk_added_g}g)` : t('brew_card.black')}
+            {brew.milk_added_g ? `${translateMilkType(brew.milk_type, t)} (${brew.milk_added_g}g)` : t('brew_card.black')}
           </p>
         </div>
       </div>
@@ -223,13 +227,13 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       {/* Expert Metrics Display */}
       <div className="flex flex-wrap gap-2 pt-2 border-t border-[#3d3530]/50">
         <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
-          <span>🌡️</span> {brew.water_temp || 'Boiling'} {t('brew_card.start_temp')}
+          <span>🌡️</span> {translateStoredExpertValue(brew.water_temp, t, 'Boiling')}
         </div>
         <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
-          <span>🔥</span> {brew.heat_level || 'Medium-Low'} {t('brew_card.heat')}
+          <span>🔥</span> {translateStoredExpertValue(brew.heat_level, t, 'Medium-Low')}
         </div>
         <div className="text-[10px] bg-[#1a1410] text-[#8b6f47] px-2 py-1 rounded flex items-center gap-1 border border-[#3d3530]">
-          <span>🌊</span> {brew.flow_type || 'Steady'} {t('brew_card.flow')}
+          <span>🌊</span> {translateStoredExpertValue(brew.flow_type, t, 'Steady')}
         </div>
         {brew.has_paper_filter && (
           <div className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded flex items-center gap-1 border border-blue-800/30">
@@ -251,7 +255,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-gradient-to-r from-[#3d3530] to-[#1a1410] rounded-lg p-4 border-l-4 border-[#d4a574]">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4 text-[#d4a574]" />
-            <h4 className="text-sm font-bold text-[#d4a574]">Brew Master Recap</h4>
+            <h4 className="text-sm font-bold text-[#d4a574]">{t('brew_card.brew_master_recap')}</h4>
           </div>
           <p className="text-sm text-[#f5f1ed] italic">
             "{(() => {

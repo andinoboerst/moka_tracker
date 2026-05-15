@@ -102,7 +102,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
               <button
                 onClick={() => setLanguage(language === 'en' ? 'it' : 'en')}
                 className="hidden md:flex items-center justify-center w-10 h-10 text-2xl hover:scale-110 transition-transform rounded-full hover:bg-[#3d3530]"
-                title={language === 'en' ? 'Switch to Italian' : 'Cambia in Inglese'}
+                title={language === 'en' ? t('common.switch_to_italian') : t('common.switch_to_english')}
               >
                 <span>{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
               </button>
@@ -122,10 +122,10 @@ export default function Header({ onSignInClick }: HeaderProps) {
                       <div className="absolute right-0 mt-2 w-56 bg-[#2d2520] border border-[#5a4f4a] rounded-lg shadow-xl py-2 z-50">
                         <div className="px-4 py-2 border-b border-[#3d3530] mb-2">
                           <p className="text-xs text-[#8b6f47]">
-                            {user.is_anonymous ? t('common.guest_mode_warning').split(':')[0] : 'Signed in as'}
+                            {user.is_anonymous ? t('common.guest_mode_warning').split(':')[0] : t('common.signed_in_as')}
                           </p>
                           <p className="text-sm text-[#f5f1ed] truncate font-medium">
-                            {user.is_anonymous ? 'Guest Explorer' : user.email}
+                            {user.is_anonymous ? t('common.guest_explorer') : user.email}
                           </p>
                         </div>
 
@@ -242,7 +242,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
               }}
               className="w-full flex items-center justify-between px-3 py-3 rounded-md text-base font-medium text-[#f5f1ed] hover:text-[#d4a574] hover:bg-[#2d2520] transition border-t border-[#3d3530] mt-2"
             >
-              <span>{language === 'en' ? 'Switch to Italian' : 'Cambia in Inglese'}</span>
+              <span>{language === 'en' ? t('common.switch_to_italian') : t('common.switch_to_english')}</span>
               <span className="text-2xl">{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
             </button>
           </div>
