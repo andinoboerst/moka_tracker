@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
 import { useState, useRef, useEffect } from 'react'
 import AuthModal from './AuthModal'
-import { User, Menu, X, Trash2, LogOut, UserPlus } from 'lucide-react'
+import PasswordChangeModal from './PasswordChangeModal'
+import { User, Menu, X, Trash2, LogOut, UserPlus, Key } from 'lucide-react'
 import { MokaPotIcon } from './icons/MokaPotIcon'
 import { getAuthHeaders } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -20,6 +21,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+  const [isPasswordChangeOpen, setIsPasswordChangeOpen] = useState(false)
 
   const userMenuRef = useRef<HTMLDivElement>(null)
 
@@ -142,6 +144,19 @@ export default function Header({ onSignInClick }: HeaderProps) {
                           </button>
                         )}
 
+                        {!user.is_anonymous && (
+                          <button
+                            onClick={() => {
+                              setIsUserMenuOpen(false)
+                              setIsPasswordChangeOpen(true)
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm text-[#f5f1ed] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2 border-b border-[#3d3530] mb-1"
+                          >
+                            <Key className="w-4 h-4" />
+                            {t('common.change_password')}
+                          </button>
+                        )}
+
                         <button
                           onClick={() => {
                             setIsUserMenuOpen(false)
@@ -252,6 +267,11 @@ export default function Header({ onSignInClick }: HeaderProps) {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      <PasswordChangeModal
+        isOpen={isPasswordChangeOpen}
+        onClose={() => setIsPasswordChangeOpen(false)}
       />
     </>
   )

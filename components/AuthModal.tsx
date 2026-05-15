@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import { Mail, User as UserIcon } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
+import PasswordResetModal from './PasswordResetModal'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -16,6 +17,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isPasswordResetOpen, setIsPasswordResetOpen] = useState(false)
   const { signIn, signUp, signInWithGoogle, signInAnonymously } = useAuth()
   const { t } = useLanguage()
 
@@ -155,6 +157,17 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </button>
         </div>
 
+        {!isSignUp && (
+          <div className="mt-2 text-center">
+            <button
+              onClick={() => setIsPasswordResetOpen(true)}
+              className="text-[#8b6f47] hover:text-[#d4a574] text-sm"
+            >
+              {t('common.forgot_password')}
+            </button>
+          </div>
+        )}
+
         <button
           onClick={onClose}
           className="mt-4 w-full text-[#8b6f47] hover:text-[#d4a574] text-sm"
@@ -162,6 +175,11 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           {t('common.cancel')}
         </button>
       </div>
+
+      <PasswordResetModal
+        isOpen={isPasswordResetOpen}
+        onClose={() => setIsPasswordResetOpen(false)}
+      />
     </div>
   )
 }

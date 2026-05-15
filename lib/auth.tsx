@@ -12,6 +12,8 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<{ error: any }>
   signInAnonymously: () => Promise<{ error: any }>
   signOut: () => Promise<void>
+  resetPassword: (email: string) => Promise<{ error: any }>
+  updatePassword: (newPassword: string) => Promise<{ error: any }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -73,8 +75,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }
 
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/reset-password` : '/',
+    })
+    return { error }
+  }
+
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    })
+    return { error }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInAnonymously, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInAnonymously, signOut, resetPassword, updatePassword }}>
       {children}
     </AuthContext.Provider>
   )
