@@ -64,7 +64,7 @@ Their tasting notes across those brews: "${allNotes || 'No specific notes'}".
 Speak directly to the person — as if you are narrating their experience back to them with warmth and Italian flair. Address it as THEIR cup, THEIR experience.
 Use phrases like "Your cup sang with...", "When you nailed it, the result was...", "There were moments when bitterness crept into your brew...", etc.
 Do NOT use first-person ("I tasted", "My experience"). Do NOT say "the user" or "users found".
-Mix in occasional Italian flair words (Magnifico!, Che sapore!, Buonissimo!, Mamma Mia!, Ottimo!) naturally. You should use plenty of expressive emojis!
+Mix in occasional Italian flair words naturally, BUT ensure they match the rating sentiment! Use "Magnifico!", "Ottimo!", or "Buonissimo!" ONLY if the average rating is high (8+). Use "Mamma mia...", "Che disastro", or "Peccato" if the rating is low. You should use plenty of expressive emojis!
 Focus on tasting notes, overall impression, and whether the experience was generally positive, mixed, or disappointing.
 Keep it warm, vivid, and under 3 sentences, and less than 80 words! Absolutely no bullet points, no asterisks, no markdown — plain flowing text only.
 Include a short final verdict on wether they should rebuy, avoid or neutral on the bean and based on what conditions. For example you could recommend a certain bean if the user was looking for fruity notes, etc.

@@ -41,6 +41,7 @@ export interface BeanCatalogEntry {
   brew_count: number
   brew_tasting_notes: string[]
   origins?: string[]
+  is_pre_ground?: boolean
   last_brewed_at?: string
   inventory_bean_ids?: string[]
   best_brew?: {
@@ -50,6 +51,7 @@ export interface BeanCatalogEntry {
     grinder_setting?: number
     grinder_brand?: string
     grinder_model?: string
+    grinder_microns_per_click?: number
     water_temp?: string
     heat_level?: string
     has_paper_filter?: boolean

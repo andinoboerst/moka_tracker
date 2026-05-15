@@ -15,6 +15,7 @@ import {
   Flame,
   Droplets,
   Clock,
+  Settings,
   Filter,
 } from 'lucide-react'
 
@@ -142,11 +143,19 @@ export default function BeanJournal() {
                 key={entry.key}
                 className="bg-[#2d2520] border border-[#3d3530] rounded-xl p-5 hover:border-[#5a4f4a] transition"
               >
-                <div className="flex flex-col sm:flex-row justify-between gap-4">
+                <div className="flex flex-row justify-between items-start gap-4 mb-3">
                   <div className="flex-1 min-w-0">
                     {/* Header */}
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <h3 className="text-lg font-bold text-[#f5f1ed]">{entry.name}</h3>
+                      {entry.is_pre_ground && (
+                        <span 
+                          className="bg-[#3d3530] text-[#f5f1ed] text-[10px] font-bold px-1.5 py-0.5 rounded cursor-help"
+                          title={t('bean_form.is_pre_ground')}
+                        >
+                          PG
+                        </span>
+                      )}
                       {rec && RecIcon && (
                         <span
                           className={`inline-flex items-center gap-1 text-xs font-bold uppercase ${rec.className}`}
@@ -163,90 +172,17 @@ export default function BeanJournal() {
                       )}
                       {entry.origins?.length ? <> • {entry.origins.join(', ')}</> : null}
                     </p>
-
-                    {/* Best brew icon strip */}
-                    {bb && (
-                      <div className="mt-3 flex flex-wrap gap-3">
-                        <span className="text-[10px] text-[#8b6f47] uppercase tracking-widest self-center font-bold">Best brew</span>
-                        <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                          <Coffee className="w-3 h-3 text-[#8b6f47]" />
-                          {bb.coffee_weight_g}g
-                        </span>
-                        <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                          <Droplets className="w-3 h-3 text-[#8b6f47]" />
-                          {bb.water_added_g}g
-                        </span>
-                        {bb.grinder_setting != null && (
-                          <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                            <Filter className="w-3 h-3 text-[#8b6f47]" />
-                            {bb.grinder_brand ? `${bb.grinder_brand} ` : ''}{bb.grinder_setting} clicks
-                          </span>
-                        )}
-                        {bb.water_temp && (
-                          <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                            <Thermometer className="w-3 h-3 text-[#8b6f47]" />
-                            {translateStoredExpertValue(bb.water_temp, t, 'Boiling')}
-                          </span>
-                        )}
-                        {bb.heat_level && (
-                          <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                            <Flame className="w-3 h-3 text-[#8b6f47]" />
-                            {translateStoredExpertValue(bb.heat_level, t, 'Medium-Low')}
-                          </span>
-                        )}
-                        {bb.extraction_time_s != null && (
-                          <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                            <Clock className="w-3 h-3 text-[#8b6f47]" />
-                            {bb.extraction_time_s}s
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* AI Summary */}
-                    {entry.flavor_notes ? (
-                      <div className="mt-3 bg-[#1a1410] border border-[#d4a574]/30 rounded-lg p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm">✨</span>
-                          <span className="text-xs font-bold text-[#d4a574] uppercase tracking-wider">Brew Recap</span>
-                        </div>
-                        <p className="text-sm text-[#f5f1ed] leading-relaxed italic">
-                          {entry.flavor_notes}
-                        </p>
-                        <button
-                          onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
-                          disabled={summarizingId === entry.key}
-                          className="mt-3 text-xs text-[#8b6f47] hover:text-[#d4a574] transition disabled:opacity-50"
-                        >
-                          {summarizingId === entry.key ? 'Generating...' : '🔄 Refresh'}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="mt-4">
-                        <button
-                          onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
-                          disabled={summarizingId === entry.key || entry.brew_count === 0}
-                          className="text-sm flex items-center gap-2 bg-transparent border border-[#d4a574]/50 hover:bg-[#d4a574]/10 text-[#d4a574] py-1.5 px-3 rounded transition disabled:opacity-50"
-                        >
-                          <span className="text-xs">✨</span>
-                          {summarizingId === entry.key ? 'Generating...' : 'Summarize with AI'}
-                        </button>
-                      </div>
-                    )}
                   </div>
 
                   {/* Rating column */}
-                  <div className="flex sm:flex-col items-center sm:items-end gap-3 shrink-0">
-                    <div className="text-center sm:text-right">
+                  <div className="flex flex-col items-end shrink-0">
+                    <div className="text-right">
                       {rating != null ? (
                         <>
                           <div className={`text-3xl font-bold font-mono ${getVibeColor(rating)}`}>
                             {rating}
-                            <span className="text-lg text-[#8b6f47]">/10</span>
+                            {/* <span className="text-base text-[#8b6f47]">/10</span> */}
                           </div>
-                          <p className="text-[10px] text-[#8b6f47] uppercase tracking-wider">
-                            {t('bean_journal.avg_brew_rating')}
-                          </p>
                         </>
                       ) : (
                         <p className="text-xs text-[#8b6f47] italic">{t('bean_journal.no_rating')}</p>
@@ -260,6 +196,83 @@ export default function BeanJournal() {
                     </div>
                   </div>
                 </div>
+
+                {/* Best brew icon strip */}
+                {bb && (
+                  <div className="mb-3 flex flex-wrap gap-3">
+                    <span className="text-[10px] text-[#8b6f47] uppercase tracking-widest self-center font-bold">Best brew</span>
+                    <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
+                      <Coffee className="w-3 h-3 text-[#8b6f47]" />
+                      {bb.coffee_weight_g}g
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
+                      <Droplets className="w-3 h-3 text-[#8b6f47]" />
+                      {bb.water_added_g}g
+                    </span>
+                    {!entry.is_pre_ground && bb.grinder_setting != null && (
+                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
+                        <Settings className="w-3 h-3 text-[#8b6f47]" />
+                        {bb.grinder_setting} clicks
+                        {bb.grinder_microns_per_click ? ` (~${bb.grinder_setting * bb.grinder_microns_per_click}µm)` : ''}
+                      </span>
+                    )}
+                    {bb.water_temp && (
+                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
+                        <Thermometer className="w-3 h-3 text-[#8b6f47]" />
+                        {translateStoredExpertValue(bb.water_temp, t, 'Boiling')}
+                      </span>
+                    )}
+                    {bb.heat_level && (
+                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
+                        <Flame className="w-3 h-3 text-[#8b6f47]" />
+                        {translateStoredExpertValue(bb.heat_level, t, 'Medium-Low')}
+                      </span>
+                    )}
+                    {bb.extraction_time_s != null && (
+                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
+                        <Clock className="w-3 h-3 text-[#8b6f47]" />
+                        {bb.extraction_time_s}s
+                      </span>
+                    )}
+                    {bb.has_paper_filter && (
+                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
+                        <Filter className="w-3 h-3 text-[#8b6f47]" />
+                        {t('brew_card.paper_filter')}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* AI Summary */}
+                {entry.flavor_notes ? (
+                  <div className="mt-3 bg-[#1a1410] border border-[#d4a574]/30 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm">✨</span>
+                      <span className="text-xs font-bold text-[#d4a574] uppercase tracking-wider">Brew Recap</span>
+                    </div>
+                    <p className="text-sm text-[#f5f1ed] leading-relaxed italic">
+                      {entry.flavor_notes}
+                    </p>
+                    <button
+                      onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
+                      disabled={summarizingId === entry.key}
+                      className="mt-3 text-xs text-[#8b6f47] hover:text-[#d4a574] transition disabled:opacity-50"
+                    >
+                      {summarizingId === entry.key ? 'Generating...' : '🔄 Refresh'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="mt-3">
+                    <button
+                      onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
+                      disabled={summarizingId === entry.key || entry.brew_count === 0}
+                      className="text-sm flex items-center gap-2 bg-transparent border border-[#d4a574]/50 hover:bg-[#d4a574]/10 text-[#d4a574] py-1.5 px-3 rounded transition disabled:opacity-50"
+                    >
+                      <span className="text-xs">✨</span>
+                      {summarizingId === entry.key ? 'Generating...' : 'Summarize with AI'}
+                    </button>
+                  </div>
+                )}
               </article>
             )
           })}

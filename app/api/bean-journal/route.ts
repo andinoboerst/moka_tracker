@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     const [journalRes, brewsRes, beansRes] = await Promise.all([
       client.from('bean_journal').select('*').order('updated_at', { ascending: false }),
-      client.from('brews').select('*, bean:beans (*)').order('created_at', { ascending: false }),
+      client.from('brews').select('*, bean:beans (*), grinder:grinders(*)').order('created_at', { ascending: false }),
       client.from('beans').select('*'),
     ])
 

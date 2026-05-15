@@ -140,6 +140,7 @@ export function buildBeanCatalog(
           grinder_setting: brew.grinder_setting ?? undefined,
           grinder_brand: (brew as any).grinder?.brand,
           grinder_model: (brew as any).grinder?.model,
+          grinder_microns_per_click: (brew as any).grinder?.microns_per_click,
           water_temp: brew.water_temp,
           heat_level: brew.heat_level,
           has_paper_filter: brew.has_paper_filter,
@@ -160,6 +161,9 @@ export function buildBeanCatalog(
     }
     if (bean.origin && !entry.origins?.includes(bean.origin)) {
       entry.origins = [...(entry.origins || []), bean.origin]
+    }
+    if (bean.is_pre_ground) {
+      entry.is_pre_ground = true
     }
   }
 

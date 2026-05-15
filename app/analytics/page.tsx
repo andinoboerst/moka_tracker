@@ -7,7 +7,7 @@ import { translateStoredExpertValue } from '@/lib/dbValues'
 import { useLanguage } from '@/lib/LanguageContext'
 import { AnalyticsScatterPlot, AnalyticsLineGraph } from '@/components/AnalyticsChart'
 import BeanJournal from '@/components/BeanJournal'
-import { ChevronDown, ChevronUp, Star, Clock, Coffee, Thermometer, Flame, Droplets, Filter } from 'lucide-react'
+import { ChevronDown, ChevronUp, Star, Clock, Coffee, Thermometer, Flame, Droplets, Filter, Settings } from 'lucide-react'
 
 type AnalyticsTab = 'brews' | 'beans' | 'top_brews'
 
@@ -20,7 +20,7 @@ export default function AnalyticsPage() {
   const [expandedBrew, setExpandedBrew] = useState<string | null>(null)
 
   useEffect(() => {
-    if (activeTab !== 'brews') return
+    if (activeTab === 'beans') return
     const load = async () => {
       setLoading(true)
       try {
@@ -253,6 +253,18 @@ export default function AnalyticsPage() {
                             {translateStoredExpertValue(brew.water_temp, t, 'Boiling')}
                           </p>
                         </div>
+                        {!brew.bean?.is_pre_ground && brew.grinder_setting != null && (
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-[#8b6f47] text-xs uppercase">
+                              <Settings className="w-3 h-3" />
+                              <span>{t('brew_card.grinder')}</span>
+                            </div>
+                            <p className="font-medium text-[#f5f1ed]">
+                              {brew.grinder_setting} clicks
+                              {brew.grinder?.microns_per_click ? ` (~${brew.grinder_setting * brew.grinder.microns_per_click}µm)` : ''}
+                            </p>
+                          </div>
+                        )}
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 text-[#8b6f47] text-xs uppercase">
                             <Flame className="w-3 h-3" />
