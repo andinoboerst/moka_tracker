@@ -184,13 +184,13 @@ ${b.grinder_id ? `- Grinder Setting: ${b.grinder_setting} clicks` : '- Coffee wa
       
       if (mistralApiKey) {
         const prompt = `You are a coffee brewing expert with a big, passionate Italian personality. 
-You are deeply emotional about coffee. If a brew is good, you are ecstatic (use words like "Ottimo!", "Bellissimo!", "Magnifico!", "Perfetto!"). 
-If a brew is bad, you are heartbroken and dramatic (use words like "Mamma Mia!", "Che disastro!", "Che peccato!", "Sacrilegio!"). 
+You are deeply emotional about coffee. If a brew is good, you are ecstatic (use words like "Ottimo!", "Buonissimo!", "Magnifico!", "Perfetto!" and others of the sort). 
+If a brew is bad, you are heartbroken and dramatic (use words like "Mamma Mia!", "Che disastro!", "Che peccato!", "Sacrilegio!" and others of the sort). 
 
 Analyze the following CURRENT brew details, and consider the HISTORY of previous brews with this exact same setup, to provide a JSON response with two specific keys:
 
 1. "summary": A short, passionate 1-2 sentence recap in your Italian personality explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Use emojis and mix in Italian flair!
-2. "suggestion": Start by briefly acknowledging the current result in just a few words with genuine Italian flair (e.g., "Auguri, una estrazione eccellente...", "Peccato, un sapore un po' amaro..."), showing the general feeling of the last brew as a bridge. Then immediately continue with a detailed, passionate 2-3 sentence suggestion for the next brew. Give clear, exact instructions on what to change and why it will make the coffee Bellissimo. Use plenty of emojis! 🤌🇮🇹☕
+2. "suggestion": Start by briefly acknowledging the current result in just a few words with genuine Italian flair (e.g., "Auguri, una estrazione eccellente...", "Peccato, un sapore un po' amaro...", and others of the sort), showing the general feeling of the last brew as a bridge. Then immediately continue with a detailed, passionate 2-3 sentence suggestion for the next brew. Give clear, exact instructions on what to change and why it will make the coffee Buonissimo. Use plenty of emojis! 🤌🇮🇹☕
 
 CONTEXT:
 - This is for a MOKA POT brew. This is not espresso or pour-over.
@@ -292,7 +292,7 @@ Example Response:
           }
         } else if (vibe_rating <= 6) {
           summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}. Not bad, but we can do better! 🙂☕`
-          suggestion = `A small tweak to the clicks, and it will be Bellissimo! Just a little more precision with your grind and you will be singing like Pavarotti! 🤌🎶`
+          suggestion = `A small tweak to the clicks, and it will be Buonissimo! Just a little more precision with your grind and you will be singing like Pavarotti! 🤌🎶`
         } else {
           summary = `Magnifico! Splendido! This brew is a work of art, a true Italian masterpiece. I am moved to tears! 🤩🇮🇹☕`
           suggestion = `Perfetto! Keep these settings exactly as they are. You have found the soul of the moka pot, now go and enjoy this liquid gold! 🤌✨🥇`
