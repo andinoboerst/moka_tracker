@@ -9,6 +9,7 @@ export function MokaPotIcon({ className = "w-6 h-6" }) {
         src={mokaImage} 
         alt="Moka Pot" 
         fill
+        sizes="(max-width: 768px) 100vw, 50vw"
         className="object-contain"
         priority
       />

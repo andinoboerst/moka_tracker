@@ -13,6 +13,51 @@ export interface Bean {
   updated_at: string
 }
 
+/** Manual personal rating & notes — keyed by name + roaster (not inventory row) */
+export interface BeanJournalEntry {
+  id: string
+  user_id: string
+  name: string
+  roaster: string
+  name_key: string
+  roaster_key: string
+  roast_level?: string
+  personal_rating?: number | null
+  flavor_notes?: string | null
+  created_at: string
+  updated_at: string
+}
+
+/** Aggregated catalog entry (journal + brew history deduped by name + roaster) */
+export interface BeanCatalogEntry {
+  key: string
+  journal_id?: string
+  name: string
+  roaster: string
+  roast_level?: string
+  personal_rating?: number
+  flavor_notes?: string
+  avg_brew_rating?: number
+  brew_count: number
+  brew_tasting_notes: string[]
+  origins?: string[]
+  last_brewed_at?: string
+  inventory_bean_ids?: string[]
+  best_brew?: {
+    vibe_rating: number
+    coffee_weight_g: number
+    water_added_g: number
+    grinder_setting?: number
+    grinder_brand?: string
+    grinder_model?: string
+    water_temp?: string
+    heat_level?: string
+    has_paper_filter?: boolean
+    flow_type?: string
+    extraction_time_s?: number
+  }
+}
+
 export interface Grinder {
   id: string
   user_id: string

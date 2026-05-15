@@ -202,6 +202,13 @@ export async function DELETE(request: NextRequest) {
       }
     )
 
+    // First, fetch the deleted bean's name/roaster so we can check for orphan cleanup
+    const { data: deletedBean } = await userClient
+      .from('beans')
+      .select('name, roaster')
+      .eq('id', id)
+      .maybeSingle()
+
     const { error } = await userClient
       .from('beans')
       .delete()
@@ -209,6 +216,36 @@ export async function DELETE(request: NextRequest) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // Clean up orphaned bean_journal entry if no other inventory beans or brews share this name+roaster
+    if (deletedBean?.name && deletedBean?.roaster) {
+      const nameKey = deletedBean.name.trim().toLowerCase()
+      const roasterKey = deletedBean.roaster.trim().toLowerCase()
+
+      const [{ count: remainingBeans }, { count: remainingBrews }] = await Promise.all([
+        userClient
+          .from('beans')
+          .select('id', { count: 'exact', head: true })
+          .ilike('name', deletedBean.name.trim())
+          .ilike('roaster', deletedBean.roaster.trim()),
+        userClient
+          .from('brews')
+          .select('id', { count: 'exact', head: true })
+          .in(
+            'bean_id',
+            (await userClient.from('beans').select('id').ilike('name', deletedBean.name.trim()).ilike('roaster', deletedBean.roaster.trim())).data?.map((b: any) => b.id) ?? []
+          ),
+      ])
+
+      if (!remainingBeans && !remainingBrews) {
+        await userClient
+          .from('bean_journal')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('name_key', nameKey)
+          .eq('roaster_key', roasterKey)
+      }
     }
 
     return NextResponse.json({ success: true })

@@ -11,7 +11,7 @@ import { useLanguage } from '@/lib/LanguageContext'
 
 export default function BrewPage() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [beans, setBeans] = useState<Bean[]>([])
   const [grinders, setGrinders] = useState<Grinder[]>([])
   const [mokaPots, setMokaPots] = useState<MokaPot[]>([])
@@ -61,7 +61,7 @@ export default function BrewPage() {
       const response = await fetch('/api/brews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders },
-        body: JSON.stringify(brewData),
+        body: JSON.stringify({ ...brewData, language: language || 'en' }),
       })
       if (response.ok) {
         router.push('/')

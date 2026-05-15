@@ -12,7 +12,7 @@ import {
 export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser(token)
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser(token)
@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
       heat_level,
       has_paper_filter,
       flow_type,
+      language = 'en',
     } = body
 
     // Validate required fields
@@ -136,8 +137,8 @@ export async function POST(request: NextRequest) {
     const grinder = grinderRes.data
     const mokaPot = mokaPotRes.data
 
-    const totalMicrons = (grinder?.microns_per_click && grinder_setting) 
-      ? grinder.microns_per_click * grinder_setting 
+    const totalMicrons = (grinder?.microns_per_click && grinder_setting)
+      ? grinder.microns_per_click * grinder_setting
       : null
 
     let daysPastRoast = null
@@ -181,7 +182,7 @@ ${b.grinder_id ? `- Grinder Setting: ${b.grinder_setting} clicks` : '- Coffee wa
     let ai_recap = ''
     try {
       const mistralApiKey = process.env.MISTRAL_API_KEY
-      
+
       if (mistralApiKey) {
         const prompt = `You are a coffee brewing expert with a big, passionate Italian personality. 
 You are deeply emotional about coffee. If a brew is good, you are ecstatic (use words like "Ottimo!", "Buonissimo!", "Magnifico!", "Perfetto!" and others of the sort). 
@@ -197,15 +198,13 @@ CONTEXT:
 - Suggestions about water should refer to "Starting Water Temp" (the water you put in the boiler).
 - Do not be too exact with temperature degrees (e.g., don't say "use exactly 82°C"), use general terms like "warmer", "cooler", "near boiling", etc.
 
-IMPORTANT: YOU MUST PROVIDE THE ENTIRE RESPONSE IN ENGLISH ONLY (this text is stored in a database for analytics). You may sprinkle in Italian flair words (Ottimo!, Mamma Mia!, etc.) but the sentences must be English.
-
 CURRENT Brew Details:
 - Bean: ${bean?.name} (${bean?.roaster}) - Origin: ${bean?.origin || 'Unknown'} - Roast Level: ${bean?.roast_level} ${bean?.roast_date ? `(Roast Date: ${bean.roast_date}, Freshness: ${daysPastRoast} days)` : ''}
 - Moka Pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} Cup, ${mokaPot?.type})
-${grinder 
-  ? `- Grinder: ${grinder.brand} ${grinder.model}
-- Grinder Setting: ${grinder_setting} clicks ${totalMicrons ? `(~${totalMicrons} microns)` : ''}` 
-  : '- Coffee: Pre-ground (No grinder used)'}
+${grinder
+            ? `- Grinder: ${grinder.brand} ${grinder.model}
+- Grinder Setting: ${grinder_setting} clicks ${totalMicrons ? `(~${totalMicrons} microns)` : ''}`
+            : '- Coffee: Pre-ground (No grinder used)'}
 - Vibe Rating: ${vibe_rating}/10
 - Tasting Notes: "${tasting_notes || 'None provided'}"
 - Coffee: ${coffee_weight_g}g
@@ -232,6 +231,8 @@ Rules:
 - WATER TEMP: Always refer to it as "Starting Water Temp" and use general terms (warmer, cooler, near boiling) instead of exact degrees.
 - YOU MUST RETURN A VALID JSON OBJECT WITH EXACTLY TWO KEYS: "summary" and "suggestion".
 - Do not use markdown blocks around the JSON. Just return raw JSON.
+- Absolutely no bullet points, no asterisks, no markdown — plain flowing text only.
+- RESPOND STRICTLY IN ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}. Even if the input text is english, translate your output into the specified language.
 
 Example Response:
 {"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the profile sour and weak! 😰☕", "suggestion": "Peccato, una estrazione un po' debole e acida... For the next time, Ottimo! Use a finer grind to slow down the water and find the sweetness. It will be like a kiss from an angel! 🤌✨"}`
@@ -253,7 +254,7 @@ Example Response:
         if (recapResponse.ok) {
           const mistralData = await recapResponse.json()
           let content = mistralData.choices?.[0]?.message?.content?.trim() || ''
-          
+
           // Strip markdown code blocks if Mistral returned them
           if (content.startsWith('```json')) {
             content = content.replace(/^```json\n/, '').replace(/\n```$/, '')
@@ -273,7 +274,7 @@ Example Response:
           console.error('Mistral API error:', await recapResponse.text())
         }
       }
-      
+
       // Fallback generator if Mistral fails or no key
       if (!ai_recap) {
         let summary = ''
@@ -352,7 +353,7 @@ Example Response:
 export async function DELETE(request: NextRequest) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
+
     const {
       data: { user },
     } = await supabase.auth.getUser(token)
