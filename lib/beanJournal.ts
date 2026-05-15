@@ -19,6 +19,8 @@ export type BeanCatalogSort =
   | 'name'
   | 'flavor'
   | 'brews'
+  | 'date_desc'
+  | 'date_asc'
 
 function effectiveRating(entry: BeanCatalogEntry): number {
   if (entry.personal_rating != null) return entry.personal_rating
@@ -58,6 +60,10 @@ export function sortBeanCatalog(
       })
     case 'brews':
       return sorted.sort((a, b) => b.brew_count - a.brew_count)
+    case 'date_desc':
+      return sorted.sort((a, b) => (b.first_added_at || '').localeCompare(a.first_added_at || ''))
+    case 'date_asc':
+      return sorted.sort((a, b) => (a.first_added_at || '').localeCompare(b.first_added_at || ''))
     case 'rating_desc':
     default:
       return sorted.sort((a, b) => effectiveRating(b) - effectiveRating(a))
@@ -96,6 +102,10 @@ export function buildBeanCatalog(
     entry.personal_rating = j.personal_rating ?? undefined
     entry.flavor_notes = j.flavor_notes ?? undefined
     if (j.roast_level) entry.roast_level = j.roast_level as RoastLevel
+    
+    if (!entry.first_added_at || j.created_at < entry.first_added_at) {
+      entry.first_added_at = j.created_at
+    }
   }
 
   for (const brew of brews) {
@@ -121,6 +131,9 @@ export function buildBeanCatalog(
     const brewDate = brew.created_at
     if (!entry.last_brewed_at || brewDate > entry.last_brewed_at) {
       entry.last_brewed_at = brewDate
+    }
+    if (!entry.first_added_at || brewDate < entry.first_added_at) {
+      entry.first_added_at = brewDate
     }
     if (brew.vibe_rating != null) {
       entry._ratingSum = (entry._ratingSum || 0) + brew.vibe_rating
@@ -164,6 +177,9 @@ export function buildBeanCatalog(
     }
     if (bean.is_pre_ground) {
       entry.is_pre_ground = true
+    }
+    if (!entry.first_added_at || bean.created_at < entry.first_added_at) {
+      entry.first_added_at = bean.created_at
     }
   }
 

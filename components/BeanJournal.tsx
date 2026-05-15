@@ -25,6 +25,7 @@ export default function BeanJournal() {
   const { t, language } = useLanguage()
   const [catalog, setCatalog] = useState<BeanCatalogEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [sortBy, setSortBy] = useState<'rating' | 'date'>('rating')
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
   const [roastFilter, setRoastFilter] = useState<string>('')
   const [summarizingId, setSummarizingId] = useState<string | null>(null)
@@ -32,7 +33,9 @@ export default function BeanJournal() {
   const fetchCatalog = useCallback(async () => {
     try {
       const headers = await getAuthHeaders()
-      const sort = sortDir === 'desc' ? 'rating_desc' : 'rating_asc'
+      let sort = 'rating_desc'
+      if (sortBy === 'rating') sort = sortDir === 'desc' ? 'rating_desc' : 'rating_asc'
+      if (sortBy === 'date') sort = sortDir === 'desc' ? 'date_desc' : 'date_asc'
       const res = await fetch(`/api/bean-journal?sort=${sort}`, { headers })
       if (res.ok) setCatalog(await res.json())
     } catch (err) {
@@ -40,7 +43,7 @@ export default function BeanJournal() {
     } finally {
       setLoading(false)
     }
-  }, [sortDir])
+  }, [sortBy, sortDir])
 
   useEffect(() => {
     setLoading(true)
@@ -92,11 +95,33 @@ export default function BeanJournal() {
       {/* Simplified controls: rating sort + roast filter dropdown */}
       <div className="flex items-center gap-3 flex-wrap">
         <button
-          onClick={() => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2d2520] border border-[#3d3530] text-sm font-bold text-[#d4a574] hover:border-[#d4a574] transition"
+          onClick={() => {
+            if (sortBy === 'rating') setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))
+            else { setSortBy('rating'); setSortDir('desc') }
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${
+            sortBy === 'rating'
+              ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
+              : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
+          }`}
         >
           <ArrowUpDown className="w-4 h-4" />
-          Rating {sortDir === 'desc' ? '↓' : '↑'}
+          {t('bean_journal.sort_rating')} {sortBy === 'rating' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
+        </button>
+
+        <button
+          onClick={() => {
+            if (sortBy === 'date') setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))
+            else { setSortBy('date'); setSortDir('desc') }
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${
+            sortBy === 'date'
+              ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
+              : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
+          }`}
+        >
+          <ArrowUpDown className="w-4 h-4" />
+          {t('bean_journal.sort_date')} {sortBy === 'date' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
         </button>
 
         <div className="relative">

@@ -43,6 +43,7 @@ export interface BeanCatalogEntry {
   origins?: string[]
   is_pre_ground?: boolean
   last_brewed_at?: string
+  first_added_at?: string
   inventory_bean_ids?: string[]
   best_brew?: {
     vibe_rating: number
