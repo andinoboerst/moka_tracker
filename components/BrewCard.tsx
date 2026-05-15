@@ -63,7 +63,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
       const file = new File([blob], `moka-brew-${brew.created_at.split('T')[0]}.png`, { type: 'image/png' })
 
       // Get the current origin for the main app link
-      const appUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}`
+      const appUrl = 'https://mokatracker.com'
 
       // Try Web Share API on mobile
       if (navigator.share && navigator.canShare) {

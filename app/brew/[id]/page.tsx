@@ -80,7 +80,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
       const blob = await response.blob()
       const file = new File([blob], `moka-brew-${brew.created_at.split('T')[0]}.png`, { type: 'image/png' })
 
-      const brewUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/brew/${brew.id}`
+      const brewUrl = `https://mokatracker.com`
 
       if (navigator.share && navigator.canShare) {
         try {

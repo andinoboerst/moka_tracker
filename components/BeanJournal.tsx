@@ -99,11 +99,10 @@ export default function BeanJournal() {
             if (sortBy === 'rating') setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))
             else { setSortBy('rating'); setSortDir('desc') }
           }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${
-            sortBy === 'rating'
-              ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
-              : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
-          }`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${sortBy === 'rating'
+            ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
+            : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
+            }`}
         >
           <ArrowUpDown className="w-4 h-4" />
           {t('bean_journal.sort_rating')} {sortBy === 'rating' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
@@ -114,11 +113,10 @@ export default function BeanJournal() {
             if (sortBy === 'date') setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))
             else { setSortBy('date'); setSortDir('desc') }
           }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${
-            sortBy === 'date'
-              ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
-              : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
-          }`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${sortBy === 'date'
+            ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
+            : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
+            }`}
         >
           <ArrowUpDown className="w-4 h-4" />
           {t('bean_journal.sort_date')} {sortBy === 'date' ? (sortDir === 'desc' ? '↓' : '↑') : ''}
@@ -174,7 +172,7 @@ export default function BeanJournal() {
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <h3 className="text-lg font-bold text-[#f5f1ed]">{entry.name}</h3>
                       {entry.is_pre_ground && (
-                        <span 
+                        <span
                           className="bg-[#3d3530] text-[#f5f1ed] text-[10px] font-bold px-1.5 py-0.5 rounded cursor-help"
                           title={t('bean_form.is_pre_ground')}
                         >
