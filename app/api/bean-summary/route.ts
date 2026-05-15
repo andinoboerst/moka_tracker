@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     })[0]
 
-    const allNotes = brews.map(b => b.tasting_notes).filter(Boolean).join('; ')
+    const allNotes = brews.slice(0, 8).map(b => b.tasting_notes).filter(Boolean).join('; ')
     const avgRating = brews.reduce((sum, b) => sum + (b.vibe_rating || 0), 0) / brews.length
     const roastLevel = brews[0]?.bean?.roast_level || 'Unknown'
 
