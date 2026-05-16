@@ -165,4 +165,8 @@ An interactive brewing coach that:
 *Note: AI features require a Mistral API key. Without it, the app functions normally but AI features are disabled.*
 
 ---
+
+The page icon was designed by [OpenMoji](https://openmoji.org/) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/#)
+
+---
 *Built with ❤️ for the pursuit of the perfect cup.*
