@@ -157,12 +157,28 @@ export default function Header({ onSignInClick }: HeaderProps) {
                           </button>
                         )}
 
+                        <Link
+                          href="/privacy"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="w-full text-left px-4 py-2 text-sm text-[#8b6f47] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2 border-t border-[#3d3530] mt-2"
+                        >
+                          Privacy Policy
+                        </Link>
+
+                        <Link
+                          href="/terms"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="w-full text-left px-4 py-2 text-sm text-[#8b6f47] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2"
+                        >
+                          Terms of Service
+                        </Link>
+
                         <button
                           onClick={() => {
                             setIsUserMenuOpen(false)
                             signOut()
                           }}
-                          className="w-full text-left px-4 py-2 text-sm text-[#f5f1ed] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2"
+                          className="w-full text-left px-4 py-2 text-sm text-[#f5f1ed] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2 border-t border-[#3d3530] mt-2"
                         >
                           <LogOut className="w-4 h-4" />
                           {t('common.sign_out')}
@@ -260,6 +276,27 @@ export default function Header({ onSignInClick }: HeaderProps) {
               <span>{language === 'en' ? t('common.switch_to_italian') : t('common.switch_to_english')}</span>
               <span className="text-2xl">{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
             </button>
+
+            {/* Only show privacy/terms in mobile menu when logged in */}
+            {user && (
+              <>
+                <Link
+                  href="/privacy"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-3 py-3 rounded-md text-base font-medium text-[#8b6f47] hover:text-[#d4a574] hover:bg-[#2d2520] transition border-t border-[#3d3530]"
+                >
+                  Privacy Policy
+                </Link>
+
+                <Link
+                  href="/terms"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-3 py-3 rounded-md text-base font-medium text-[#8b6f47] hover:text-[#d4a574] hover:bg-[#2d2520] transition"
+                >
+                  Terms of Service
+                </Link>
+              </>
+            )}
           </div>
         )}
       </header>

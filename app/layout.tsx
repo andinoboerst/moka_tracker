@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/lib/LanguageContext";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ChatAssistant from "@/components/ChatAssistant";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,6 +46,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <ChatAssistant />
+            <Footer />
           </AuthProvider>
         </LanguageProvider>
         <Analytics />
