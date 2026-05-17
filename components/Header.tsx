@@ -188,7 +188,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                           onClick={handleCopyEmail}
                           className="w-full text-left px-4 py-2 text-sm text-[#8b6f47] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2 border-t border-[#3d3530] mt-2"
                         >
-                          {emailCopied ? '✓ Copied!' : 'Support: support@mokatracker.com'}
+                          {emailCopied ? '✓ Copied!' : 'support@mokatracker.com'}
                         </button>
 
                         <button
@@ -318,7 +318,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                   onClick={handleCopyEmail}
                   className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-[#8b6f47] hover:text-[#d4a574] hover:bg-[#2d2520] transition"
                 >
-                  {emailCopied ? '✓ Copied!' : 'Support: support@mokatracker.com'}
+                  {emailCopied ? '✓ Copied!' : 'support@mokatracker.com'}
                 </button>
               </>
             )}
