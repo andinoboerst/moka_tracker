@@ -22,6 +22,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [isPasswordChangeOpen, setIsPasswordChangeOpen] = useState(false)
+  const [emailCopied, setEmailCopied] = useState(false)
 
   const userMenuRef = useRef<HTMLDivElement>(null)
 
@@ -62,6 +63,16 @@ export default function Header({ onSignInClick }: HeaderProps) {
       alert(err instanceof Error ? err.message : 'Error deleting account')
       setIsDeletingAccount(false)
     }
+  }
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('support@mokatracker.com')
+    setEmailCopied(true)
+    setTimeout(() => {
+      setEmailCopied(false)
+      setIsUserMenuOpen(false)
+      setIsMobileMenuOpen(false)
+    }, 2000)
   }
 
   return (
@@ -172,6 +183,13 @@ export default function Header({ onSignInClick }: HeaderProps) {
                         >
                           Terms of Service
                         </Link>
+
+                        <button
+                          onClick={handleCopyEmail}
+                          className="w-full text-left px-4 py-2 text-sm text-[#8b6f47] hover:bg-[#3d3530] hover:text-[#d4a574] transition flex items-center gap-2 border-t border-[#3d3530] mt-2"
+                        >
+                          {emailCopied ? '✓ Copied!' : 'Support: support@mokatracker.com'}
+                        </button>
 
                         <button
                           onClick={() => {
@@ -295,6 +313,13 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 >
                   Terms of Service
                 </Link>
+
+                <button
+                  onClick={handleCopyEmail}
+                  className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-[#8b6f47] hover:text-[#d4a574] hover:bg-[#2d2520] transition"
+                >
+                  {emailCopied ? '✓ Copied!' : 'Support: support@mokatracker.com'}
+                </button>
               </>
             )}
           </div>
