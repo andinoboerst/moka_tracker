@@ -138,7 +138,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-bold text-[#d4a574] mb-4">11. Contact Us</h2>
               <p>
-                If you have questions about this privacy policy or your data, please contact us through the application or at our website.
+                If you have questions about this privacy policy or your data, please contact us at support@mokatracker.com.
               </p>
             </section>
 

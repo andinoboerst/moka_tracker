@@ -73,7 +73,7 @@ export default function TermsOfService() {
                 <li>You retain ownership of all brewing data and content you create</li>
                 <li>You grant us a license to store, process, and display your data for service provision</li>
                 <li>You represent that you have the right to share any content you upload</li>
-                    <li>We may use anonymized, aggregated data for service improvement</li>
+                <li>We may use anonymized, aggregated data for service improvement</li>
               </ul>
             </section>
 
@@ -173,7 +173,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-[#d4a574] mb-4">15. Contact Information</h2>
               <p>
-                If you have questions about these Terms of Service, please contact us through the application or visit our website.
+                If you have questions about these Terms of Service, please contact us at support@mokatracker.com.
               </p>
             </section>
 
