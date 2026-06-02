@@ -203,7 +203,7 @@ export default function AnalyticsPage() {
                       <div>
                         <h3 className="font-bold text-[#f5f1ed]">{brew.bean?.name}</h3>
                         <p className="text-xs text-[#8b6f47]">
-                          {new Date(brew.created_at).toLocaleDateString()} •{' '}
+                          {new Date(brew.created_at).toLocaleDateString('de-DE')} •{' '}
                           {t('analytics.vibe_score', { rating: brew.vibe_rating })}
                         </p>
                       </div>
