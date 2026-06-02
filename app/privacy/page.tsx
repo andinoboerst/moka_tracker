@@ -1,6 +1,11 @@
 import Header from '@/components/Header'
 
 export default function PrivacyPolicy() {
+  const lastUpdated = new Date()
+  const formattedLastUpdated = `${lastUpdated.getDate().toString().padStart(2, '0')}.${(lastUpdated.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}.${lastUpdated.getFullYear()}`
+
   return (
     <>
       <Header />
@@ -138,13 +143,17 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-bold text-[#d4a574] mb-4">11. Contact Us</h2>
               <p>
-                If you have questions about this privacy policy or your data, please contact us at support@mokatracker.com.
+                If you have questions about this privacy policy or your data, please contact us at{' '}
+                <a href="mailto:support@mokatracker.com" className="text-[#d4a574] underline hover:text-[#f5f1ed]">
+                  support@mokatracker.com
+                </a>
+                .
               </p>
             </section>
 
             <section className="pt-6 border-t border-[#3d3530]">
               <p className="text-sm text-[#8b6f47]">
-                Last Updated: {new Date().toLocaleDateString()}
+                Last Updated: {formattedLastUpdated}
               </p>
             </section>
           </div>
