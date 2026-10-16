@@ -104,26 +104,45 @@ Always use Italian coffee terms and flair, even if the response is in English. R
       return NextResponse.json({ error: 'Mistral API key not configured' }, { status: 500 })
     }
 
-    const mistralResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${mistralApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'mistral-small-latest',
-        messages: requestMessages,
-        temperature: 0.75,
-      }),
-    })
+    const primaryModel = process.env.MISTRAL_MODEL || 'ministral-8b-latest'
+    const candidateModels = [primaryModel, 'open-mistral-7b'].filter((m, i, arr) => arr.indexOf(m) === i)
 
-    if (!mistralResponse.ok) {
-      const text = await mistralResponse.text()
-      return NextResponse.json({ error: `Mistral error: ${text}` }, { status: 500 })
+    let answer = ''
+    let lastError = ''
+
+    for (const model of candidateModels) {
+      try {
+        const mistralResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${mistralApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model,
+            messages: requestMessages,
+            temperature: 0.75,
+            max_tokens: 800,
+          }),
+        })
+
+        if (mistralResponse.ok) {
+          const data = await mistralResponse.json()
+          answer = data.choices?.[0]?.message?.content?.trim() || ''
+          break
+        } else {
+          lastError = await mistralResponse.text()
+          console.error(`Mistral (${model}) error:`, lastError)
+        }
+      } catch (reqErr) {
+        lastError = String(reqErr)
+        console.error(`Mistral chat request error with model ${model}:`, reqErr)
+      }
     }
 
-    const data = await mistralResponse.json()
-    const answer = data.choices?.[0]?.message?.content?.trim() || ''
+    if (!answer && lastError) {
+      return NextResponse.json({ error: `Mistral error: ${lastError}` }, { status: 500 })
+    }
 
     return NextResponse.json({ answer })
   } catch (err) {

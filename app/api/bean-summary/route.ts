@@ -75,31 +75,42 @@ RESPOND STRICTLY IN ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}. Even if the us
     try {
       const mistralApiKey = process.env.MISTRAL_API_KEY
       if (mistralApiKey) {
-        const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${mistralApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'mistral-small-latest',
-            messages: [{ role: 'user', content: prompt }],
-            temperature: 0.7,
-          }),
-        })
+        const primaryModel = process.env.MISTRAL_MODEL || 'ministral-8b-latest'
+        const candidateModels = [primaryModel, 'open-mistral-7b'].filter((m, i, arr) => arr.indexOf(m) === i)
 
-        if (recapResponse.ok) {
-          const mistralData = await recapResponse.json()
-          let raw = mistralData.choices?.[0]?.message?.content?.trim() || ''
-          // Strip markdown formatting that would render as literal symbols
-          raw = raw.replace(/\*\*([^*]+)\*\*/g, '$1') // bold
-          raw = raw.replace(/\*([^*]+)\*/g, '$1')     // italic
-          raw = raw.replace(/^#+\s+/gm, '')            // headings
-          raw = raw.replace(/^[-*]\s+/gm, '')          // list bullets
-          raw = raw.replace(/`([^`]+)`/g, '$1')        // inline code
-          summaryText = raw
-        } else {
-          console.error('Mistral API error:', await recapResponse.text())
+        for (const model of candidateModels) {
+          try {
+            const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${mistralApiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 400,
+              }),
+            })
+
+            if (recapResponse.ok) {
+              const mistralData = await recapResponse.json()
+              let raw = mistralData.choices?.[0]?.message?.content?.trim() || ''
+              // Strip markdown formatting that would render as literal symbols
+              raw = raw.replace(/\*\*([^*]+)\*\*/g, '$1') // bold
+              raw = raw.replace(/\*([^*]+)\*/g, '$1')     // italic
+              raw = raw.replace(/^#+\s+/gm, '')            // headings
+              raw = raw.replace(/^[-*]\s+/gm, '')          // list bullets
+              raw = raw.replace(/`([^`]+)`/g, '$1')        // inline code
+              summaryText = raw
+              break
+            } else {
+              console.error(`Mistral (${model}) API error:`, await recapResponse.text())
+            }
+          } catch (reqErr) {
+            console.error(`Mistral request error with model ${model}:`, reqErr)
+          }
         }
       }
     } catch (e) {

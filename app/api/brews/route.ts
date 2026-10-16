@@ -237,41 +237,58 @@ Rules:
 Example Response:
 {"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the profile sour and weak! 😰☕", "suggestion": "Peccato, una estrazione un po' debole e acida... For the next time, Ottimo! Use a finer grind to slow down the water and find the sweetness. It will be like a kiss from an angel! 🤌✨"}`
 
-        const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${mistralApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'mistral-small-latest',
-            messages: [{ role: 'user', content: prompt }],
-            temperature: 0.7,
-            response_format: { type: 'json_object' }
-          }),
-        })
+        const primaryModel = process.env.MISTRAL_MODEL || 'ministral-8b-latest'
+        const candidateModels = [primaryModel, 'open-mistral-7b'].filter((m, i, arr) => arr.indexOf(m) === i)
 
-        if (recapResponse.ok) {
-          const mistralData = await recapResponse.json()
-          let content = mistralData.choices?.[0]?.message?.content?.trim() || ''
-
-          // Strip markdown code blocks if Mistral returned them
-          if (content.startsWith('```json')) {
-            content = content.replace(/^```json\n/, '').replace(/\n```$/, '')
-          } else if (content.startsWith('```')) {
-            content = content.replace(/^```\n/, '').replace(/\n```$/, '')
-          }
-
+        for (const model of candidateModels) {
           try {
-            // Verify it's valid JSON before saving
-            JSON.parse(content)
-            ai_recap = content
-          } catch (parseError) {
-            console.error('Mistral returned invalid JSON:', content)
-            // Leave ai_recap empty so fallback runs
+            const recapResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${mistralApiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 600,
+                response_format: { type: 'json_object' }
+              }),
+            })
+
+            if (recapResponse.ok) {
+              const mistralData = await recapResponse.json()
+              let content = mistralData.choices?.[0]?.message?.content?.trim() || ''
+
+              // Strip markdown code blocks if Mistral returned them
+              if (content.startsWith('```json')) {
+                content = content.replace(/^```json\n/, '').replace(/\n```$/, '')
+              } else if (content.startsWith('```')) {
+                content = content.replace(/^```\n/, '').replace(/\n```$/, '')
+              }
+
+              try {
+                // Verify it's valid JSON before saving
+                const parsed = JSON.parse(content)
+                if (typeof parsed.summary === 'object' || typeof parsed.suggestion === 'object') {
+                  ai_recap = JSON.stringify({
+                    summary: typeof parsed.summary === 'string' ? parsed.summary : JSON.stringify(parsed.summary),
+                    suggestion: typeof parsed.suggestion === 'string' ? parsed.suggestion : JSON.stringify(parsed.suggestion),
+                  })
+                } else {
+                  ai_recap = content
+                }
+                break
+              } catch (parseError) {
+                console.error(`Mistral (${model}) returned invalid JSON:`, content)
+              }
+            } else {
+              console.error(`Mistral (${model}) API error:`, await recapResponse.text())
+            }
+          } catch (reqErr) {
+            console.error(`Mistral request error with model ${model}:`, reqErr)
           }
-        } else {
-          console.error('Mistral API error:', await recapResponse.text())
         }
       }
 
