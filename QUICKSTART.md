@@ -25,7 +25,7 @@ npm install
 
 1. In Supabase dashboard, go to **SQL Editor**
 2. Click **New Query**
-3. Paste the entire content of `schema.sql`
+3. Paste each file in `supabase/migrations/` in order
 4. Click **RUN**
 5. Done! Your tables are created
 

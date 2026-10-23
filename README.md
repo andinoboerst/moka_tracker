@@ -59,7 +59,7 @@ npm install
 
 ### 2. Database Setup
 1. Create a new Supabase project.
-2. Go to the SQL Editor and run the contents of the `schema.sql` file provided in the root directory. This will set up your tables, row-level security (RLS) policies, and foreign key constraints (with cascading deletes).
+2. Apply the migrations in `supabase/migrations/` (with the Supabase GitHub integration, or `supabase db push`). They set up your tables, row-level security (RLS) policies, and foreign key constraints (with cascading deletes).
 
 ### 3. Environment Variables
 Create a `.env.local` file in the root directory and add the following keys:

@@ -37,6 +37,13 @@ export const formatDate = (date: string | Date): string => {
 }
 
 /**
+ * Display name for a moka pot: the nickname if set, otherwise "Brand Model"
+ */
+export const mokaPotName = (pot: { brand: string; model: string; nickname?: string | null }): string => {
+  return pot.nickname?.trim() || `${pot.brand} ${pot.model}`
+}
+
+/**
  * Get vibe color based on rating
  */
 export const getVibeColor = (rating: number): string => {

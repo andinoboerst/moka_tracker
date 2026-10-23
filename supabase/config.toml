@@ -1,0 +1,6 @@
+# Supabase project config (used by the GitHub integration and the local CLI).
+# Migrations in ./migrations are applied automatically on push to the production branch.
+project_id = "moka-tracker"
+
+[db]
+major_version = 17

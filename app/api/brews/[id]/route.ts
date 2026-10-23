@@ -31,7 +31,7 @@ export async function GET(
         *,
         bean:beans(id, name, origin, roast_level, roaster),
         grinder:grinders(id, brand, model, microns_per_click),
-        moka_pot:moka_pots(id, brand, model, size_cups)
+        moka_pot:moka_pots(id, brand, model, nickname, size_cups)
       `)
       .eq('id', id)
       .eq('user_id', user.id)

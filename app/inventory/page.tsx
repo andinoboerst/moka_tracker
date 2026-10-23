@@ -124,7 +124,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteBean = async (id: string) => {
-    if (!confirm(t('common.confirm_delete_account'))) return // Reusing similar wording or I could add a specific one
+    if (!confirm(t('common.confirm_delete_item'))) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/beans?id=${id}`, {
       method: 'DELETE',
@@ -134,7 +134,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteGrinder = async (id: string) => {
-    if (!confirm(t('common.confirm_delete_account'))) return
+    if (!confirm(t('common.confirm_delete_item'))) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/grinders?id=${id}`, {
       method: 'DELETE',
@@ -144,7 +144,7 @@ export default function InventoryPage() {
   }
 
   const handleDeleteMokaPot = async (id: string) => {
-    if (!confirm(t('common.confirm_delete_account'))) return
+    if (!confirm(t('common.confirm_delete_item'))) return
     const headers = await getAuthHeaders()
     const response = await fetch(`/api/moka-pots?id=${id}`, {
       method: 'DELETE',
@@ -156,7 +156,7 @@ export default function InventoryPage() {
   const handleToggleBeanActive = async (bean: Bean) => {
     try {
       const headers = await getAuthHeaders()
-      const updatedBean = { ...bean, is_active: !bean.is_active }
+      const updatedBean = { ...bean, is_active: bean.is_active === false }
       const response = await fetch('/api/beans', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...headers },

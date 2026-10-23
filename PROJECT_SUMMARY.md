@@ -157,7 +157,7 @@ moka_tracker/
 ├── public/
 │   └── [Next.js assets]
 │
-├── schema.sql (Database schema & RLS)
+├── supabase/migrations (Database schema & RLS)
 ├── .env.example (Environment template)
 ├── .env.local (Your secrets - DO NOT COMMIT)
 ├── Dockerfile (Docker deployment)
@@ -281,7 +281,7 @@ The AI considers:
 1. **README.md** - Full feature overview and tech stack
 2. **SETUP.md** - Detailed setup with Supabase + OpenAI
 3. **QUICKSTART.md** - Get running in 5 minutes
-4. **schema.sql** - Database setup script
+4. **supabase/migrations** - Database setup scripts
 5. **Comments in code** - Inline documentation throughout
 
 ## 🎯 Next Steps for You

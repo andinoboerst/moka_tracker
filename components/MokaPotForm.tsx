@@ -17,6 +17,7 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
+    nickname: '',
     type: 'Stovetop',
     size_cups: 2,
   })
@@ -28,11 +29,12 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
       setFormData({
         brand: initialData.brand,
         model: initialData.model,
+        nickname: initialData.nickname ?? '',
         type: initialData.type,
         size_cups: initialData.size_cups,
       })
     } else {
-      setFormData({ brand: '', model: '', type: 'Stovetop', size_cups: 2 })
+      setFormData({ brand: '', model: '', nickname: '', type: 'Stovetop', size_cups: 2 })
     }
   }, [initialData])
 
@@ -45,7 +47,7 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
       const payload = initialData ? { ...formData, id: initialData.id } : formData
       await onSubmit(payload)
       if (!initialData) {
-        setFormData({ brand: '', model: '', type: 'Stovetop', size_cups: 2 })
+        setFormData({ brand: '', model: '', nickname: '', type: 'Stovetop', size_cups: 2 })
       }
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
@@ -105,6 +107,20 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
             className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
             placeholder="e.g., Venus"
             required
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">
+            {t('moka_form.nickname')} <span className="text-[#8b6f47] font-normal">({t('moka_form.optional')})</span>
+          </label>
+          <input
+            type="text"
+            value={formData.nickname}
+            onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
+            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            placeholder={t('moka_form.nickname_placeholder')}
+            maxLength={50}
           />
         </div>
 

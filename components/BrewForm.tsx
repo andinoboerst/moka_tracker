@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { Bean, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
-import { calculateBrewRatio, calculateExtractionRatio } from '@/lib/utils'
+import { calculateBrewRatio, calculateExtractionRatio, mokaPotName } from '@/lib/utils'
 import { X } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
 
@@ -145,7 +145,7 @@ export default function BrewForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-6"
+      className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-lg shadow-black/20 p-6 space-y-6"
     >
       <h2 className="text-3xl font-serif font-bold text-[#d4a574]">{t('brew_form.title')}</h2>
 
@@ -217,7 +217,7 @@ export default function BrewForm({
             <option value="">{t('brew_form.select_moka')}</option>
             {mokaPots.map((pot) => (
               <option key={pot.id} value={pot.id}>
-                {pot.brand} {pot.model} ({t('moka_form.cup_count', { count: pot.size_cups })})
+                {mokaPotName(pot)} ({t('moka_form.cup_count', { count: pot.size_cups })})
               </option>
             ))}
           </select>

@@ -1,7 +1,7 @@
 'use client'
 
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { MessageCircle, Send, X } from 'lucide-react'
+import { MessageCircle, Send, X, Loader2 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { useLanguage } from '@/lib/LanguageContext'
 import { getAuthHeaders } from '@/lib/utils'
@@ -20,12 +20,17 @@ export default function ChatAssistant() {
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const endRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (open) {
       inputRef.current?.focus()
     }
   }, [open])
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [messages, isSending, open])
 
   useEffect(() => {
     setMessages((current) => {
@@ -69,7 +74,7 @@ export default function ChatAssistant() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
+        const errorData = await response.json().catch(() => null)
         throw new Error(errorData?.error || 'Chat request failed')
       }
 
@@ -83,14 +88,14 @@ export default function ChatAssistant() {
     }
   }
 
-  if (loading) {
+  if (loading || !user) {
     return null
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-[calc(100vw-2rem)]">
       {open ? (
-        <div className="w-[360px] max-w-full rounded-3xl bg-[#1a1410]/95 border border-[#3d3530] shadow-2xl backdrop-blur-xl text-[#f5f1ed] overflow-hidden">
+        <div className="w-[380px] max-w-full rounded-2xl bg-[#1a1410]/95 border border-[#3d3530] shadow-2xl backdrop-blur-xl text-[#f5f1ed] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 bg-[#2d2520] border-b border-[#3d3530]">
             <div>
               <p className="text-base font-semibold">{t('chat.title')}</p>
@@ -105,19 +110,26 @@ export default function ChatAssistant() {
             </button>
           </div>
 
-          <div className="max-h-[420px] overflow-y-auto p-4 space-y-3">
+          <div className="max-h-[min(420px,60vh)] overflow-y-auto p-4 flex flex-col gap-3">
             {messages.map((message, index) => (
               <div
                 key={`${message.role}-${index}`}
-                className={`rounded-3xl p-3 ${
+                className={`rounded-2xl p-3 max-w-[85%] ${
                   message.role === 'assistant'
-                    ? 'bg-[#2d2520] text-[#f5f1ed] self-start'
-                    : 'bg-[#d4a574]/15 text-[#f5f1ed] self-end'
+                    ? 'bg-[#2d2520] text-[#f5f1ed] self-start rounded-tl-sm'
+                    : 'bg-[#d4a574]/20 text-[#f5f1ed] self-end rounded-tr-sm'
                 }`}
               >
                 <p className="text-sm leading-6 whitespace-pre-wrap">{message.content}</p>
               </div>
             ))}
+            {isSending && (
+              <div className="self-start flex items-center gap-2 rounded-2xl rounded-tl-sm bg-[#2d2520] px-3 py-2 text-xs text-[#8b6f47]">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                ...
+              </div>
+            )}
+            <div ref={endRef} />
           </div>
 
           {error && <div className="px-4 pb-2 text-xs text-red-300">{error}</div>}

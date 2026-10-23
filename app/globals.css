@@ -35,11 +35,37 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(212, 165, 116, 0.10), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(139, 111, 71, 0.08), transparent 60%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
 }
 
-* {
-  @apply transition-colors duration-200;
+::selection {
+  background: rgba(212, 165, 116, 0.35);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--coffee-gold);
+  outline-offset: 2px;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Scrollbar styling */

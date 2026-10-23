@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const { brand, model, type, size_cups } = body
+    const nickname = typeof body.nickname === 'string' && body.nickname.trim() ? body.nickname.trim().slice(0, 50) : null
 
     if (!brand || !model || !type || !size_cups || size_cups <= 0) {
       return NextResponse.json(
@@ -85,6 +86,7 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           brand,
           model,
+          nickname,
           type: normalizeMokaPotType(type),
           size_cups,
         },
@@ -111,6 +113,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json()
     const { id, brand, model, type, size_cups } = body
+    const nickname = typeof body.nickname === 'string' && body.nickname.trim() ? body.nickname.trim().slice(0, 50) : null
 
     if (!id || !brand || !model || !type || !size_cups || size_cups <= 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -124,7 +127,7 @@ export async function PUT(request: NextRequest) {
 
     const { data, error } = await userClient
       .from('moka_pots')
-      .update({ brand, model, type: normalizeMokaPotType(type), size_cups })
+      .update({ brand, model, nickname, type: normalizeMokaPotType(type), size_cups })
       .eq('id', id)
       .select()
 

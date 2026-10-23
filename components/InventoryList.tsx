@@ -79,8 +79,11 @@ export default function InventoryList({
       return (
         <div className="flex-1">
           <h4 className="font-medium text-[#f5f1ed]">
-            {pot.brand} {pot.model}
+            {pot.nickname?.trim() || `${pot.brand} ${pot.model}`}
           </h4>
+          {pot.nickname?.trim() && (
+            <p className="text-xs text-[#8b6f47]">{pot.brand} {pot.model}</p>
+          )}
           <p className="text-sm text-[#8b6f47]">
             {pot.type} • {pot.size_cups} {t('moka_form.size').replace(' (Cups)', '')}
           </p>

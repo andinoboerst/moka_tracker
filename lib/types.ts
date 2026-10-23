@@ -76,6 +76,7 @@ export interface MokaPot {
   user_id: string
   brand: string
   model: string
+  nickname?: string | null
   type: string
   size_cups: number
   created_at: string

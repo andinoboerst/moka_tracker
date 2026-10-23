@@ -31,7 +31,7 @@ A modern, scientific coffee brewing tracker for moka pot enthusiasts. Log your b
 ### 1. Supabase Setup
 
 1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to **SQL Editor** and run the [schema.sql](./schema.sql) file to create tables and RLS policies
+2. Go to **SQL Editor** and run the files in [supabase/migrations](./supabase/migrations) in order to create tables and RLS policies
 3. Get your credentials:
    - Project URL: Settings → API → Project URL
    - Anon Key: Settings → API → Anon key
@@ -152,7 +152,7 @@ moka_tracker/
 ├── supabase/
 │   └── functions/
 │       └── generate-recap/  # AI recap edge function
-└── schema.sql          # Database schema
+└── supabase/migrations # Database schema (applied in order)
 ```
 
 ## Color Palette (Dark Coffee Aesthetic)
@@ -168,7 +168,7 @@ moka_tracker/
 ## Development Tips
 
 ### Adding New Equipment Types
-1. Add a new table to `schema.sql`
+1. Add a new migration file in `supabase/migrations`
 2. Create a new form component
 3. Create API route in `app/api/`
 4. Add to inventory page

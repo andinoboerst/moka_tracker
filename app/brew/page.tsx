@@ -101,7 +101,7 @@ export default function BrewPage() {
             </p>
             <Link
               href="/inventory"
-              className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-6 rounded transition"
+              className="inline-block bg-[#d4a574] hover:bg-[#e0b688] text-[#1a1410] font-semibold py-2 px-6 rounded-lg transition shadow-sm"
             >
               {t('inventory.go_to_inventory')}
             </Link>

@@ -73,7 +73,7 @@ export default function Home() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2 tracking-tight">
             {t('dashboard.headline')}
           </h1>
           <p className="text-[#8b6f47] text-lg italic">
@@ -94,7 +94,7 @@ export default function Home() {
 
         {/* Not signed in */}
         {!authLoading && !user ? (
-          <div className="text-center py-20 bg-[#2d2520] border border-[#3d3530] rounded-xl px-6 relative overflow-hidden">
+          <div className="text-center py-20 bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-xl shadow-black/30 px-6 relative overflow-hidden">
             {/* Background design element */}
             <div className="absolute top-0 left-0 w-full h-1 flex">
               <div className="flex-1 bg-italy-green"></div>
@@ -116,7 +116,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button 
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="w-full sm:w-auto bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-3 px-10 rounded-lg transition shadow-lg text-lg"
+                  className="w-full sm:w-auto bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-3 px-10 rounded-xl transition shadow-lg text-lg"
                 >
                   {t('common.sign_in')}
                 </button>
@@ -157,7 +157,7 @@ export default function Home() {
                           {t('dashboard.based_on_last', { bean: brews[0].bean?.name || '?', rating: brews[0].vibe_rating })}
                         </p>
                         <p className="text-[#f5f1ed] text-lg font-medium leading-relaxed mb-6 max-w-3xl">
-                          "{parsed.suggestion}"
+                          &ldquo;{parsed.suggestion}&rdquo;
                         </p>
                         <Link
                           href="/brew"
@@ -169,7 +169,7 @@ export default function Home() {
                     </div>
                   );
                 }
-              } catch (e) {
+              } catch {
                 // If parsing fails, it's an old string-only recap, skip showing the card
               }
               return null;
@@ -177,11 +177,11 @@ export default function Home() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-              <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-lg shadow-black/20 p-6 text-center">
                 <p className="text-[#8b6f47] text-sm mb-2">{t('dashboard.total_brews')}</p>
                 <p className="text-4xl font-bold text-[#d4a574]">{brews.length}</p>
               </div>
-              <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-lg shadow-black/20 p-6 text-center">
                 <p className="text-[#8b6f47] text-sm mb-2">{t('dashboard.avg_vibe')}</p>
                 <p className="text-4xl font-bold text-[#d4a574]">
                   {brews.length > 0
@@ -189,11 +189,11 @@ export default function Home() {
                     : '—'}
                 </p>
               </div>
-              <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 text-center">
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-lg shadow-black/20 p-6 text-center">
                 <p className="text-[#8b6f47] text-sm mb-2">{t('dashboard.quick_action')}</p>
                 <Link
                   href="/brew"
-                  className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition"
+                  className="inline-block bg-[#d4a574] hover:bg-[#e0b688] text-[#1a1410] font-semibold py-2 px-4 rounded-lg transition"
                 >
                   {t('nav.log_brew')} →
                 </Link>
@@ -217,7 +217,7 @@ export default function Home() {
                   <p className="text-[#8b6f47] mb-4">{t('dashboard.no_brews')}</p>
                   <Link
                     href="/brew"
-                    className="inline-block bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-6 rounded transition"
+                    className="inline-block bg-[#d4a574] hover:bg-[#e0b688] text-[#1a1410] font-semibold py-2 px-6 rounded-lg transition shadow-sm"
                   >
                     + {t('nav.log_brew')}
                   </Link>

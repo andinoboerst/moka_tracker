@@ -1,7 +1,7 @@
 'use client'
 
 import { Brew } from '@/lib/types'
-import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
+import { getVibeEmoji, getVibeName, formatDate, mokaPotName } from '@/lib/utils'
 import { translateStoredExpertValue, translateMilkType, translateRoastLevel } from '@/lib/dbValues'
 import { Trash2, Sparkles, Share2, Download } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -98,7 +98,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
     }
   }
   return (
-    <div className="bg-[#2d2520] border border-[#3d3530] rounded-lg p-6 space-y-4 hover:border-[#5a4f4a] transition">
+    <div className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-lg shadow-black/20 p-6 space-y-4 hover:border-[#d4a574]/40 transition">
       {/* Header with date and delete */}
       <div className="flex justify-between items-start">
         <div>
@@ -170,7 +170,7 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
         <div className="bg-[#1a1410] rounded p-3">
           <p className="text-xs text-[#8b6f47] mb-1">{t('brew_card.moka_pot')}</p>
           <p className="text-sm font-medium text-[#f5f1ed]">
-            {brew.moka_pot?.brand} {brew.moka_pot?.model} ({t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})
+            {brew.moka_pot ? mokaPotName(brew.moka_pot) : ''} ({t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})
           </p>
         </div>
 
@@ -257,16 +257,28 @@ export default function BrewCard({ brew, onDelete, isDeleting }: BrewCardProps) 
             <Sparkles className="w-4 h-4 text-[#d4a574]" />
             <h4 className="text-sm font-bold text-[#d4a574]">{t('brew_card.brew_master_recap')}</h4>
           </div>
-          <p className="text-sm text-[#f5f1ed] italic">
-            "{(() => {
-              try {
-                const parsed = JSON.parse(brew.ai_recap);
-                return parsed.summary || parsed.suggestion || brew.ai_recap;
-              } catch (e) {
-                return brew.ai_recap;
-              }
-            })()}"
-          </p>
+          {(() => {
+            let summary = brew.ai_recap
+            let suggestion = ''
+            try {
+              const parsed = JSON.parse(brew.ai_recap)
+              summary = parsed.summary || parsed.suggestion || brew.ai_recap
+              suggestion = parsed.summary ? parsed.suggestion || '' : ''
+            } catch {
+              // Old-style plain string recap
+            }
+            return (
+              <div className="space-y-2">
+                <p className="text-sm text-[#f5f1ed] italic">&ldquo;{summary}&rdquo;</p>
+                {suggestion && (
+                  <p className="text-sm text-[#d4a574]">
+                    <span className="font-semibold">{t('dashboard.next_brew_guide')}: </span>
+                    {suggestion}
+                  </p>
+                )}
+              </div>
+            )
+          })()}
         </div>
       )}
 

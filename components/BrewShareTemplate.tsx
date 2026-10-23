@@ -1,7 +1,7 @@
 'use client'
 
 import { Brew } from '@/lib/types'
-import { getVibeEmoji, getVibeName, formatDate } from '@/lib/utils'
+import { getVibeEmoji, getVibeName, formatDate, mokaPotName } from '@/lib/utils'
 import { translateRoastLevel } from '@/lib/dbValues'
 import { MokaPotIcon } from './icons/MokaPotIcon'
 import { Scale, Thermometer, Timer, Sparkles, Droplets, Settings } from 'lucide-react'
@@ -54,7 +54,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
         {brew.moka_pot && (
           <div className="absolute top-12 right-12 bg-[#1a1410] px-8 py-4 rounded-full border border-[#d4a574]/40 shadow-lg">
             <p className="text-3xl text-[#d4a574] font-serif italic">
-              {brew.moka_pot.brand} {brew.moka_pot.model}
+              {mokaPotName(brew.moka_pot)}
             </p>
           </div>
         )}

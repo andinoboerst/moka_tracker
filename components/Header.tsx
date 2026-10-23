@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { useState, useRef, useEffect } from 'react'
 import AuthModal from './AuthModal'
@@ -17,6 +18,7 @@ interface HeaderProps {
 export default function Header({ onSignInClick }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage()
   const { user, signOut } = useAuth()
+  const pathname = usePathname()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -77,7 +79,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
 
   return (
     <>
-      <header className="bg-[#2d2520] border-b border-[#3d3530] sticky top-0 z-50">
+      <header className="bg-[#2d2520]/85 backdrop-blur-md border-b border-[#3d3530] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center gap-2 group">
@@ -85,7 +87,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 <MokaPotIcon className="w-12 h-12" />
               </div>
               <div className="relative">
-                <h1 className="text-2xl font-serif font-bold text-[#d4a574]">Moka Tracker</h1>
+                <span className="block text-2xl font-serif font-bold text-[#d4a574]">Moka Tracker</span>
                 <div className="absolute -bottom-1 left-0 w-full h-[2px] flex">
                   <div className="flex-1 bg-[#009246]"></div>
                   <div className="flex-1 bg-white"></div>
@@ -95,26 +97,36 @@ export default function Header({ onSignInClick }: HeaderProps) {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="flex items-center gap-8">
-              <nav className="hidden md:flex gap-8">
-                <Link href="/" className="text-[#f5f1ed] hover:text-[#d4a574] transition">
-                  {t('nav.dashboard')}
-                </Link>
-                <Link href="/inventory" className="text-[#f5f1ed] hover:text-[#d4a574] transition">
-                  {t('nav.inventory')}
-                </Link>
-                <Link href="/analytics" className="text-[#f5f1ed] hover:text-[#d4a574] transition">
-                  {t('nav.analytics')}
-                </Link>
-                <Link href="/brew" className="text-[#f5f1ed] hover:text-[#d4a574] transition">
-                  {t('nav.log_brew')}
-                </Link>
+            <div className="flex items-center gap-4">
+              <nav className="hidden md:flex gap-1">
+                {[
+                  { href: '/', label: t('nav.dashboard') },
+                  { href: '/inventory', label: t('nav.inventory') },
+                  { href: '/analytics', label: t('nav.analytics') },
+                  { href: '/brew', label: t('nav.log_brew') },
+                ].map((item) => {
+                  const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-current={active ? 'page' : undefined}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                        active
+                          ? 'bg-[#d4a574]/15 text-[#d4a574]'
+                          : 'text-[#f5f1ed]/80 hover:text-[#d4a574] hover:bg-[#3d3530]/60'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                })}
               </nav>
 
               {/* Language Toggle (Desktop) */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'it' : 'en')}
-                className="hidden md:flex items-center justify-center w-10 h-10 text-2xl hover:scale-110 transition-transform rounded-full hover:bg-[#3d3530]"
+                className="hidden md:flex items-center justify-center w-10 h-10 text-xl hover:scale-110 transition-transform rounded-full hover:bg-[#3d3530]"
                 title={language === 'en' ? t('common.switch_to_italian') : t('common.switch_to_english')}
               >
                 <span>{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
@@ -126,6 +138,8 @@ export default function Header({ onSignInClick }: HeaderProps) {
                     <button
                       onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                       className="p-2 rounded-full bg-[#1a1410] border border-[#5a4f4a] text-[#d4a574] hover:bg-[#3d3530] transition"
+                      aria-label="Account menu"
+                      aria-expanded={isUserMenuOpen}
                     >
                       <User className="w-5 h-5" />
                     </button>
@@ -219,7 +233,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 ) : (
                   <button
                     onClick={() => onSignInClick ? onSignInClick() : setIsAuthModalOpen(true)}
-                    className="bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition text-sm hidden md:block"
+                    className="bg-[#d4a574] hover:bg-[#e0b688] text-[#1a1410] font-semibold py-2 px-4 rounded-lg transition text-sm hidden md:block"
                   >
                     {t('common.sign_in')}
                   </button>
@@ -229,6 +243,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="md:hidden p-2 text-[#f5f1ed] hover:text-[#d4a574]"
+                  aria-label="Toggle menu"
                 >
                   {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>

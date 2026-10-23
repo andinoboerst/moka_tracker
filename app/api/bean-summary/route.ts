@@ -64,12 +64,12 @@ Their tasting notes across those brews: "${allNotes || 'No specific notes'}".
 Speak directly to the person — as if you are narrating their experience back to them with warmth and Italian flair. Address it as THEIR cup, THEIR experience.
 Use phrases like "Your cup sang with...", "When you nailed it, the result was...", "There were moments when bitterness crept into your brew...", etc.
 Do NOT use first-person ("I tasted", "My experience"). Do NOT say "the user" or "users found".
-Mix in occasional Italian flair words naturally, BUT ensure they match the rating sentiment! Use "Magnifico!", "Ottimo!", or "Buonissimo!" ONLY if the average rating is high (8+). Use "Mamma mia...", "Che disastro", or "Peccato" if the rating is low. You should use plenty of expressive emojis!
+${language === 'it' ? '' : 'Write the summary itself in plain English; Italian is only allowed as one or two short exclamations. '}Mix in occasional Italian flair words naturally, BUT ensure they match the rating sentiment! Use "Magnifico!", "Ottimo!", or "Buonissimo!" ONLY if the average rating is high (8+). Use "Mamma mia...", "Che disastro", or "Peccato" if the rating is low. You should use plenty of expressive emojis!
 Focus on tasting notes, overall impression, and whether the experience was generally positive, mixed, or disappointing.
 Keep it warm, vivid, and under 3 sentences, and less than 80 words! Absolutely no bullet points, no asterisks, no markdown — plain flowing text only.
 Include a short final verdict on wether they should rebuy, avoid or neutral on the bean and based on what conditions. For example you could recommend a certain bean if the user was looking for fruity notes, etc.
 Do NOT give any recommendations on brew settings, just on wether to rebuy or not.
-RESPOND STRICTLY IN ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}. Even if the user's tasting notes are in English, translate your summary into the specified language.`
+${language === 'it' ? 'RESPOND IN ITALIAN. Even if the tasting notes are in English, translate your summary into Italian.' : 'RESPOND IN ENGLISH. Even if the tasting notes are in another language, write the summary in English.'}`
 
     let summaryText = ''
     try {

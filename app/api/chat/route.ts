@@ -25,7 +25,7 @@ const buildInventorySummary = (beans: any[], grinders: any[], mokaPots: any[]) =
     ? mokaPots
         .map(
           (pot) =>
-            `- ${pot.brand} ${pot.model} (${pot.size_cups} cups${pot.type ? `, ${pot.type}` : ''})`
+            `- ${pot.brand} ${pot.model}${pot.nickname ? ` (nicknamed "${pot.nickname}")` : ''} (${pot.size_cups} cups${pot.type ? `, ${pot.type}` : ''})`
         )
         .join('\n')
     : '- None'
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     const mokaPots = mokaPotsRes.data || []
 
     const inventorySummary = buildInventorySummary(beans, grinders, mokaPots)
-    const languageMode = language === 'it' ? 'ITALIAN' : 'ENGLISH'
+    const languageName = language === 'it' ? 'Italian' : 'English'
 
     const systemPrompt = `You are a Moka brew expert specialized in advising moka pot users. Always respond as a friendly and precise coffee coach, with practical advice based on the user's actual inventory and equipment. The user wants help with moka brews, not espresso or pour-over.
 
@@ -92,7 +92,13 @@ When the user mentions a specific moka pot model or brand, infer the most likely
 
 When answering about equipment care, cleaning, or material-specific advice, use the likely material of the named model and mention the exact brand/model in your advice. If the model is unknown, explain that the material is not confirmed and ask the user to clarify before giving highly material-sensitive guidance.
 
-Always use Italian coffee terms and flair, even if the response is in English. Respond in ${languageMode}. Do not include markdown formatting in your answer. Keep your advice actionable and specific.`
+LANGUAGE: Write the entire answer in ${languageName}. ${
+      language === 'it'
+        ? 'Sprinkle in a little Italian coffee-culture charm, but keep the advice clear.'
+        : 'Add at most one or two short, playful Italian touches (for example "Mamma mia!", "Perfetto!" or "Buon caffè!") as light seasoning. The actual advice, explanations and suggestions must stay in plain English; never write full sentences of advice in Italian.'
+    }
+
+Do not include markdown formatting in your answer (no asterisks, headings or bullet symbols; plain sentences or simple numbered lines are fine). Keep your advice actionable and specific.`
 
     const requestMessages = [
       { role: 'system', content: systemPrompt },

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Header from '@/components/Header'
-import { getAuthHeaders } from '@/lib/utils'
+import { getAuthHeaders, formatDate } from '@/lib/utils'
 import { translateStoredExpertValue } from '@/lib/dbValues'
 import { useLanguage } from '@/lib/LanguageContext'
 import { AnalyticsScatterPlot, AnalyticsLineGraph } from '@/components/AnalyticsChart'
@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
         ) : activeTab === 'brews' ? (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-              <div className="bg-[#2d2520] border border-[#3d3530] rounded-xl p-6 shadow-xl">
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-lg shadow-black/20 p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                   <h2 className="text-xl font-serif font-bold text-[#d4a574]">
                     {t('analytics.scatter_plot_title')}
@@ -164,7 +164,7 @@ export default function AnalyticsPage() {
                 />
               </div>
 
-              <div className="bg-[#2d2520] border border-[#3d3530] rounded-xl p-6 shadow-xl">
+              <div className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-lg shadow-black/20 p-6">
                 <div className="mb-6">
                   <h2 className="text-xl font-serif font-bold text-[#d4a574]">
                     {t('analytics.line_graph_title')}
@@ -203,7 +203,7 @@ export default function AnalyticsPage() {
                       <div>
                         <h3 className="font-bold text-[#f5f1ed]">{brew.bean?.name}</h3>
                         <p className="text-xs text-[#8b6f47]">
-                          {new Date(brew.created_at).toLocaleDateString('de-DE')} •{' '}
+                          {formatDate(brew.created_at)} •{' '}
                           {t('analytics.vibe_score', { rating: brew.vibe_rating })}
                         </p>
                       </div>
