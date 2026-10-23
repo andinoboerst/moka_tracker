@@ -305,6 +305,44 @@ textarea:focus {
   .segmented-item[aria-current='page'] svg,
   .segmented-item[data-active='true'] svg { color: var(--accent-ink); }
 
+  /* Range slider (simulator) */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      var(--accent) 0 var(--fill, 50%),
+      var(--line-strong) var(--fill, 50%) 100%
+    );
+    outline: none;
+    cursor: pointer;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--ink);
+    border: 3px solid var(--accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    transition: transform 0.15s;
+  }
+  .slider::-webkit-slider-thumb:hover { transform: scale(1.12); }
+  .slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--ink);
+    border: 3px solid var(--accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+  .slider:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+
+
   /* Italian accent: a hairline tricolore, used sparingly as a signature */
   .tricolore {
     height: 2px;
