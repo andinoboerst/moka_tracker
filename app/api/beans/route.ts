@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground, bean_type, arabica_percent } = body
+    const { name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground, bean_type, arabica_percent, tasting_notes } = body
     const beanType = normalizeBeanType(bean_type)
     const arabicaPercent =
       beanType === 'Blend' && arabica_percent !== '' && arabica_percent !== null && arabica_percent !== undefined
@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
           is_pre_ground: !!is_pre_ground,
           bean_type: beanType,
           arabica_percent: Number.isFinite(arabicaPercent) ? arabicaPercent : null,
+          tasting_notes: typeof tasting_notes === 'string' && tasting_notes.trim() ? tasting_notes.trim().slice(0, 300) : null,
         },
       ])
       .select()
@@ -131,7 +132,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { id, name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground, bean_type, arabica_percent } = body
+    const { id, name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground, bean_type, arabica_percent, tasting_notes } = body
     const beanType = normalizeBeanType(bean_type)
     const arabicaPercent =
       beanType === 'Blend' && arabica_percent !== '' && arabica_percent !== null && arabica_percent !== undefined
@@ -170,6 +171,7 @@ export async function PUT(request: NextRequest) {
         is_pre_ground: !!is_pre_ground,
         bean_type: beanType,
         arabica_percent: Number.isFinite(arabicaPercent) ? arabicaPercent : null,
+        tasting_notes: typeof tasting_notes === 'string' && tasting_notes.trim() ? tasting_notes.trim().slice(0, 300) : null,
       })
       .eq('id', id)
       .select()

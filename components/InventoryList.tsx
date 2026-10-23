@@ -50,6 +50,9 @@ export default function InventoryList({
           <p className="text-sm text-muted flex items-center gap-2">
             {bean.roaster} • {bean.roast_level}
           </p>
+          {bean.tasting_notes && (
+            <p className="text-xs text-muted italic mt-0.5 line-clamp-2">&ldquo;{bean.tasting_notes}&rdquo;</p>
+          )}
           <div className={`flex gap-4 mt-1 transition-opacity ${bean.is_active !== false ? 'opacity-100' : 'opacity-40'}`}>
             {bean.roast_date && (
               <span className="text-[10px] text-muted flex items-center gap-1">

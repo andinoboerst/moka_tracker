@@ -16,6 +16,7 @@ export interface BeanFormData {
   is_pre_ground: boolean
   bean_type: string
   arabica_percent: string
+  tasting_notes: string
 }
 
 export type BeanFormPayload = BeanFormData & { id?: string }
@@ -31,6 +32,7 @@ const emptyBeanForm: BeanFormData = {
   is_pre_ground: false,
   bean_type: '',
   arabica_percent: '',
+  tasting_notes: '',
 }
 
 function beanToFormData(bean?: Bean | null): BeanFormData {
@@ -46,6 +48,7 @@ function beanToFormData(bean?: Bean | null): BeanFormData {
     is_pre_ground: bean.is_pre_ground === true,
     bean_type: bean.bean_type || '',
     arabica_percent: bean.arabica_percent?.toString() || '',
+    tasting_notes: bean.tasting_notes || '',
   }
 }
 
@@ -207,6 +210,18 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             onChange={(e) => setFormData({ ...formData, weight_g: e.target.value })}
             placeholder="e.g., 250"
             className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.tasting_notes')}</label>
+          <textarea
+            value={formData.tasting_notes}
+            onChange={(e) => setFormData({ ...formData, tasting_notes: e.target.value })}
+            placeholder={t('bean_form.tasting_notes_hint')}
+            rows={2}
+            maxLength={300}
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent resize-y"
           />
         </div>
 

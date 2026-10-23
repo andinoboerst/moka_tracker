@@ -12,6 +12,8 @@ export interface Bean {
   bean_type?: 'Arabica' | 'Robusta' | 'Blend' | null
   /** Only for blends: share of Arabica, 0-100 */
   arabica_percent?: number | null
+  /** Flavour notes of the bag (roaster's description or your own expectations) */
+  tasting_notes?: string | null
   created_at: string
   updated_at: string
 }

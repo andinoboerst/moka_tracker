@@ -129,7 +129,7 @@ CONTEXT:
 - Do not be too exact with temperature degrees (e.g., don't say "use exactly 82°C"), use general terms like "warmer", "cooler", "near boiling", etc.
 
 CURRENT Brew Details:
-${mixText || `- Bean: ${bean?.name} (${bean?.roaster}) - Species: ${bean?.bean_type || 'Unknown'}${bean?.bean_type === 'Blend' && bean?.arabica_percent != null ? ` (${bean.arabica_percent}% Arabica)` : ''} - Origin: ${bean?.origin || 'Unknown'} - Roast Level: ${bean?.roast_level}`}${mixText ? '\n- Main bean details: ' + bean?.name + ' (' + bean?.roaster + ') - Origin: ' + (bean?.origin || 'Unknown') + ' - Roast Level: ' + bean?.roast_level : ''} ${bean?.roast_date ? `(Roast Date: ${bean.roast_date}, Freshness: ${daysPastRoast} days)` : ''}
+${mixText || `- Bean: ${bean?.name} (${bean?.roaster}) - Species: ${bean?.bean_type || 'Unknown'}${bean?.bean_type === 'Blend' && bean?.arabica_percent != null ? ` (${bean.arabica_percent}% Arabica)` : ''} - Origin: ${bean?.origin || 'Unknown'} - Roast Level: ${bean?.roast_level}${bean?.tasting_notes ? ` - Advertised flavour notes of the bag: "${bean.tasting_notes}"` : ''}`}${mixText ? '\n- Main bean details: ' + bean?.name + ' (' + bean?.roaster + ') - Origin: ' + (bean?.origin || 'Unknown') + ' - Roast Level: ' + bean?.roast_level : ''} ${bean?.roast_date ? `(Roast Date: ${bean.roast_date}, Freshness: ${daysPastRoast} days)` : ''}
 - Moka Pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} Cup, ${mokaPot?.type})
 ${grinder
           ? `- Grinder: ${grinder.brand} ${grinder.model}

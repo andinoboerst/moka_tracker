@@ -17,7 +17,7 @@ const buildInventorySummary = (beans: any[], grinders: any[], mokaPots: any[]) =
     ? beans
         .map(
           (bean) =>
-            `- ${bean.name} (${bean.roaster || 'unknown'}, ${bean.origin || 'unknown'}, roast: ${bean.roast_level}${bean.bean_type ? `, ${bean.bean_type}${bean.bean_type === 'Blend' && bean.arabica_percent != null ? ` ${bean.arabica_percent}% Arabica` : ''}` : ''}${typeof bean.weight_g === 'number' ? `, ${bean.weight_g}g left` : ''}${bean.roast_date ? `, roast date ${bean.roast_date}` : ''})`
+            `- ${bean.name} (${bean.roaster || 'unknown'}, ${bean.origin || 'unknown'}, roast: ${bean.roast_level}${bean.bean_type ? `, ${bean.bean_type}${bean.bean_type === 'Blend' && bean.arabica_percent != null ? ` ${bean.arabica_percent}% Arabica` : ''}` : ''}${typeof bean.weight_g === 'number' ? `, ${bean.weight_g}g left` : ''}${bean.roast_date ? `, roast date ${bean.roast_date}` : ''}${bean.tasting_notes ? `, flavour notes: ${bean.tasting_notes}` : ''})`
         )
         .join('\n')
     : '- None'
