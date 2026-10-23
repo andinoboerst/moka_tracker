@@ -167,7 +167,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
           </div>
         </div>
 
-        <div className="mt-8 p-6 bg-surface border border-line rounded-lg">
+        <div className="mt-8 p-6 card">
           <h2 className="text-2xl font-bold text-accent mb-4">{t('brew_share_page.title')}</h2>
           <div className="space-y-4 text-ink">
             <div>

@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  /* Dark (default) — coffee-bean palette */
+  /* Dark (default) — espresso & crema palette */
   color-scheme: dark;
-  --canvas: #1a1410;
-  --surface: #2d2520;
-  --line: #3d3530;
-  --line-strong: #5a4f4a;
-  --muted: #8b6f47;
-  --accent: #d4a574;
-  --accent-hover: #e0b688;
-  --ink: #f5f1ed;
-  --glow-1: rgba(212, 165, 116, 0.10);
-  --glow-2: rgba(139, 111, 71, 0.08);
+  --canvas: #17110d;
+  --surface: #251c17;
+  --surface-raised: #2f241d;
+  --line: #3a2e26;
+  --line-strong: #56463a;
+  --muted: #a88b68;
+  --accent: #d9a870;
+  --accent-hover: #e8bd88;
+  --accent-deep: #b9824a;
+  --ink: #f6efe7;
+  --glow-1: rgba(217, 168, 112, 0.12);
+  --glow-2: rgba(185, 130, 74, 0.08);
+  --shadow-card: 0 1px 0 rgba(255, 235, 210, 0.04) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover: 0 1px 0 rgba(255, 235, 210, 0.06) inset, 0 16px 36px -14px rgba(0, 0, 0, 0.7);
 
   --background: var(--canvas);
   --foreground: var(--ink);
@@ -22,20 +26,26 @@
 
 :root[data-theme='light'] {
   color-scheme: light;
-  --canvas: #f7f2ec;
-  --surface: #ffffff;
-  --line: #e4d9cc;
-  --line-strong: #c9bbab;
+  --canvas: #f6efe6;
+  --surface: #fffcf8;
+  --surface-raised: #ffffff;
+  --line: #e7dccd;
+  --line-strong: #cdbca8;
   --muted: #7a5f3b;
-  --accent: #9a5f26;
-  --accent-hover: #7d4a1b;
+  --accent: #8f5522;
+  --accent-hover: #744318;
+  --accent-deep: #6b3f17;
   --ink: #2a1f17;
-  --glow-1: rgba(154, 95, 38, 0.08);
-  --glow-2: rgba(139, 111, 71, 0.06);
+  --glow-1: rgba(154, 95, 38, 0.10);
+  --glow-2: rgba(139, 111, 71, 0.07);
+  --shadow-card: 0 1px 2px rgba(72, 44, 20, 0.05), 0 8px 24px -12px rgba(72, 44, 20, 0.18);
+  --shadow-card-hover: 0 2px 4px rgba(72, 44, 20, 0.06), 0 16px 36px -14px rgba(72, 44, 20, 0.28);
 }
 
 @theme inline {
   --color-canvas: var(--canvas);
+  --color-surface-raised: var(--surface-raised);
+  --color-accent-deep: var(--accent-deep);
   --color-surface: var(--surface);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
@@ -61,11 +71,173 @@ body {
     radial-gradient(ellipse 50% 40% at 100% 100%, var(--glow-2), transparent 60%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@layer base {
+  h1, h2 {
+    font-family: var(--font-playfair), Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='range'] {
+    accent-color: var(--accent);
+  }
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='range']):focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 ::selection {
-  background: rgba(212, 165, 116, 0.35);
-  color: #fff;
+  background: rgba(217, 168, 112, 0.35);
+  color: var(--ink);
+}
+
+@layer components {
+/* ---------- Design primitives ---------- */
+
+.card {
+  background: linear-gradient(180deg, var(--surface-raised), var(--surface));
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.card-interactive:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+.card-interactive { transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(180deg, var(--accent-hover), var(--accent));
+  color: var(--canvas);
+  font-weight: 600;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 6px 16px -6px color-mix(in srgb, var(--accent-deep) 70%, transparent);
+}
+:root[data-theme='light'] .btn-primary { color: #fff; }
+.btn-primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.5; filter: none; transform: none; cursor: not-allowed; }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+  font-weight: 600;
+  border-radius: 0.75rem;
+  background: transparent;
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-tile {
+  background: color-mix(in srgb, var(--canvas) 70%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 0.75rem;
+}
+
+.stat-tile-strong {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: 0.75rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--canvas) 60%, var(--surface));
+  border: 1px solid var(--line);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in { animation: rise-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+/* ---------- Italian tricolore accents ---------- */
+
+.tricolore {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--italy-green) 0 33.33%,
+    #f4efe6 33.33% 66.66%,
+    var(--italy-red) 66.66% 100%
+  );
+}
+
+.tricolore-divider {
+  display: block;
+  width: 3.5rem;
+  height: 3px;
+  margin-inline: auto;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--italy-green) 0 33.33%,
+    #f4efe6 33.33% 66.66%,
+    var(--italy-red) 66.66% 100%
+  );
+}
+
+.tricolore-top { position: relative; overflow: hidden; }
+.tricolore-top::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--italy-green) 0 33.33%,
+    #f4efe6 33.33% 66.66%,
+    var(--italy-red) 66.66% 100%
+  );
+}
 }
 
 :focus-visible {

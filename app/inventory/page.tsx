@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
+import PageHeading from '@/components/PageHeading'
 import BeanForm from '@/components/BeanForm'
 import GrinderForm from '@/components/GrinderForm'
 import MokaPotForm from '@/components/MokaPotForm'
@@ -197,14 +198,7 @@ export default function InventoryPage() {
     <>
       <Header />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-accent mb-2">
-            {t('inventory.title')}
-          </h1>
-          <p className="text-muted text-lg italic">
-            {t('inventory.subtitle')}
-          </p>
-        </div>
+        <PageHeading title={t('inventory.title')} subtitle={t('inventory.subtitle')} className="mb-12" />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left column: Forms */}

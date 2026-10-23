@@ -195,11 +195,13 @@ export default function Home() {
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
-        <div className="mb-10">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-accent mb-2 tracking-tight">
+        <div className="mb-10 rise-in">
+          <p className="eyebrow mb-3">☕ Moka Tracker</p>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold gradient-text mb-3 tracking-tight">
             {t('dashboard.headline')}
           </h1>
-          <p className="text-muted text-lg italic">{t('dashboard.subtitle')}</p>
+          <p className="text-muted text-lg italic mb-5">{t('dashboard.subtitle')}</p>
+          <div className="tricolore w-20" aria-hidden="true" />
         </div>
 
         {/* Guest Mode Warning */}
@@ -215,12 +217,7 @@ export default function Home() {
 
         {/* Not signed in */}
         {!authLoading && !user ? (
-          <div className="text-center py-20 bg-surface border border-line rounded-2xl shadow-xl shadow-black/30 px-6 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 flex">
-              <div className="flex-1 bg-italy-green"></div>
-              <div className="flex-1 bg-white"></div>
-              <div className="flex-1 bg-italy-red"></div>
-            </div>
+          <div className="card tricolore-top text-center py-20 px-6 rise-in">
 
             <div className="max-w-2xl mx-auto">
               <div className="text-7xl mb-6">☕</div>
@@ -236,13 +233,13 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="w-full sm:w-auto bg-accent hover:bg-accent-hover text-canvas font-semibold py-3 px-10 rounded-xl transition shadow-lg text-lg"
+                  className="btn-primary w-full sm:w-auto py-3 px-10 text-lg"
                 >
                   {t('common.sign_in')}
                 </button>
                 <button
                   onClick={handleGuestSignIn}
-                  className="w-full sm:w-auto bg-transparent border-2 border-line hover:border-line-strong text-ink font-semibold py-3 px-10 rounded-xl transition text-lg"
+                  className="btn-ghost w-full sm:w-auto py-3 px-10 text-lg"
                 >
                   {t('common.continue_as_guest')}
                 </button>
@@ -258,7 +255,7 @@ export default function Home() {
           <>
             {/* Next Brew Guide Card */}
             {suggestion && stats?.latest && (
-              <div className="mb-8 bg-gradient-to-r from-surface to-canvas border border-accent/30 rounded-2xl p-6 shadow-lg relative overflow-hidden">
+              <div className="card tricolore-top mb-8 border-accent/30 p-6">
                 <div className="absolute top-0 right-0 p-4 opacity-10 text-accent">
                   <MokaPotIcon className="w-32 h-32" />
                 </div>
@@ -275,7 +272,7 @@ export default function Home() {
                   </p>
                   <Link
                     href="/brew"
-                    className="inline-block bg-transparent border-2 border-accent hover:bg-accent hover:text-canvas text-accent font-semibold py-2 px-6 rounded-lg transition"
+                    className="btn-primary py-2.5 px-6"
                   >
                     {t('dashboard.log_next')}
                   </Link>
@@ -298,21 +295,21 @@ export default function Home() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-              <div className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 p-6 text-center">
-                <p className="text-muted text-sm mb-2">{t('dashboard.total_brews')}</p>
-                <p className="text-4xl font-bold text-accent">{stats?.total ?? '—'}</p>
+              <div className="card p-6 text-center">
+                <p className="eyebrow mb-3">{t('dashboard.total_brews')}</p>
+                <p className="text-5xl font-serif font-bold text-accent">{stats?.total ?? '—'}</p>
               </div>
-              <div className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 p-6 text-center">
-                <p className="text-muted text-sm mb-2">{t('dashboard.avg_vibe')}</p>
-                <p className="text-4xl font-bold text-accent">
+              <div className="card p-6 text-center">
+                <p className="eyebrow mb-3">{t('dashboard.avg_vibe')}</p>
+                <p className="text-5xl font-serif font-bold text-accent">
                   {stats?.avg_rating != null ? stats.avg_rating.toFixed(1) : '—'}
                 </p>
               </div>
-              <div className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 p-6 text-center">
-                <p className="text-muted text-sm mb-2">{t('dashboard.quick_action')}</p>
+              <div className="card p-6 text-center flex flex-col items-center justify-center">
+                <p className="eyebrow mb-4">{t('dashboard.quick_action')}</p>
                 <Link
                   href="/brew"
-                  className="inline-block bg-accent hover:bg-accent-hover text-canvas font-semibold py-2 px-4 rounded-lg transition"
+                  className="btn-primary py-2.5 px-5"
                 >
                   {t('nav.log_brew')} →
                 </Link>
@@ -401,7 +398,7 @@ export default function Home() {
                     <p className="text-muted mb-4">{t('dashboard.no_brews')}</p>
                     <Link
                       href="/brew"
-                      className="inline-block bg-accent hover:bg-accent-hover text-canvas font-semibold py-2 px-6 rounded-lg transition"
+                      className="btn-primary py-2.5 px-6"
                     >
                       + {t('nav.log_brew')}
                     </Link>

@@ -80,7 +80,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
 
   return (
     <>
-      <header className="bg-surface/85 backdrop-blur-md border-b border-line sticky top-0 z-50">
+      <header className="bg-surface/85 backdrop-blur-md border-b border-line sticky top-0 z-50 shadow-[0_8px_24px_-16px_rgba(0,0,0,0.5)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center gap-2 group">
@@ -88,12 +88,8 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 <MokaPotIcon className="w-12 h-12" />
               </div>
               <div className="relative">
-                <span className="block text-2xl font-serif font-bold text-accent">Moka Tracker</span>
-                <div className="absolute -bottom-1 left-0 w-full h-[2px] flex">
-                  <div className="flex-1 bg-[#009246]"></div>
-                  <div className="flex-1 bg-white"></div>
-                  <div className="flex-1 bg-[#ce2b37]"></div>
-                </div>
+                <span className="block text-2xl font-serif font-bold gradient-text tracking-tight">Moka Tracker</span>
+                <div className="tricolore absolute -bottom-1 left-0 w-full" aria-hidden="true" />
               </div>
             </Link>
 
@@ -236,7 +232,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 ) : (
                   <button
                     onClick={() => onSignInClick ? onSignInClick() : setIsAuthModalOpen(true)}
-                    className="bg-accent hover:bg-accent-hover text-canvas font-semibold py-2 px-4 rounded-lg transition text-sm hidden md:block"
+                    className="btn-primary py-2 px-5 text-sm hidden md:inline-flex"
                   >
                     {t('common.sign_in')}
                   </button>

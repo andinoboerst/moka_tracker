@@ -323,7 +323,7 @@ export default function BrewForm({
   const set = (patch: Partial<FormState>) => setFormData((prev) => ({ ...prev, ...patch }))
 
   return (
-    <form onSubmit={handleSubmit} className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 p-6 space-y-6">
+    <form onSubmit={handleSubmit} className="card p-6 space-y-6">
       <h2 className="text-3xl font-serif font-bold text-accent">
         {isEdit ? t('feat.edit_brew') : t('brew_form.title')}
       </h2>
@@ -753,7 +753,7 @@ export default function BrewForm({
       <button
         type="submit"
         disabled={isLoading || !mixValid}
-        className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 text-canvas font-semibold py-3 rounded-xl transition text-lg"
+        className="btn-primary w-full disabled:opacity-50 py-3 text-lg"
       >
         {isLoading ? t('common.saving') : isEdit ? t('feat.save_changes') : t('brew_form.save_button')}
       </button>

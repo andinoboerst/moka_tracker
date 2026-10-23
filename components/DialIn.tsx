@@ -89,7 +89,7 @@ export default function DialIn({ brews }: { brews: Brew[] }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Best known recipe */}
-        <div className="bg-surface border border-accent/30 rounded-2xl shadow-lg shadow-black/20 p-6">
+        <div className="card border-accent/30 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="w-5 h-5 text-accent" />
             <h3 className="text-xl font-serif font-bold text-accent">{t('feat.dialin_best')}</h3>
@@ -131,14 +131,14 @@ export default function DialIn({ brews }: { brews: Brew[] }) {
           </dl>
           <a
             href={`/brew?from=${best.id}`}
-            className="mt-5 inline-block bg-accent hover:bg-accent-hover text-canvas font-semibold py-2 px-5 rounded-lg transition"
+            className="btn-primary mt-5 py-2 px-5"
           >
             {t('feat.brew_again')}
           </a>
         </div>
 
         {/* Sweet spot by grind */}
-        <div className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 p-6">
+        <div className="card p-6">
           <div className="flex items-center gap-2 mb-4">
             <Target className="w-5 h-5 text-accent" />
             <h3 className="text-xl font-serif font-bold text-accent">{t('feat.dialin_sweet')}</h3>

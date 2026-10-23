@@ -70,7 +70,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-surface border border-line rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+      <div className="card p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-accent mb-6">
           {isSignUp ? t('common.create_account') : t('common.sign_in')}
         </h2>
@@ -109,7 +109,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-accent hover:bg-accent-hover text-canvas font-bold py-2 px-4 rounded transition disabled:opacity-50"
+            className="btn-primary w-full py-2 px-4 disabled:opacity-50"
           >
             {loading ? t('common.loading') : (isSignUp ? t('common.sign_up') : t('common.sign_in'))}
           </button>

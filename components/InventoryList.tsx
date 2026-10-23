@@ -134,7 +134,7 @@ export default function InventoryList({
       {items.map((item) => (
         <div
           key={item.id}
-          className={`bg-surface border border-line rounded-lg p-4 flex items-center justify-between hover:border-line-strong transition ${
+          className={`card p-4 flex items-center justify-between hover:border-line-strong transition ${
             type === 'beans' && (item as Bean).is_active === false ? 'opacity-70 bg-surface' : ''
           }`}
         >

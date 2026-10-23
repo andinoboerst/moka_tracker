@@ -21,16 +21,17 @@ export default function Footer() {
   }
 
   return (
-    <footer className="py-4 px-4">
-      <div className="flex gap-4 text-xs text-muted">
-        <Link 
-          href="/privacy" 
+    <footer className="py-8 px-4 mt-8">
+      <span className="tricolore-divider mb-5" aria-hidden="true" />
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-muted">
+        <Link
+          href="/privacy"
           className="hover:text-accent transition"
         >
           Privacy
         </Link>
-        <Link 
-          href="/terms" 
+        <Link
+          href="/terms"
           className="hover:text-accent transition"
         >
           Terms
@@ -43,6 +44,7 @@ export default function Footer() {
           {copied ? 'Copied!' : 'support@mokatracker.com'}
         </button>
       </div>
+      <p className="text-center text-[11px] text-muted/70 mt-4 italic font-serif">Fatto con ☕ e passione</p>
     </footer>
   )
 }

@@ -62,7 +62,7 @@ function BrewPageContent() {
             <p className="text-yellow-300 mb-4">{t('inventory.inventory_requirement')}</p>
             <Link
               href="/inventory"
-              className="inline-block bg-accent hover:bg-accent-hover text-canvas font-semibold py-2 px-6 rounded-lg transition"
+              className="btn-primary py-2 px-6"
             >
               {t('inventory.go_to_inventory')}
             </Link>

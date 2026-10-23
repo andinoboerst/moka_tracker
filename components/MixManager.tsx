@@ -117,7 +117,7 @@ export default function MixManager({ beans, mixes, onChanged }: MixManagerProps)
           mix.components.map((c) => ({ percentage: c.percentage, bean: beans.find((b) => b.id === c.bean_id) }))
         )
         return (
-          <div key={mix.id} className="bg-surface border border-line rounded-xl p-4 flex items-start justify-between gap-3">
+          <div key={mix.id} className="card p-4 flex items-start justify-between gap-3">
             <div>
               <h4 className="font-medium text-ink">{mix.name}</h4>
               <p className="text-sm text-muted">
@@ -226,7 +226,7 @@ export default function MixManager({ beans, mixes, onChanged }: MixManagerProps)
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 text-canvas font-semibold py-2 rounded-lg flex items-center justify-center gap-2"
+            className="btn-primary w-full disabled:opacity-50 py-2 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" /> {saving ? t('common.saving') : t('common.save')}
           </button>

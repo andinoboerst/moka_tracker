@@ -149,7 +149,7 @@ export default function BeanJournal() {
       </div>
 
       {displayed.length === 0 ? (
-        <div className="text-center py-12 bg-surface border border-line rounded-xl">
+        <div className="text-center py-12 card">
           <Coffee className="w-12 h-12 text-muted mx-auto mb-4" />
           <p className="text-muted italic">{t('bean_journal.empty')}</p>
         </div>
@@ -164,7 +164,7 @@ export default function BeanJournal() {
             return (
               <article
                 key={entry.key}
-                className="bg-surface border border-line rounded-xl p-5 hover:border-line-strong transition"
+                className="card p-5 hover:border-line-strong transition"
               >
                 <div className="flex flex-row justify-between items-start gap-4 mb-3">
                   <div className="flex-1 min-w-0">

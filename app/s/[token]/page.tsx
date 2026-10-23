@@ -73,7 +73,7 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
             </Link>
           </div>
         ) : (
-          <article className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 overflow-hidden">
+          <article className="card overflow-hidden">
             <div className="h-1.5 flex">
               <div className="flex-1 bg-italy-green" />
               <div className="flex-1 bg-white" />
@@ -157,7 +157,7 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
               <div className="pt-2 text-center">
                 <Link
                   href="/"
-                  className="inline-block bg-accent hover:bg-accent-hover text-canvas font-semibold py-2.5 px-6 rounded-xl transition"
+                  className="btn-primary py-2.5 px-6"
                 >
                   {t('feat.shared_cta')}
                 </Link>

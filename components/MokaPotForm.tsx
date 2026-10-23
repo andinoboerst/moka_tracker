@@ -156,7 +156,7 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 text-canvas font-bold py-2 rounded transition flex items-center justify-center gap-2"
+        className="btn-primary w-full disabled:opacity-50 py-2 flex items-center justify-center gap-2"
       >
         {initialData ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
         {isLoading ? t('common.saving') : t('common.save')}

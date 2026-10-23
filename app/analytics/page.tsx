@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Header from '@/components/Header'
+import PageHeading from '@/components/PageHeading'
 import { getAuthHeaders, formatDate } from '@/lib/utils'
 import { translateStoredExpertValue } from '@/lib/dbValues'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -78,14 +79,9 @@ export default function AnalyticsPage() {
     <>
       <Header />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-accent mb-2">
-            {t('analytics.title')}
-          </h1>
-          <p className="text-muted text-lg italic">{t('analytics.subtitle')}</p>
-        </div>
+        <PageHeading title={t('analytics.title')} subtitle={t('analytics.subtitle')} className="mb-8" />
 
-        <div className="flex flex-wrap bg-canvas rounded-xl p-1 border border-line mb-10 w-fit max-w-full">
+        <div className="flex flex-wrap bg-canvas rounded-full p-1 border border-line-strong/60 shadow-inner mb-10 w-fit max-w-full">
           {(
             [
               ['beans', t('analytics.tab_beans')],
@@ -97,8 +93,8 @@ export default function AnalyticsPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 sm:px-5 py-2 rounded-lg text-sm font-semibold transition ${
-                activeTab === tab ? 'bg-accent text-canvas' : 'text-muted hover:text-ink'
+              className={`px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition ${
+                activeTab === tab ? 'btn-primary' : 'text-muted hover:text-ink'
               }`}
             >
               {label}
@@ -117,7 +113,7 @@ export default function AnalyticsPage() {
         ) : activeTab === 'brews' ? (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-              <div className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 p-6">
+              <div className="card p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                   <h2 className="text-xl font-serif font-bold text-accent">
                     {t('analytics.scatter_plot_title')}
@@ -156,7 +152,7 @@ export default function AnalyticsPage() {
                 />
               </div>
 
-              <div className="bg-surface border border-line rounded-2xl shadow-lg shadow-black/20 p-6">
+              <div className="card p-6">
                 <div className="mb-6">
                   <h2 className="text-xl font-serif font-bold text-accent">
                     {t('analytics.line_graph_title')}
@@ -180,7 +176,7 @@ export default function AnalyticsPage() {
               {topBrews.map((brew) => (
                 <div
                   key={brew.id}
-                  className="bg-surface border border-line rounded-xl overflow-hidden shadow-lg transition hover:border-accent/30"
+                  className="card overflow-hidden shadow-lg transition hover:border-accent/30"
                 >
                   <div
                     className="p-4 flex items-center justify-between cursor-pointer"

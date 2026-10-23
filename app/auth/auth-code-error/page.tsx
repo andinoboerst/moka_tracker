@@ -11,7 +11,7 @@ export default function AuthCodeErrorPage() {
         </p>
         <Link
           href="/"
-          className="inline-block bg-accent hover:bg-accent-hover text-canvas font-bold py-2 px-6 rounded-lg transition"
+          className="btn-primary py-2 px-6"
         >
           Back to Moka Tracker
         </Link>

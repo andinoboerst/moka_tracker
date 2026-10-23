@@ -10,8 +10,8 @@ export default function TermsOfService() {
     <>
       <Header />
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-surface border border-line rounded-xl p-8 shadow-xl">
-          <h1 className="text-4xl font-serif font-bold text-accent mb-8">
+        <div className="card tricolore-top p-8 pt-10">
+          <h1 className="text-4xl font-serif font-bold gradient-text mb-8">
             Terms of Service
           </h1>
 
