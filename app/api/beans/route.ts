@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { normalizeRoastLevel } from '@/lib/dbValues'
+import { normalizeBeanType } from '@/lib/beans'
 
 export async function GET(request: NextRequest) {
   try {
@@ -57,7 +58,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground } = body
+    const { name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground, bean_type, arabica_percent } = body
+    const beanType = normalizeBeanType(bean_type)
+    const arabicaPercent =
+      beanType === 'Blend' && arabica_percent !== '' && arabica_percent !== null && arabica_percent !== undefined
+        ? Math.min(100, Math.max(0, parseInt(arabica_percent)))
+        : null
 
     if (!name || !roaster || !roast_level) {
       return NextResponse.json(
@@ -89,9 +95,11 @@ export async function POST(request: NextRequest) {
           roast_level: normalizeRoastLevel(roast_level),
           roast_date: roast_date || null,
           origin: origin || null,
-          weight_g: weight_g ? parseInt(weight_g) : null,
+          weight_g: weight_g !== '' && weight_g !== null && weight_g !== undefined ? parseInt(weight_g) : null,
           is_active: is_active !== undefined ? is_active : true,
           is_pre_ground: !!is_pre_ground,
+          bean_type: beanType,
+          arabica_percent: Number.isFinite(arabicaPercent) ? arabicaPercent : null,
         },
       ])
       .select()
@@ -122,7 +130,12 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { id, name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground } = body
+    const { id, name, roaster, roast_level, roast_date, origin, weight_g, is_active, is_pre_ground, bean_type, arabica_percent } = body
+    const beanType = normalizeBeanType(bean_type)
+    const arabicaPercent =
+      beanType === 'Blend' && arabica_percent !== '' && arabica_percent !== null && arabica_percent !== undefined
+        ? Math.min(100, Math.max(0, parseInt(arabica_percent)))
+        : null
 
     if (!id || !name || !roaster || !roast_level) {
       return NextResponse.json(
@@ -151,9 +164,11 @@ export async function PUT(request: NextRequest) {
         roast_level: normalizeRoastLevel(roast_level),
         roast_date: roast_date || null,
         origin: origin || null,
-        weight_g: weight_g ? parseInt(weight_g) : null,
+        weight_g: weight_g !== '' && weight_g !== null && weight_g !== undefined ? parseInt(weight_g) : null,
         is_active: is_active !== undefined ? is_active : true,
         is_pre_ground: !!is_pre_ground,
+        bean_type: beanType,
+        arabica_percent: Number.isFinite(arabicaPercent) ? arabicaPercent : null,
       })
       .eq('id', id)
       .select()

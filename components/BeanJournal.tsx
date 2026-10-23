@@ -87,7 +87,7 @@ export default function BeanJournal() {
     : catalog
 
   if (loading) {
-    return <p className="text-[#8b6f47] italic py-8 text-center">{t('bean_journal.loading')}</p>
+    return <p className="text-muted italic py-8 text-center">{t('bean_journal.loading')}</p>
   }
 
   return (
@@ -100,8 +100,8 @@ export default function BeanJournal() {
             else { setSortBy('rating'); setSortDir('desc') }
           }}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${sortBy === 'rating'
-            ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
-            : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
+            ? 'bg-surface border-accent text-accent'
+            : 'bg-canvas border-line text-muted hover:border-line-strong'
             }`}
         >
           <ArrowUpDown className="w-4 h-4" />
@@ -114,8 +114,8 @@ export default function BeanJournal() {
             else { setSortBy('date'); setSortDir('desc') }
           }}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${sortBy === 'date'
-            ? 'bg-[#2d2520] border-[#d4a574] text-[#d4a574]'
-            : 'bg-[#1a1410] border-[#3d3530] text-[#8b6f47] hover:border-[#5a4f4a]'
+            ? 'bg-surface border-accent text-accent'
+            : 'bg-canvas border-line text-muted hover:border-line-strong'
             }`}
         >
           <ArrowUpDown className="w-4 h-4" />
@@ -126,7 +126,7 @@ export default function BeanJournal() {
           <select
             value={roastFilter}
             onChange={(e) => setRoastFilter(e.target.value)}
-            className="appearance-none pl-3 pr-8 py-2 rounded-lg bg-[#2d2520] border border-[#3d3530] text-sm font-bold text-[#8b6f47] hover:border-[#5a4f4a] focus:border-[#d4a574] focus:outline-none transition cursor-pointer"
+            className="appearance-none pl-3 pr-8 py-2 rounded-lg bg-surface border border-line text-sm font-bold text-muted hover:border-line-strong focus:border-accent focus:outline-none transition cursor-pointer"
           >
             <option value="">All Roasts</option>
             {ROAST_LEVELS.map((r) => (
@@ -135,13 +135,13 @@ export default function BeanJournal() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b6f47] pointer-events-none" />
+          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
         </div>
 
         {roastFilter && (
           <button
             onClick={() => setRoastFilter('')}
-            className="text-xs text-[#8b6f47] hover:text-[#f5f1ed] transition"
+            className="text-xs text-muted hover:text-ink transition"
           >
             ✕ Clear
           </button>
@@ -149,9 +149,9 @@ export default function BeanJournal() {
       </div>
 
       {displayed.length === 0 ? (
-        <div className="text-center py-12 bg-[#2d2520] border border-[#3d3530] rounded-xl">
-          <Coffee className="w-12 h-12 text-[#8b6f47] mx-auto mb-4" />
-          <p className="text-[#8b6f47] italic">{t('bean_journal.empty')}</p>
+        <div className="text-center py-12 bg-surface border border-line rounded-xl">
+          <Coffee className="w-12 h-12 text-muted mx-auto mb-4" />
+          <p className="text-muted italic">{t('bean_journal.empty')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -164,16 +164,16 @@ export default function BeanJournal() {
             return (
               <article
                 key={entry.key}
-                className="bg-[#2d2520] border border-[#3d3530] rounded-xl p-5 hover:border-[#5a4f4a] transition"
+                className="bg-surface border border-line rounded-xl p-5 hover:border-line-strong transition"
               >
                 <div className="flex flex-row justify-between items-start gap-4 mb-3">
                   <div className="flex-1 min-w-0">
                     {/* Header */}
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="text-lg font-bold text-[#f5f1ed]">{entry.name}</h3>
+                      <h3 className="text-lg font-bold text-ink">{entry.name}</h3>
                       {entry.is_pre_ground && (
                         <span
-                          className="bg-[#3d3530] text-[#f5f1ed] text-[10px] font-bold px-1.5 py-0.5 rounded cursor-help"
+                          className="bg-line text-ink text-[10px] font-bold px-1.5 py-0.5 rounded cursor-help"
                           title={t('bean_form.is_pre_ground')}
                         >
                           PG
@@ -188,7 +188,7 @@ export default function BeanJournal() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-[#8b6f47]">
+                    <p className="text-sm text-muted">
                       {entry.roaster}
                       {entry.roast_level && (
                         <> • {translateRoastLevel(entry.roast_level, t)}</>
@@ -204,14 +204,14 @@ export default function BeanJournal() {
                         <>
                           <div className={`text-3xl font-bold font-mono ${getVibeColor(rating)}`}>
                             {rating}
-                            {/* <span className="text-base text-[#8b6f47]">/10</span> */}
+                            {/* <span className="text-base text-muted">/10</span> */}
                           </div>
                         </>
                       ) : (
-                        <p className="text-xs text-[#8b6f47] italic">{t('bean_journal.no_rating')}</p>
+                        <p className="text-xs text-muted italic">{t('bean_journal.no_rating')}</p>
                       )}
                       {entry.brew_count > 0 && (
-                        <p className="text-xs text-[#8b6f47] mt-1 flex items-center gap-1 justify-end">
+                        <p className="text-xs text-muted mt-1 flex items-center gap-1 justify-end">
                           <Coffee className="w-3 h-3" />
                           {t('bean_journal.brew_count', { count: entry.brew_count })}
                         </p>
@@ -223,43 +223,43 @@ export default function BeanJournal() {
                 {/* Best brew icon strip */}
                 {bb && (
                   <div className="mb-3 flex flex-wrap gap-3">
-                    <span className="text-[10px] text-[#8b6f47] uppercase tracking-widest self-center font-bold">Best brew</span>
-                    <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                      <Coffee className="w-3 h-3 text-[#8b6f47]" />
+                    <span className="text-[10px] text-muted uppercase tracking-widest self-center font-bold">Best brew</span>
+                    <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
+                      <Coffee className="w-3 h-3 text-muted" />
                       {bb.coffee_weight_g}g
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                      <Droplets className="w-3 h-3 text-[#8b6f47]" />
+                    <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
+                      <Droplets className="w-3 h-3 text-muted" />
                       {bb.water_added_g}g
                     </span>
                     {!entry.is_pre_ground && bb.grinder_setting != null && (
-                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                        <Settings className="w-3 h-3 text-[#8b6f47]" />
+                      <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
+                        <Settings className="w-3 h-3 text-muted" />
                         {bb.grinder_setting} clicks
                         {bb.grinder_microns_per_click ? ` (~${bb.grinder_setting * bb.grinder_microns_per_click}µm)` : ''}
                       </span>
                     )}
                     {bb.water_temp && (
-                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                        <Thermometer className="w-3 h-3 text-[#8b6f47]" />
+                      <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
+                        <Thermometer className="w-3 h-3 text-muted" />
                         {translateStoredExpertValue(bb.water_temp, t, 'Boiling')}
                       </span>
                     )}
                     {bb.heat_level && (
-                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                        <Flame className="w-3 h-3 text-[#8b6f47]" />
+                      <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
+                        <Flame className="w-3 h-3 text-muted" />
                         {translateStoredExpertValue(bb.heat_level, t, 'Medium-Low')}
                       </span>
                     )}
                     {bb.extraction_time_s != null && (
-                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                        <Clock className="w-3 h-3 text-[#8b6f47]" />
+                      <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
+                        <Clock className="w-3 h-3 text-muted" />
                         {bb.extraction_time_s}s
                       </span>
                     )}
                     {bb.has_paper_filter && (
-                      <span className="flex items-center gap-1 text-xs text-[#f5f1ed] bg-[#1a1410] border border-[#3d3530] rounded px-2 py-1">
-                        <Filter className="w-3 h-3 text-[#8b6f47]" />
+                      <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
+                        <Filter className="w-3 h-3 text-muted" />
                         {t('brew_card.paper_filter')}
                       </span>
                     )}
@@ -268,18 +268,18 @@ export default function BeanJournal() {
 
                 {/* AI Summary */}
                 {entry.flavor_notes ? (
-                  <div className="mt-3 bg-[#1a1410] border border-[#d4a574]/30 rounded-lg p-4">
+                  <div className="mt-3 bg-canvas border border-accent/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm">✨</span>
-                      <span className="text-xs font-bold text-[#d4a574] uppercase tracking-wider">Brew Recap</span>
+                      <span className="text-xs font-bold text-accent uppercase tracking-wider">Brew Recap</span>
                     </div>
-                    <p className="text-sm text-[#f5f1ed] leading-relaxed italic">
+                    <p className="text-sm text-ink leading-relaxed italic">
                       {entry.flavor_notes}
                     </p>
                     <button
                       onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
                       disabled={summarizingId === entry.key}
-                      className="mt-3 text-xs text-[#8b6f47] hover:text-[#d4a574] transition disabled:opacity-50"
+                      className="mt-3 text-xs text-muted hover:text-accent transition disabled:opacity-50"
                     >
                       {summarizingId === entry.key ? 'Generating...' : '🔄 Refresh'}
                     </button>
@@ -289,7 +289,7 @@ export default function BeanJournal() {
                     <button
                       onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
                       disabled={summarizingId === entry.key || entry.brew_count === 0}
-                      className="text-sm flex items-center gap-2 bg-transparent border border-[#d4a574]/50 hover:bg-[#d4a574]/10 text-[#d4a574] py-1.5 px-3 rounded transition disabled:opacity-50"
+                      className="text-sm flex items-center gap-2 bg-transparent border border-accent/50 hover:bg-accent/10 text-accent py-1.5 px-3 rounded transition disabled:opacity-50"
                     >
                       <span className="text-xs">✨</span>
                       {summarizingId === entry.key ? 'Generating...' : 'Summarize with AI'}

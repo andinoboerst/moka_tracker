@@ -8,7 +8,7 @@ import { toPng } from 'html-to-image'
 import { ArrowLeft, Download, Share2 } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/LanguageContext'
-import { getVibeName } from '@/lib/utils'
+import { getVibeName, getAuthHeaders } from '@/lib/utils'
 
 export default function BrewSharePage({ params }: { params: Promise<{ id: string }> }) {
   const { language, t } = useLanguage()
@@ -30,7 +30,8 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
 
     const fetchBrew = async () => {
       try {
-        const response = await fetch(`/api/brews/${paramsId}`)
+        const headers = await getAuthHeaders()
+        const response = await fetch(`/api/brews/${paramsId}`, { headers })
         if (!response.ok) throw new Error('Brew not found')
         const data = await response.json()
         setBrew(data)
@@ -113,16 +114,16 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-[#8b6f47]">{t('brew_share_page.loading')}</p>
+        <p className="text-muted">{t('brew_share_page.loading')}</p>
       </div>
     )
   }
 
   if (!brew) {
     return (
-      <div className="min-h-screen bg-[#0f0d0a] text-[#f5f1ed] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-canvas text-ink flex flex-col items-center justify-center p-4">
         <h1 className="text-4xl font-bold mb-4">{t('brew_share_page.not_found')}</h1>
-        <Link href="/brew" className="text-[#d4a574] hover:underline">
+        <Link href="/brew" className="text-accent hover:underline">
           {t('brew_share_page.back_to_brews')}
         </Link>
       </div>
@@ -130,12 +131,12 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0d0a] text-[#f5f1ed] p-4">
+    <div className="min-h-screen bg-canvas text-ink p-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/brew"
-            className="flex items-center gap-2 text-[#d4a574] hover:text-[#f5f1ed] transition"
+            className="flex items-center gap-2 text-accent hover:text-ink transition"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('brew_share_page.back')}
@@ -144,7 +145,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
             <button
               onClick={handleShare}
               disabled={isSharing}
-              className="flex items-center gap-2 px-4 py-2 bg-[#d4a574] text-[#1a1410] rounded-lg hover:bg-[#e5b886] transition disabled:opacity-50 font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-accent text-canvas rounded-lg hover:bg-accent-hover transition disabled:opacity-50 font-medium"
             >
               <Share2 className="w-4 h-4" />
               {t('common.share')}
@@ -152,7 +153,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
             <button
               onClick={handleDownload}
               disabled={isDownloading}
-              className="flex items-center gap-2 px-4 py-2 bg-[#2d2520] border border-[#3d3530] text-[#d4a574] rounded-lg hover:bg-[#3d3530] transition disabled:opacity-50 font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-surface border border-line text-accent rounded-lg hover:bg-line transition disabled:opacity-50 font-medium"
             >
               <Download className="w-4 h-4" />
               {t('brew_share_page.download')}
@@ -166,9 +167,9 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
           </div>
         </div>
 
-        <div className="mt-8 p-6 bg-[#2d2520] border border-[#3d3530] rounded-lg">
-          <h2 className="text-2xl font-bold text-[#d4a574] mb-4">{t('brew_share_page.title')}</h2>
-          <div className="space-y-4 text-[#f5f1ed]">
+        <div className="mt-8 p-6 bg-surface border border-line rounded-lg">
+          <h2 className="text-2xl font-bold text-accent mb-4">{t('brew_share_page.title')}</h2>
+          <div className="space-y-4 text-ink">
             <div>
               <h3 className="font-semibold text-lg mb-2">{t('brew_share_page.on_mobile')}</h3>
               <ol className="space-y-2 ml-4 list-decimal">
@@ -184,8 +185,8 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
                 <li>{t('brew_share_page.desktop_step_2')}</li>
               </ol>
             </div>
-            <div className="pt-4 border-t border-[#3d3530]">
-              <p className="text-sm text-[#8b6f47] italic">
+            <div className="pt-4 border-t border-line">
+              <p className="text-sm text-muted italic">
                 {t('brew_share_page.share_tip')}
               </p>
             </div>

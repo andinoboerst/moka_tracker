@@ -22,22 +22,22 @@ export default function Footer() {
 
   return (
     <footer className="py-4 px-4">
-      <div className="flex gap-4 text-xs text-[#8b6f47]">
+      <div className="flex gap-4 text-xs text-muted">
         <Link 
           href="/privacy" 
-          className="hover:text-[#d4a574] transition"
+          className="hover:text-accent transition"
         >
           Privacy
         </Link>
         <Link 
           href="/terms" 
-          className="hover:text-[#d4a574] transition"
+          className="hover:text-accent transition"
         >
           Terms
         </Link>
         <button
           onClick={handleCopyEmail}
-          className="hover:text-[#d4a574] transition cursor-pointer bg-transparent border-0 p-0 text-xs relative"
+          className="hover:text-accent transition cursor-pointer bg-transparent border-0 p-0 text-xs relative"
           title="Click to copy"
         >
           {copied ? 'Copied!' : 'support@mokatracker.com'}

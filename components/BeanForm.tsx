@@ -23,6 +23,8 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
     weight_g: '',
     is_active: true,
     is_pre_ground: false,
+    bean_type: '',
+    arabica_percent: '',
   })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -38,6 +40,8 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
         weight_g: initialData.weight_g?.toString() || '',
         is_active: initialData.is_active !== false,
         is_pre_ground: initialData.is_pre_ground === true,
+        bean_type: initialData.bean_type || '',
+        arabica_percent: initialData.arabica_percent?.toString() || '',
       })
     } else {
       setFormData({
@@ -49,6 +53,8 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
         weight_g: '',
         is_active: true,
         is_pre_ground: false,
+        bean_type: '',
+        arabica_percent: '',
       })
     }
   }, [initialData])
@@ -71,6 +77,8 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
           weight_g: '',
           is_active: true,
           is_pre_ground: false,
+          bean_type: '',
+          arabica_percent: '',
         })
       }
       setSuccess(true)
@@ -83,14 +91,14 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
   return (
     <form
       onSubmit={handleSubmit}
-      className={`bg-[#2d2520] border ${initialData ? 'border-[#d4a574]' : 'border-[#3d3530]'} rounded-lg p-6 space-y-4`}
+      className={`bg-surface border ${initialData ? 'border-accent' : 'border-line'} rounded-lg p-6 space-y-4`}
     >
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-[#d4a574]">
+        <h3 className="text-lg font-semibold text-accent">
           {initialData ? t('bean_form.edit_title') : t('bean_form.add_title')}
         </h3>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="text-[#8b6f47] hover:text-[#f5f1ed]">
+          <button type="button" onClick={onCancel} className="text-muted hover:text-ink">
             <X className="w-5 h-5" />
           </button>
         )}
@@ -111,35 +119,35 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('bean_form.name')}</label>
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.name')}</label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="e.g., Yirgacheffe"
             required
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('bean_form.roaster')}</label>
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.roaster')}</label>
           <input
             type="text"
             value={formData.roaster}
             onChange={(e) => setFormData({ ...formData, roaster: e.target.value })}
             placeholder="e.g., Blue Bottle"
             required
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('bean_form.roast_level')}</label>
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.roast_level')}</label>
           <select
             value={formData.roast_level}
             onChange={(e) => setFormData({ ...formData, roast_level: e.target.value })}
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink focus:outline-none focus:border-accent"
           >
             <option value="Light">{t('bean_form.light')}</option>
             <option value="Medium">{t('bean_form.medium')}</option>
@@ -149,34 +157,63 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('bean_form.roast_date')}</label>
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.bean_type')}</label>
+          <select
+            value={formData.bean_type}
+            onChange={(e) => setFormData({ ...formData, bean_type: e.target.value })}
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink focus:outline-none focus:border-accent"
+          >
+            <option value="">{t('bean_form.type_unknown')}</option>
+            <option value="Arabica">{t('bean_form.type_arabica')}</option>
+            <option value="Robusta">{t('bean_form.type_robusta')}</option>
+            <option value="Blend">{t('bean_form.type_blend')}</option>
+          </select>
+        </div>
+
+        {formData.bean_type === 'Blend' && (
+          <div>
+            <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.arabica_percent')}</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={formData.arabica_percent}
+              onChange={(e) => setFormData({ ...formData, arabica_percent: e.target.value })}
+              placeholder="e.g., 70"
+              className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.roast_date')}</label>
           <input
             type="date"
             value={formData.roast_date}
             onChange={(e) => setFormData({ ...formData, roast_date: e.target.value })}
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] focus:outline-none focus:border-[#d4a574]"
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink focus:outline-none focus:border-accent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('bean_form.origin')}</label>
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.origin')}</label>
           <input
             type="text"
             value={formData.origin}
             onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
             placeholder={t('bean_form.origin_hint')}
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#f5f1ed] mb-1">{t('bean_form.weight')}</label>
+          <label className="block text-sm font-medium text-ink mb-1">{t('bean_form.weight')}</label>
           <input
             type="number"
             value={formData.weight_g}
             onChange={(e) => setFormData({ ...formData, weight_g: e.target.value })}
             placeholder="e.g., 250"
-            className="w-full bg-[#1a1410] border border-[#5a4f4a] rounded px-3 py-2 text-[#f5f1ed] placeholder-[#8b6f47] focus:outline-none focus:border-[#d4a574]"
+            className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
           />
         </div>
 
@@ -186,9 +223,9 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             id="is_active"
             checked={formData.is_active}
             onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-            className="w-4 h-4 rounded border-[#5a4f4a] bg-[#1a1410] text-[#d4a574] focus:ring-[#d4a574]"
+            className="w-4 h-4 rounded border-line-strong bg-canvas text-accent focus:ring-accent"
           />
-          <label htmlFor="is_active" className="text-sm font-medium text-[#f5f1ed]">
+          <label htmlFor="is_active" className="text-sm font-medium text-ink">
             {t('bean_form.is_active')}
           </label>
         </div>
@@ -199,9 +236,9 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             id="is_pre_ground"
             checked={formData.is_pre_ground}
             onChange={(e) => setFormData({ ...formData, is_pre_ground: e.target.checked })}
-            className="w-4 h-4 rounded border-[#5a4f4a] bg-[#1a1410] text-[#d4a574] focus:ring-[#d4a574]"
+            className="w-4 h-4 rounded border-line-strong bg-canvas text-accent focus:ring-accent"
           />
-          <label htmlFor="is_pre_ground" className="text-sm font-medium text-[#f5f1ed]">
+          <label htmlFor="is_pre_ground" className="text-sm font-medium text-ink">
             {t('bean_form.is_pre_ground')}
           </label>
         </div>
@@ -210,7 +247,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-[#d4a574] hover:bg-[#c49464] disabled:opacity-50 text-[#1a1410] font-bold py-2 rounded transition flex items-center justify-center gap-2"
+        className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 text-canvas font-bold py-2 rounded transition flex items-center justify-center gap-2"
       >
         {initialData ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
         {isLoading ? t('common.saving') : t('common.save')}

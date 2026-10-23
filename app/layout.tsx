@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ChatAssistant from "@/components/ChatAssistant";
 import Footer from "@/components/Footer";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,14 @@ export const metadata: Metadata = {
   description: "A free, simple tool for coffee enthusiasts to log, track, and improve their stovetop Moka pot brews.",
   icons: {
     icon: "/icon.png",
+    apple: "/icon.png",
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "Moka Tracker", statusBarStyle: "black-translucent" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1a1410",
 };
 
 export default function RootLayout({
@@ -39,9 +47,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-screen flex flex-col bg-[#1a1410] text-[#f5f1ed]">
+      <body className="min-h-screen flex flex-col bg-canvas text-ink">
         <LanguageProvider>
           <AuthProvider>
             {children}
@@ -49,6 +58,7 @@ export default function RootLayout({
             <Footer />
           </AuthProvider>
         </LanguageProvider>
+        <ServiceWorkerRegister />
         <Analytics />
         <SpeedInsights />
       </body>

@@ -70,34 +70,34 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-[#2d2520] border border-[#3d3530] rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold text-[#d4a574] mb-6">
+      <div className="bg-surface border border-line rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+        <h2 className="text-2xl font-bold text-accent mb-6">
           {isSignUp ? t('common.create_account') : t('common.sign_in')}
         </h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#f5f1ed] mb-2">
+            <label className="block text-sm font-medium text-ink mb-2">
               {t('common.email')}
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 bg-[#1a1410] border border-[#3d3530] rounded-md text-[#f5f1ed] focus:outline-none focus:ring-2 focus:ring-[#d4a574]"
+              className="w-full px-3 py-2 bg-canvas border border-line rounded-md text-ink focus:outline-none focus:ring-2 focus:ring-accent"
               required
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-[#f5f1ed] mb-2">
+            <label className="block text-sm font-medium text-ink mb-2">
               {t('common.password')}
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-[#1a1410] border border-[#3d3530] rounded-md text-[#f5f1ed] focus:outline-none focus:ring-2 focus:ring-[#d4a574]"
+              className="w-full px-3 py-2 bg-canvas border border-line rounded-md text-ink focus:outline-none focus:ring-2 focus:ring-accent"
               required
             />
           </div>
@@ -109,7 +109,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#d4a574] hover:bg-[#c49464] text-[#1a1410] font-bold py-2 px-4 rounded transition disabled:opacity-50"
+            className="w-full bg-accent hover:bg-accent-hover text-canvas font-bold py-2 px-4 rounded transition disabled:opacity-50"
           >
             {loading ? t('common.loading') : (isSignUp ? t('common.sign_up') : t('common.sign_in'))}
           </button>
@@ -117,10 +117,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#3d3530]"></div>
+            <div className="w-full border-t border-line"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-[#2d2520] text-[#8b6f47]">{t('common.or_continue_with')}</span>
+            <span className="px-2 bg-surface text-muted">{t('common.or_continue_with')}</span>
           </div>
         </div>
 
@@ -142,16 +142,16 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <button
           onClick={handleGuestSignIn}
           disabled={loading}
-          className="w-full mt-3 flex items-center justify-center gap-3 bg-[#1a1410] hover:bg-[#251e1a] text-[#f5f1ed] font-medium py-2 px-4 rounded transition disabled:opacity-50 border border-[#3d3530]"
+          className="w-full mt-3 flex items-center justify-center gap-3 bg-canvas hover:bg-surface text-ink font-medium py-2 px-4 rounded transition disabled:opacity-50 border border-line"
         >
-          <UserIcon className="w-5 h-5 text-[#8b6f47]" />
+          <UserIcon className="w-5 h-5 text-muted" />
           <span>{t('common.continue_as_guest')}</span>
         </button>
 
         <div className="mt-4 text-center">
           <button
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-[#8b6f47] hover:text-[#d4a574] text-sm"
+            className="text-muted hover:text-accent text-sm"
           >
             {isSignUp ? t('common.already_have_account') : t('common.dont_have_account')}
           </button>
@@ -161,7 +161,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <div className="mt-2 text-center">
             <button
               onClick={() => setIsPasswordResetOpen(true)}
-              className="text-[#8b6f47] hover:text-[#d4a574] text-sm"
+              className="text-muted hover:text-accent text-sm"
             >
               {t('common.forgot_password')}
             </button>
@@ -170,7 +170,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         <button
           onClick={onClose}
-          className="mt-4 w-full text-[#8b6f47] hover:text-[#d4a574] text-sm"
+          className="mt-4 w-full text-muted hover:text-accent text-sm"
         >
           {t('common.cancel')}
         </button>

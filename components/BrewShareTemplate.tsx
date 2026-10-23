@@ -2,6 +2,7 @@
 
 import { Brew } from '@/lib/types'
 import { getVibeEmoji, getVibeName, formatDate, mokaPotName } from '@/lib/utils'
+import { describeMix } from '@/lib/beans'
 import { translateRoastLevel } from '@/lib/dbValues'
 import { MokaPotIcon } from './icons/MokaPotIcon'
 import { Scale, Thermometer, Timer, Sparkles, Droplets, Settings } from 'lucide-react'
@@ -61,7 +62,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
 
         <div className="mb-12 border-b border-[#3d3530] pb-10">
           <h2 className="text-6xl font-bold text-[#f5f1ed] mb-4">
-            {brew.bean?.name}
+            {brew.mix && brew.mix.length > 1 ? describeMix(brew.mix) : brew.bean?.name}
           </h2>
           <p className="text-4xl text-[#d4a574]">
             {brew.bean?.origin ? `${brew.bean.origin} • ` : ''}{translateRoastLevel(brew.bean?.roast_level, t)} {t('brew_share.roast')}

@@ -6,7 +6,8 @@ import BeanForm from '@/components/BeanForm'
 import GrinderForm from '@/components/GrinderForm'
 import MokaPotForm from '@/components/MokaPotForm'
 import InventoryList from '@/components/InventoryList'
-import { Bean, Grinder, MokaPot } from '@/lib/types'
+import MixManager from '@/components/MixManager'
+import { Bean, BeanMix, Grinder, MokaPot } from '@/lib/types'
 import { getAuthHeaders } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
 
@@ -15,6 +16,7 @@ export default function InventoryPage() {
   const [beans, setBeans] = useState<Bean[]>([])
   const [grinders, setGrinders] = useState<Grinder[]>([])
   const [mokaPots, setMokaPots] = useState<MokaPot[]>([])
+  const [mixes, setMixes] = useState<BeanMix[]>([])
   const [loading, setLoading] = useState(true)
 
   // Edit states
@@ -23,7 +25,7 @@ export default function InventoryPage() {
   const [editingMokaPot, setEditingMokaPot] = useState<MokaPot | null>(null)
 
   useEffect(() => {
-    Promise.all([fetchBeans(), fetchGrinders(), fetchMokaPots()]).then(() =>
+    Promise.all([fetchBeans(), fetchGrinders(), fetchMokaPots(), fetchMixes()]).then(() =>
       setLoading(false)
     )
   }, [])
@@ -45,6 +47,16 @@ export default function InventoryPage() {
       }
     } catch (err) {
       console.error('Error fetching beans:', err)
+    }
+  }
+
+  const fetchMixes = async () => {
+    try {
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/bean-mixes', { headers })
+      if (response.ok) setMixes(await response.json())
+    } catch (err) {
+      console.error('Error fetching mixes:', err)
     }
   }
 
@@ -175,7 +187,7 @@ export default function InventoryPage() {
       <>
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-[#8b6f47]">{t('inventory.loading')}</p>
+          <p className="text-muted">{t('inventory.loading')}</p>
         </div>
       </>
     )
@@ -186,10 +198,10 @@ export default function InventoryPage() {
       <Header />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#d4a574] mb-2">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-accent mb-2">
             {t('inventory.title')}
           </h1>
-          <p className="text-[#8b6f47] text-lg italic">
+          <p className="text-muted text-lg italic">
             {t('inventory.subtitle')}
           </p>
         </div>
@@ -220,7 +232,7 @@ export default function InventoryPage() {
           {/* Right column: Lists */}
           <div className="space-y-8">
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">{t('inventory.your_beans')}</h2>
+              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('inventory.your_beans')}</h2>
               <InventoryList
                 items={beans}
                 type="beans"
@@ -232,7 +244,12 @@ export default function InventoryPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">{t('inventory.your_grinders')}</h2>
+              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('feat.mixes_title')}</h2>
+              <MixManager beans={beans} mixes={mixes} onChanged={fetchMixes} />
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('inventory.your_grinders')}</h2>
               <InventoryList
                 items={grinders}
                 type="grinders"
@@ -243,7 +260,7 @@ export default function InventoryPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-[#d4a574] mb-4">{t('inventory.your_moka_pots')}</h2>
+              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('inventory.your_moka_pots')}</h2>
               <InventoryList
                 items={mokaPots}
                 type="moka-pots"

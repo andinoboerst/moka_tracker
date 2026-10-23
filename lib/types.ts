@@ -9,6 +9,9 @@ export interface Bean {
   weight_g?: number
   is_active?: boolean
   is_pre_ground?: boolean
+  bean_type?: 'Arabica' | 'Robusta' | 'Blend' | null
+  /** Only for blends: share of Arabica, 0-100 */
+  arabica_percent?: number | null
   created_at: string
   updated_at: string
 }
@@ -105,6 +108,9 @@ export interface Brew {
   has_paper_filter?: boolean
   flow_type?: string
   ai_recap?: string
+  share_token?: string | null
+  /** Present when several beans were mixed; bean_id is the largest component */
+  mix?: { bean_id: string; percentage: number; bean?: Bean }[]
   created_at: string
   updated_at: string
   bean?: Bean
@@ -114,6 +120,8 @@ export interface Brew {
 
 export interface BrewCreateInput {
   bean_id: string
+  /** Optional manual mix (percentages sum to 100). When set, bean_id is the largest component. */
+  mix?: { bean_id: string; percentage: number }[]
   grinder_id?: string
   moka_pot_id: string
   grinder_setting?: number
@@ -131,4 +139,13 @@ export interface BrewCreateInput {
   flow_type: string
   /** UI locale only — not persisted; all DB enum fields use English canonical values */
   language?: string
+}
+
+export interface BeanMix {
+  id: string
+  user_id: string
+  name: string
+  components: { bean_id: string; percentage: number }[]
+  created_at: string
+  updated_at: string
 }
