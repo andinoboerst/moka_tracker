@@ -133,7 +133,7 @@ export default function MixManager({ beans, mixes, onChanged }: MixManagerProps)
               )}
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => startEdit(mix)} className="p-2 hover:bg-line rounded text-accent" aria-label="Edit">
+              <button onClick={() => startEdit(mix)} className="p-2 hover:bg-line rounded text-accent-ink" aria-label="Edit">
                 <Edit2 className="w-4 h-4" />
               </button>
               <button onClick={() => handleDelete(mix.id)} className="p-2 hover:bg-red-900/30 rounded text-red-400" aria-label="Delete">
@@ -147,7 +147,7 @@ export default function MixManager({ beans, mixes, onChanged }: MixManagerProps)
       {open ? (
         <form onSubmit={handleSave} className="bg-surface border border-accent rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-accent">{editingId ? t('feat.mix_form_edit') : t('feat.mix_form_add')}</h4>
+            <h4 className="font-semibold text-accent-ink">{editingId ? t('feat.mix_form_edit') : t('feat.mix_form_add')}</h4>
             <button type="button" onClick={reset} className="text-muted hover:text-ink" aria-label="Cancel">
               <X className="w-5 h-5" />
             </button>
@@ -211,7 +211,7 @@ export default function MixManager({ beans, mixes, onChanged }: MixManagerProps)
               <button
                 type="button"
                 onClick={() => setRows((r) => [...r, { bean_id: '', percentage: '0' }])}
-                className="text-xs text-muted hover:text-accent flex items-center gap-1"
+                className="text-xs text-muted hover:text-accent-ink flex items-center gap-1"
               >
                 <Plus className="w-3 h-3" /> {t('feat.mix_add_bean')}
               </button>
@@ -235,7 +235,7 @@ export default function MixManager({ beans, mixes, onChanged }: MixManagerProps)
         beans.length >= 2 && (
           <button
             onClick={() => setOpen(true)}
-            className="w-full border border-dashed border-line-strong hover:border-accent text-muted hover:text-accent rounded-xl py-2.5 text-sm flex items-center justify-center gap-2"
+            className="w-full border border-dashed border-line-strong hover:border-accent text-muted hover:text-accent-ink rounded-xl py-2.5 text-sm flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" /> {t('feat.mix_form_add')}
           </button>

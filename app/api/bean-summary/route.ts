@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     const avgRating = brews.reduce((sum, b) => sum + (b.vibe_rating || 0), 0) / brews.length
     const roastLevel = brews[0]?.bean?.roast_level || 'Unknown'
 
-    let prompt = `You are a warm, passionate Italian brew master giving someone a personal summary of their own tasting notes and opinions about a bean named "${name}" from "${roaster}" (Roast Level: ${roastLevel}).
+    const prompt = `You are a warm, passionate Italian brew master giving someone a personal summary of their own tasting notes and opinions about a bean named "${name}" from "${roaster}" (Roast Level: ${roastLevel}).
 This person brewed it ${brews.length} time(s), with an average rating of ${avgRating.toFixed(1)}/10.
 Their tasting notes across those brews: "${allNotes || 'No specific notes'}".
 

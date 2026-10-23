@@ -17,6 +17,9 @@ import {
   Clock,
   Settings,
   Filter,
+  Sparkles,
+  RefreshCw,
+  X,
 } from 'lucide-react'
 
 const ROAST_LEVELS = ['Light', 'Medium', 'Dark', 'French']
@@ -46,6 +49,8 @@ export default function BeanJournal() {
   }, [sortBy, sortDir])
 
   useEffect(() => {
+    // Data fetch on mount / sort change: show the loading state while it runs.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     fetchCatalog()
   }, [fetchCatalog])
@@ -100,7 +105,7 @@ export default function BeanJournal() {
             else { setSortBy('rating'); setSortDir('desc') }
           }}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${sortBy === 'rating'
-            ? 'bg-surface border-accent text-accent'
+            ? 'bg-surface border-accent text-accent-ink'
             : 'bg-canvas border-line text-muted hover:border-line-strong'
             }`}
         >
@@ -114,7 +119,7 @@ export default function BeanJournal() {
             else { setSortBy('date'); setSortDir('desc') }
           }}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-bold transition ${sortBy === 'date'
-            ? 'bg-surface border-accent text-accent'
+            ? 'bg-surface border-accent text-accent-ink'
             : 'bg-canvas border-line text-muted hover:border-line-strong'
             }`}
         >
@@ -143,7 +148,7 @@ export default function BeanJournal() {
             onClick={() => setRoastFilter('')}
             className="text-xs text-muted hover:text-ink transition"
           >
-            ✕ Clear
+            <span className="inline-flex items-center gap-1"><X className="w-3 h-3" /> Clear</span>
           </button>
         )}
       </div>
@@ -270,8 +275,8 @@ export default function BeanJournal() {
                 {entry.flavor_notes ? (
                   <div className="mt-3 bg-canvas border border-accent/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm">✨</span>
-                      <span className="text-xs font-bold text-accent uppercase tracking-wider">Brew Recap</span>
+                      <Sparkles className="w-4 h-4 text-accent-ink" />
+                      <span className="text-xs font-bold text-accent-ink uppercase tracking-wider">Brew Recap</span>
                     </div>
                     <p className="text-sm text-ink leading-relaxed italic">
                       {entry.flavor_notes}
@@ -279,9 +284,12 @@ export default function BeanJournal() {
                     <button
                       onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
                       disabled={summarizingId === entry.key}
-                      className="mt-3 text-xs text-muted hover:text-accent transition disabled:opacity-50"
+                      className="mt-3 text-xs text-muted hover:text-accent-ink transition disabled:opacity-50"
                     >
-                      {summarizingId === entry.key ? 'Generating...' : '🔄 Refresh'}
+                      <span className="inline-flex items-center gap-1.5">
+                        <RefreshCw className="w-3 h-3" />
+                        {summarizingId === entry.key ? 'Generating...' : 'Refresh'}
+                      </span>
                     </button>
                   </div>
                 ) : (
@@ -289,9 +297,9 @@ export default function BeanJournal() {
                     <button
                       onClick={() => handleSummarize(entry.name, entry.roaster, entry.key)}
                       disabled={summarizingId === entry.key || entry.brew_count === 0}
-                      className="text-sm flex items-center gap-2 bg-transparent border border-accent/50 hover:bg-accent/10 text-accent py-1.5 px-3 rounded transition disabled:opacity-50"
+                      className="text-sm flex items-center gap-2 bg-transparent border border-accent/50 hover:bg-accent/10 text-accent-ink py-1.5 px-3 rounded transition disabled:opacity-50"
                     >
-                      <span className="text-xs">✨</span>
+                      <Sparkles className="w-3.5 h-3.5" />
                       {summarizingId === entry.key ? 'Generating...' : 'Summarize with AI'}
                     </button>
                   </div>

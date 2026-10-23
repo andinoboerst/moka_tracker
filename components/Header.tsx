@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth'
 import { useState, useRef, useEffect } from 'react'
 import AuthModal from './AuthModal'
 import PasswordChangeModal from './PasswordChangeModal'
-import { User, Menu, X, Trash2, LogOut, UserPlus, Key } from 'lucide-react'
+import { User, Menu, X, Trash2, LogOut, UserPlus, Key, Coffee, Package, BarChart3, Plus, Globe, Check } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { MokaPotIcon } from './icons/MokaPotIcon'
 import { getAuthHeaders } from '@/lib/utils'
@@ -80,77 +80,80 @@ export default function Header({ onSignInClick }: HeaderProps) {
 
   return (
     <>
-      <header className="bg-surface/85 backdrop-blur-md border-b border-line sticky top-0 z-50 shadow-[0_8px_24px_-16px_rgba(0,0,0,0.5)]">
+      <header className="sticky top-0 z-50 border-b border-line bg-canvas/85 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="text-accent transition-transform group-hover:scale-110 group-hover:rotate-6">
-                <MokaPotIcon className="w-12 h-12" />
+          <div className="flex justify-between items-center h-16 gap-4">
+            <Link href="/" className="flex items-center gap-2.5 group shrink-0" aria-label="Moka Tracker home">
+              <div className="transition-transform duration-150 group-hover:-rotate-6">
+                <MokaPotIcon className="w-9 h-9" />
               </div>
-              <div className="relative">
-                <span className="block text-2xl font-serif font-bold gradient-text tracking-tight">Moka Tracker</span>
-                <div className="tricolore absolute -bottom-1 left-0 w-full" aria-hidden="true" />
+              <div className="relative pb-1">
+                <span className="block text-xl font-display font-semibold tracking-tight text-ink">Moka Tracker</span>
+                <div className="tricolore absolute bottom-0 left-0 w-full" aria-hidden="true" />
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="flex items-center gap-4">
-              <nav className="hidden md:flex gap-1">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <nav className="segmented hidden md:inline-flex" aria-label="Primary">
                 {[
-                  { href: '/', label: t('nav.dashboard') },
-                  { href: '/inventory', label: t('nav.inventory') },
-                  { href: '/analytics', label: t('nav.analytics') },
-                  { href: '/brew', label: t('nav.log_brew') },
-                ].map((item) => {
-                  const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+                  { href: '/', label: t('nav.dashboard'), Icon: Coffee },
+                  { href: '/inventory', label: t('nav.inventory'), Icon: Package },
+                  { href: '/analytics', label: t('nav.analytics'), Icon: BarChart3 },
+                ].map(({ href, label, Icon }) => {
+                  const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
                   return (
                     <Link
-                      key={item.href}
-                      href={item.href}
+                      key={href}
+                      href={href}
                       aria-current={active ? 'page' : undefined}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                        active
-                          ? 'bg-accent/15 text-accent'
-                          : 'text-ink/80 hover:text-accent hover:bg-line/60'
-                      }`}
+                      className="segmented-item"
                     >
-                      {item.label}
+                      <Icon className="w-4 h-4" />
+                      {label}
                     </Link>
                   )
                 })}
               </nav>
 
+              <Link href="/brew" className="btn-primary hidden md:inline-flex h-9 px-3.5 text-sm">
+                <Plus className="w-4 h-4" />
+                {t('nav.log_brew')}
+              </Link>
+
               <ThemeToggle className="hidden md:flex" />
 
-              {/* Language Toggle (Desktop) */}
+              {/* Language switcher (desktop) */}
               <button
                 onClick={() => setLanguage(language === 'en' ? 'it' : 'en')}
-                className="hidden md:flex items-center justify-center w-10 h-10 text-xl hover:scale-110 transition-transform rounded-full hover:bg-line"
+                className="hidden md:inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg border border-line text-muted hover:text-ink hover:border-line-strong"
                 title={language === 'en' ? t('common.switch_to_italian') : t('common.switch_to_english')}
+                aria-label={language === 'en' ? t('common.switch_to_italian') : t('common.switch_to_english')}
               >
-                <span>{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
+                <Globe className="w-4 h-4" />
+                <span className="num text-xs font-medium tracking-wide">{language.toUpperCase()}</span>
               </button>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 {user ? (
                   <div className="relative" ref={userMenuRef}>
                     <button
                       onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                      className="p-2 rounded-full bg-canvas border border-line-strong text-accent hover:bg-line transition"
+                      className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-surface border border-line-strong text-accent-ink hover:border-muted"
                       aria-label="Account menu"
                       aria-expanded={isUserMenuOpen}
                     >
-                      <User className="w-5 h-5" />
+                      <User className="w-4 h-4" />
                     </button>
 
                     {/* User Dropdown */}
                     {isUserMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-56 bg-surface border border-line-strong rounded-lg shadow-xl py-2 z-50">
+                      <div className="absolute right-0 mt-2 w-60 card py-2 z-50">
                         <div className="px-4 py-2 border-b border-line mb-2">
-                          <p className="text-xs text-muted">
+                          <p className="eyebrow">
                             {user.is_anonymous ? t('common.guest_mode_warning').split(':')[0] : t('common.signed_in_as')}
                           </p>
-                          <p className="text-sm text-ink truncate font-medium">
+                          <p className="text-sm text-ink truncate font-medium mt-1">
                             {user.is_anonymous ? t('common.guest_explorer') : user.email}
                           </p>
                         </div>
@@ -161,7 +164,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                               setIsUserMenuOpen(false)
                               onSignInClick ? onSignInClick() : setIsAuthModalOpen(true)
                             }}
-                            className="w-full text-left px-4 py-2 text-sm text-accent hover:bg-line transition flex items-center gap-2 border-b border-line mb-1"
+                            className="w-full text-left px-4 py-2 text-sm text-accent-ink hover:bg-line/60 flex items-center gap-2 border-b border-line mb-1"
                           >
                             <UserPlus className="w-4 h-4" />
                             {t('common.sign_up')}
@@ -174,7 +177,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                               setIsUserMenuOpen(false)
                               setIsPasswordChangeOpen(true)
                             }}
-                            className="w-full text-left px-4 py-2 text-sm text-ink hover:bg-line hover:text-accent transition flex items-center gap-2 border-b border-line mb-1"
+                            className="w-full text-left px-4 py-2 text-sm text-ink hover:bg-line/60 flex items-center gap-2 border-b border-line mb-1"
                           >
                             <Key className="w-4 h-4" />
                             {t('common.change_password')}
@@ -184,7 +187,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                         <Link
                           href="/privacy"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="w-full text-left px-4 py-2 text-sm text-muted hover:bg-line hover:text-accent transition flex items-center gap-2 border-t border-line mt-2"
+                          className="w-full text-left px-4 py-2 text-sm text-muted hover:bg-line/60 hover:text-ink flex items-center gap-2 border-t border-line mt-2"
                         >
                           Privacy Policy
                         </Link>
@@ -192,16 +195,22 @@ export default function Header({ onSignInClick }: HeaderProps) {
                         <Link
                           href="/terms"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="w-full text-left px-4 py-2 text-sm text-muted hover:bg-line hover:text-accent transition flex items-center gap-2"
+                          className="w-full text-left px-4 py-2 text-sm text-muted hover:bg-line/60 hover:text-ink flex items-center gap-2"
                         >
                           Terms of Service
                         </Link>
 
                         <button
                           onClick={handleCopyEmail}
-                          className="w-full text-left px-4 py-2 text-sm text-muted hover:bg-line hover:text-accent transition flex items-center gap-2 border-t border-line mt-2"
+                          className="w-full text-left px-4 py-2 text-sm text-muted hover:bg-line/60 hover:text-ink flex items-center gap-2 border-t border-line mt-2"
                         >
-                          {emailCopied ? '✓ Copied!' : 'support@mokatracker.com'}
+                          {emailCopied ? (
+                            <>
+                              <Check className="w-4 h-4 text-sage" /> Copied
+                            </>
+                          ) : (
+                            'support@mokatracker.com'
+                          )}
                         </button>
 
                         <button
@@ -209,7 +218,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                             setIsUserMenuOpen(false)
                             signOut()
                           }}
-                          className="w-full text-left px-4 py-2 text-sm text-ink hover:bg-line hover:text-accent transition flex items-center gap-2 border-t border-line mt-2"
+                          className="w-full text-left px-4 py-2 text-sm text-ink hover:bg-line/60 flex items-center gap-2 border-t border-line mt-2"
                         >
                           <LogOut className="w-4 h-4" />
                           {t('common.sign_out')}
@@ -221,7 +230,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                             handleDeleteAccount()
                           }}
                           disabled={isDeletingAccount}
-                          className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-900/30 transition flex items-center gap-2 mt-1"
+                          className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-900/30 flex items-center gap-2 mt-1"
                         >
                           <Trash2 className="w-4 h-4" />
                           {isDeletingAccount ? t('common.saving') : t('common.delete_account')}
@@ -231,8 +240,8 @@ export default function Header({ onSignInClick }: HeaderProps) {
                   </div>
                 ) : (
                   <button
-                    onClick={() => onSignInClick ? onSignInClick() : setIsAuthModalOpen(true)}
-                    className="btn-primary py-2 px-5 text-sm hidden md:inline-flex"
+                    onClick={() => (onSignInClick ? onSignInClick() : setIsAuthModalOpen(true))}
+                    className="btn-ghost h-9 px-3.5 text-sm hidden md:inline-flex"
                   >
                     {t('common.sign_in')}
                   </button>
@@ -241,8 +250,9 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="md:hidden p-2 text-ink hover:text-accent"
+                  className="md:hidden p-2 text-ink hover:text-accent-ink"
                   aria-label="Toggle menu"
+                  aria-expanded={isMobileMenuOpen}
                 >
                   {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
@@ -253,35 +263,30 @@ export default function Header({ onSignInClick }: HeaderProps) {
 
         {/* Mobile Navigation Dropdown */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-canvas border-b border-line px-4 pt-2 pb-4 space-y-1 shadow-lg">
+          <div className="md:hidden bg-canvas border-b border-line px-4 pt-3 pb-4 space-y-1">
             {user ? (
               <>
-                <Link
-                  href="/"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:text-accent hover:bg-surface transition"
-                >
-                  {t('nav.dashboard')}
-                </Link>
-                <Link
-                  href="/inventory"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:text-accent hover:bg-surface transition"
-                >
-                  {t('nav.inventory')}
-                </Link>
-                <Link
-                  href="/analytics"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:text-accent hover:bg-surface transition"
-                >
-                  {t('nav.analytics')}
-                </Link>
+                {[
+                  { href: '/', label: t('nav.dashboard'), Icon: Coffee },
+                  { href: '/inventory', label: t('nav.inventory'), Icon: Package },
+                  { href: '/analytics', label: t('nav.analytics'), Icon: BarChart3 },
+                ].map(({ href, label, Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-base font-medium text-ink hover:bg-surface"
+                  >
+                    <Icon className="w-5 h-5 text-muted" />
+                    {label}
+                  </Link>
+                ))}
                 <Link
                   href="/brew"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-base font-medium text-ink hover:text-accent hover:bg-surface transition"
+                  className="btn-primary w-full py-3 mt-2"
                 >
+                  <Plus className="w-5 h-5" />
                   {t('nav.log_brew')}
                 </Link>
               </>
@@ -291,24 +296,27 @@ export default function Header({ onSignInClick }: HeaderProps) {
                   setIsMobileMenuOpen(false)
                   setIsAuthModalOpen(true)
                 }}
-                className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-accent hover:bg-surface transition"
+                className="btn-primary w-full py-3"
               >
                 {t('common.sign_in')}
               </button>
             )}
 
-            <ThemeToggle className="w-full !justify-start gap-3 px-3 !rounded-md" />
+            <ThemeToggle showLabel className="w-full !justify-start gap-3 px-3" />
 
-            {/* Language Toggle (Mobile) */}
+            {/* Language switcher (mobile) */}
             <button
               onClick={() => {
                 setLanguage(language === 'en' ? 'it' : 'en')
                 setIsMobileMenuOpen(false)
               }}
-              className="w-full flex items-center justify-between px-3 py-3 rounded-md text-base font-medium text-ink hover:text-accent hover:bg-surface transition border-t border-line mt-2"
+              className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-base font-medium text-ink hover:bg-surface border-t border-line mt-2"
             >
               <span>{language === 'en' ? t('common.switch_to_italian') : t('common.switch_to_english')}</span>
-              <span className="text-2xl">{language === 'en' ? '🇬🇧' : '🇮🇹'}</span>
+              <span className="inline-flex items-center gap-1.5 text-muted">
+                <Globe className="w-4 h-4" />
+                <span className="num text-xs font-medium">{language.toUpperCase()}</span>
+              </span>
             </button>
 
             {/* Only show privacy/terms in mobile menu when logged in */}
@@ -317,7 +325,7 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 <Link
                   href="/privacy"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-base font-medium text-muted hover:text-accent hover:bg-surface transition border-t border-line"
+                  className="block px-3 py-3 rounded-lg text-base font-medium text-muted hover:text-ink hover:bg-surface border-t border-line"
                 >
                   Privacy Policy
                 </Link>
@@ -325,16 +333,22 @@ export default function Header({ onSignInClick }: HeaderProps) {
                 <Link
                   href="/terms"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-3 rounded-md text-base font-medium text-muted hover:text-accent hover:bg-surface transition"
+                  className="block px-3 py-3 rounded-lg text-base font-medium text-muted hover:text-ink hover:bg-surface"
                 >
                   Terms of Service
                 </Link>
 
                 <button
                   onClick={handleCopyEmail}
-                  className="w-full text-left px-3 py-3 rounded-md text-base font-medium text-muted hover:text-accent hover:bg-surface transition"
+                  className="w-full text-left px-3 py-3 rounded-lg text-base font-medium text-muted hover:text-ink hover:bg-surface flex items-center gap-2"
                 >
-                  {emailCopied ? '✓ Copied!' : 'support@mokatracker.com'}
+                  {emailCopied ? (
+                    <>
+                      <Check className="w-4 h-4 text-sage" /> Copied
+                    </>
+                  ) : (
+                    'support@mokatracker.com'
+                  )}
                 </button>
               </>
             )}

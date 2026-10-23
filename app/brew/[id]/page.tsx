@@ -123,7 +123,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
     return (
       <div className="min-h-screen bg-canvas text-ink flex flex-col items-center justify-center p-4">
         <h1 className="text-4xl font-bold mb-4">{t('brew_share_page.not_found')}</h1>
-        <Link href="/brew" className="text-accent hover:underline">
+        <Link href="/brew" className="text-accent-ink hover:underline">
           {t('brew_share_page.back_to_brews')}
         </Link>
       </div>
@@ -136,7 +136,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
         <div className="flex items-center justify-between mb-6">
           <Link
             href="/brew"
-            className="flex items-center gap-2 text-accent hover:text-ink transition"
+            className="flex items-center gap-2 text-accent-ink hover:text-ink transition"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('brew_share_page.back')}
@@ -145,7 +145,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
             <button
               onClick={handleShare}
               disabled={isSharing}
-              className="flex items-center gap-2 px-4 py-2 bg-accent text-canvas rounded-lg hover:bg-accent-hover transition disabled:opacity-50 font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition disabled:opacity-50 font-medium"
             >
               <Share2 className="w-4 h-4" />
               {t('common.share')}
@@ -153,7 +153,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
             <button
               onClick={handleDownload}
               disabled={isDownloading}
-              className="flex items-center gap-2 px-4 py-2 bg-surface border border-line text-accent rounded-lg hover:bg-line transition disabled:opacity-50 font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-surface border border-line text-accent-ink rounded-lg hover:bg-line transition disabled:opacity-50 font-medium"
             >
               <Download className="w-4 h-4" />
               {t('brew_share_page.download')}
@@ -168,7 +168,7 @@ export default function BrewSharePage({ params }: { params: Promise<{ id: string
         </div>
 
         <div className="mt-8 p-6 card">
-          <h2 className="text-2xl font-bold text-accent mb-4">{t('brew_share_page.title')}</h2>
+          <h2 className="text-2xl font-bold text-accent-ink mb-4">{t('brew_share_page.title')}</h2>
           <div className="space-y-4 text-ink">
             <div>
               <h3 className="font-semibold text-lg mb-2">{t('brew_share_page.on_mobile')}</h3>

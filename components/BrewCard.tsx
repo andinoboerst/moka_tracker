@@ -1,9 +1,10 @@
 'use client'
 
 import { Brew } from '@/lib/types'
-import { getVibeEmoji, getVibeName, formatDate, mokaPotName, getAuthHeaders } from '@/lib/utils'
+import { getVibeName, formatDate, mokaPotName, getAuthHeaders } from '@/lib/utils'
 import { translateStoredExpertValue, translateMilkType, translateRoastLevel } from '@/lib/dbValues'
-import { Trash2, Sparkles, Share2, Download, Pencil, Copy, Link2, Link2Off, Check } from 'lucide-react'
+import { Trash2, Sparkles, Share2, Download, Pencil, Copy, Link2, Link2Off, Check, Thermometer, Flame, Waves, FileText } from 'lucide-react'
+import VibeIcon from './VibeIcon'
 import Link from 'next/link'
 import { describeMix, mixArabicaShare } from '@/lib/beans'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -141,12 +142,12 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
     }
   }
   return (
-    <div className="card card-interactive tricolore-top p-6 space-y-4">
+    <div className="card card-interactive p-6 space-y-4">
       {/* Header with date and delete */}
       <div className="flex justify-between items-start">
         <div>
           <p className="eyebrow">{formatDate(brew.created_at)}</p>
-          <h3 className="text-xl font-serif font-bold text-ink mt-1.5">
+          <h3 className="text-xl font-display font-bold text-ink mt-1.5">
             {hasMix ? describeMix(brew.mix!) : brew.bean?.name}
           </h3>
           {hasMix && mixShare !== null && (
@@ -154,24 +155,26 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-2xl" title={getVibeName(brew.vibe_rating, language)}>{getVibeEmoji(brew.vibe_rating)}</span>
+          <span title={getVibeName(brew.vibe_rating, language)} className="text-accent-ink px-1">
+            <VibeIcon rating={brew.vibe_rating} className="w-6 h-6" />
+          </span>
           <Link
             href={`/brew/${brew.id}/edit`}
-            className="p-2 hover:bg-line rounded transition text-accent"
+            className="p-2 hover:bg-line rounded transition text-accent-ink"
             title={t('feat.edit_brew')}
           >
             <Pencil className="w-4 h-4" />
           </Link>
           <Link
             href={`/brew?from=${brew.id}`}
-            className="p-2 hover:bg-line rounded transition text-accent"
+            className="p-2 hover:bg-line rounded transition text-accent-ink"
             title={t('feat.brew_again')}
           >
             <Copy className="w-4 h-4" />
           </Link>
           <button
             onClick={copyPublicLink}
-            className="p-2 hover:bg-line rounded transition text-accent"
+            className="p-2 hover:bg-line rounded transition text-accent-ink"
             title={linkCopied ? t('feat.link_copied') : t('feat.share_link')}
           >
             {linkCopied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
@@ -188,7 +191,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
           <button
             onClick={handleShare}
             disabled={isSharing}
-            className="p-2 hover:bg-line rounded transition disabled:opacity-50 text-accent"
+            className="p-2 hover:bg-line rounded transition disabled:opacity-50 text-accent-ink"
             title={t('common.share')}
           >
             <Share2 className="w-4 h-4" />
@@ -196,7 +199,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
           <button
             onClick={handleDownload}
             disabled={isDownloading}
-            className="p-2 hover:bg-line rounded transition disabled:opacity-50 text-accent"
+            className="p-2 hover:bg-line rounded transition disabled:opacity-50 text-accent-ink"
             title={t('brew_card.download_image')}
           >
             <Download className="w-4 h-4" />
@@ -215,7 +218,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       {/* Brew Details Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.bean')}</p>
+          <p className="eyebrow mb-1.5">{t('brew_card.bean')}</p>
           {hasMix ? (
             <ul className="text-sm font-medium text-ink space-y-0.5">
               {[...brew.mix!].sort((a, b) => b.percentage - a.percentage).map((c) => (
@@ -239,14 +242,14 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
         </div>
 
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.grinder')}</p>
+          <p className="eyebrow mb-1.5">{t('brew_card.grinder')}</p>
           <p className="text-sm font-medium text-ink">
             {brew.grinder_id ? (
               <>
-                {brew.grinder_setting} {t('brew_card.clicks')}
+                <span className="num">{brew.grinder_setting}</span> {t('brew_card.clicks')}
                 {brew.grinder?.microns_per_click && (
                   <span className="text-xs text-muted ml-1">
-                    ({brew.grinder_setting! * brew.grinder.microns_per_click}μm)
+                    (<span className="num">{brew.grinder_setting! * brew.grinder.microns_per_click}μm</span>)
                   </span>
                 )}
               </>
@@ -260,16 +263,16 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
         </div>
 
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.moka_pot')}</p>
+          <p className="eyebrow mb-1.5">{t('brew_card.moka_pot')}</p>
           <p className="text-sm font-medium text-ink">
             {brew.moka_pot ? mokaPotName(brew.moka_pot) : ''} ({t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})
           </p>
         </div>
 
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.vibe')}</p>
-          <p className="text-sm font-medium text-accent">
-            {brew.vibe_rating}/10 — {getVibeName(brew.vibe_rating, language)}
+          <p className="eyebrow mb-1.5">{t('brew_card.vibe')}</p>
+          <p className="text-sm font-medium text-accent-ink">
+            <span className="num">{brew.vibe_rating}/10</span> — {getVibeName(brew.vibe_rating, language)}
           </p>
         </div>
       </div>
@@ -277,39 +280,39 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       {/* Measurements */}
       <div className="grid grid-cols-3 gap-3">
         <div className="stat-tile-strong p-3 text-center">
-          <p className="text-xs text-muted">{t('brew_card.coffee')}</p>
-          <p className="text-lg font-semibold text-accent">{brew.coffee_weight_g}g</p>
+          <p className="eyebrow">{t('brew_card.coffee')}</p>
+          <p className="num text-lg font-medium text-ink">{brew.coffee_weight_g}g</p>
         </div>
         <div className="stat-tile-strong p-3 text-center">
-          <p className="text-xs text-muted">{t('brew_card.water_in')}</p>
-          <p className="text-lg font-semibold text-accent">{brew.water_added_g}g</p>
+          <p className="eyebrow">{t('brew_card.water_in')}</p>
+          <p className="num text-lg font-medium text-ink">{brew.water_added_g}g</p>
         </div>
         <div className="stat-tile-strong p-3 text-center">
-          <p className="text-xs text-muted">{t('brew_card.yield')}</p>
-          <p className="text-lg font-semibold text-accent">{brew.final_yield_g}g</p>
+          <p className="eyebrow">{t('brew_card.yield')}</p>
+          <p className="num text-lg font-medium text-ink">{brew.final_yield_g}g</p>
         </div>
       </div>
 
       {/* Additional Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.brew_ratio')}</p>
-          <p className="text-sm font-semibold text-accent">
+          <p className="eyebrow mb-1.5">{t('brew_card.brew_ratio')}</p>
+          <p className="num text-sm font-medium text-ink">
             1:{brew.brew_ratio_input?.toFixed(2)}
           </p>
         </div>
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.extraction')}</p>
-          <p className="text-sm font-semibold text-accent">
+          <p className="eyebrow mb-1.5">{t('brew_card.extraction')}</p>
+          <p className="num text-sm font-medium text-ink">
             1:{brew.extraction_ratio_output?.toFixed(2)}
           </p>
         </div>
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.time')}</p>
-          <p className="text-sm font-semibold text-ink">{brew.extraction_time_s}s</p>
+          <p className="eyebrow mb-1.5">{t('brew_card.time')}</p>
+          <p className="num text-sm font-medium text-ink">{brew.extraction_time_s}s</p>
         </div>
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.style')}</p>
+          <p className="eyebrow mb-1.5">{t('brew_card.style')}</p>
           <p className="text-sm font-semibold text-ink">
             {brew.milk_added_g ? `${translateMilkType(brew.milk_type, t)} (${brew.milk_added_g}g)` : t('brew_card.black')}
           </p>
@@ -319,17 +322,17 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       {/* Expert Metrics Display */}
       <div className="flex flex-wrap gap-2 pt-2 border-t border-line/50">
         <div className="chip">
-          <span>🌡️</span> {translateStoredExpertValue(brew.water_temp, t, 'Boiling')}
+          <Thermometer className="w-3.5 h-3.5" /> {translateStoredExpertValue(brew.water_temp, t, 'Boiling')}
         </div>
         <div className="chip">
-          <span>🔥</span> {translateStoredExpertValue(brew.heat_level, t, 'Medium-Low')}
+          <Flame className="w-3.5 h-3.5" /> {translateStoredExpertValue(brew.heat_level, t, 'Medium-Low')}
         </div>
         <div className="chip">
-          <span>🌊</span> {translateStoredExpertValue(brew.flow_type, t, 'Steady')}
+          <Waves className="w-3.5 h-3.5" /> {translateStoredExpertValue(brew.flow_type, t, 'Steady')}
         </div>
         {brew.has_paper_filter && (
           <div className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded flex items-center gap-1 border border-blue-800/30">
-            <span>📄</span> {t('brew_card.paper_filter')}
+            <FileText className="w-3.5 h-3.5" /> {t('brew_card.paper_filter')}
           </div>
         )}
       </div>
@@ -337,17 +340,17 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       {/* Tasting Notes */}
       {brew.tasting_notes && (
         <div className="stat-tile p-3">
-          <p className="text-xs text-muted mb-1">{t('brew_card.notes')}</p>
+          <p className="eyebrow mb-1.5">{t('brew_card.notes')}</p>
           <p className="text-sm text-ink">{brew.tasting_notes}</p>
         </div>
       )}
 
       {/* AI Recap */}
       {brew.ai_recap && (
-        <div className="bg-gradient-to-r from-line to-canvas rounded-lg p-4 border-l-4 border-accent">
+        <div className="rounded-lg p-4 border border-line border-l-[3px] border-l-accent bg-canvas">
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <h4 className="text-sm font-bold text-accent">{t('brew_card.brew_master_recap')}</h4>
+            <Sparkles className="w-4 h-4 text-accent-ink" />
+            <h4 className="eyebrow !text-accent-ink">{t('brew_card.brew_master_recap')}</h4>
           </div>
           {(() => {
             let summary = brew.ai_recap
@@ -363,7 +366,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
               <div className="space-y-2">
                 <p className="text-sm text-ink italic">&ldquo;{summary}&rdquo;</p>
                 {suggestion && (
-                  <p className="text-sm text-accent">
+                  <p className="text-sm text-accent-ink">
                     <span className="font-semibold">{t('dashboard.next_brew_guide')}: </span>
                     {suggestion}
                   </p>

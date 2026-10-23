@@ -2,18 +2,18 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from './supabase'
-import { User } from '@supabase/supabase-js'
+import { AuthError, User } from '@supabase/supabase-js'
 
 interface AuthContextType {
   user: User | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: any }>
-  signUp: (email: string, password: string) => Promise<{ error: any }>
-  signInWithGoogle: () => Promise<{ error: any }>
-  signInAnonymously: () => Promise<{ error: any }>
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>
+  signInAnonymously: () => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  resetPassword: (email: string) => Promise<{ error: any }>
-  updatePassword: (newPassword: string) => Promise<{ error: any }>
+  resetPassword: (email: string) => Promise<{ error: AuthError | null }>
+  updatePassword: (newPassword: string) => Promise<{ error: AuthError | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInAnonymously = async () => {
-    const { error } = await (supabase.auth as any).signInAnonymously()
+    const { error } = await supabase.auth.signInAnonymously()
     return { error }
   }
 

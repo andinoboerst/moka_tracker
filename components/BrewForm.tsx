@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { Bean, BeanMix, Brew, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
 import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeaders, formatDate } from '@/lib/utils'
 import { mixArabicaShare, mixSignature } from '@/lib/beans'
-import { X, Plus, Play, Square, RotateCcw, History, Save, AlertTriangle } from 'lucide-react'
+import { X, Plus, Play, Square, RotateCcw, History, Save, AlertTriangle, FlaskConical } from 'lucide-react'
+import VibeIcon from './VibeIcon'
 import { useLanguage } from '@/lib/LanguageContext'
 
 interface BrewFormProps {
@@ -307,7 +308,6 @@ export default function BrewForm({
   }
 
   const rating = parseInt(formData.vibe_rating)
-  const vibeEmoji = rating <= 2 ? '🫠' : rating <= 4 ? '🤷‍♂️' : rating <= 6 ? '☕' : rating <= 8 ? '🇮🇹' : '🤌'
   const vibeName =
     rating <= 2
       ? t('dashboard.vibe_low')
@@ -324,7 +324,7 @@ export default function BrewForm({
 
   return (
     <form onSubmit={handleSubmit} className="card p-6 space-y-6">
-      <h2 className="text-3xl font-serif font-bold text-accent">
+      <h2 className="text-3xl font-display font-bold text-accent-ink">
         {isEdit ? t('feat.edit_brew') : t('brew_form.title')}
       </h2>
 
@@ -344,7 +344,7 @@ export default function BrewForm({
       {/* Beans */}
       <section className="space-y-4">
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <h3 className="text-lg font-serif font-bold text-accent">{t('brew_form.bean')}</h3>
+          <h3 className="text-lg font-display font-bold text-accent-ink">{t('brew_form.bean')}</h3>
           <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
             <input
               type="checkbox"
@@ -440,7 +440,7 @@ export default function BrewForm({
                     key={p}
                     type="button"
                     onClick={() => updateRow(0, { percentage: String(p) })}
-                    className="px-2.5 py-1 rounded-full text-xs border border-line-strong text-muted hover:text-accent hover:border-accent"
+                    className="px-2.5 py-1 rounded-full text-xs border border-line-strong text-muted hover:text-accent-ink hover:border-accent"
                   >
                     {p}/{100 - p}
                   </button>
@@ -449,7 +449,7 @@ export default function BrewForm({
                 <button
                   type="button"
                   onClick={() => setMixRows((rows) => [...rows, { bean_id: '', percentage: '0' }])}
-                  className="px-2.5 py-1 rounded-full text-xs border border-line-strong text-muted hover:text-accent hover:border-accent flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-full text-xs border border-line-strong text-muted hover:text-accent-ink hover:border-accent flex items-center gap-1"
                 >
                   <Plus className="w-3 h-3" /> {t('feat.mix_add_bean')}
                 </button>
@@ -458,7 +458,7 @@ export default function BrewForm({
                 <button
                   type="button"
                   onClick={saveCurrentMix}
-                  className="px-2.5 py-1 rounded-full text-xs border border-line-strong text-muted hover:text-accent hover:border-accent flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-full text-xs border border-line-strong text-muted hover:text-accent-ink hover:border-accent flex items-center gap-1"
                 >
                   <Save className="w-3 h-3" /> {t('feat.mix_save')}
                 </button>
@@ -517,7 +517,7 @@ export default function BrewForm({
           <button
             type="button"
             onClick={applySimilar}
-            className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover"
+            className="flex items-center gap-2 text-sm text-accent-ink hover:text-accent-hover"
           >
             <History className="w-4 h-4" /> {t('feat.use_last')}
           </button>
@@ -600,7 +600,7 @@ export default function BrewForm({
               type="button"
               onClick={toggleTimer}
               className={`shrink-0 px-3 rounded-lg border flex items-center gap-1.5 text-sm font-medium ${
-                timerRunning ? 'border-red-500 text-red-400' : 'border-line-strong text-accent hover:border-accent'
+                timerRunning ? 'border-red-500 text-red-400' : 'border-line-strong text-accent-ink hover:border-accent'
               }`}
               title={timerRunning ? t('feat.timer_stop') : t('feat.timer_start')}
             >
@@ -611,7 +611,7 @@ export default function BrewForm({
               <button
                 type="button"
                 onClick={resetTimer}
-                className="shrink-0 px-2 text-muted hover:text-accent"
+                className="shrink-0 px-2 text-muted hover:text-accent-ink"
                 title={t('feat.timer_reset')}
               >
                 <RotateCcw className="w-4 h-4" />
@@ -662,8 +662,8 @@ export default function BrewForm({
 
       {/* Expert Variables */}
       <div className="p-6 bg-canvas/50 border border-line rounded-xl space-y-6">
-        <h3 className="text-lg font-serif font-bold text-accent flex items-center gap-2">
-          <span className="text-xl">🔬</span> {t('brew_form.expert_variables')}
+        <h3 className="text-lg font-display font-bold text-accent-ink flex items-center gap-2">
+          <FlaskConical className="w-5 h-5" /> {t('brew_form.expert_variables')}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -714,19 +714,20 @@ export default function BrewForm({
       <div className="grid grid-cols-2 gap-4 p-4 bg-line rounded-xl border border-line-strong">
         <div>
           <p className="text-sm text-muted mb-1">{t('brew_form.brew_ratio')}</p>
-          <p className="text-lg font-semibold text-accent">{brewRatio ? `1:${brewRatio.toFixed(2)}` : '—'}</p>
+          <p className="text-lg font-semibold text-accent-ink">{brewRatio ? `1:${brewRatio.toFixed(2)}` : '—'}</p>
         </div>
         <div>
           <p className="text-sm text-muted mb-1">{t('brew_form.extraction_ratio')}</p>
-          <p className="text-lg font-semibold text-accent">{extractionRatio ? `1:${extractionRatio.toFixed(2)}` : '—'}</p>
+          <p className="text-lg font-semibold text-accent-ink">{extractionRatio ? `1:${extractionRatio.toFixed(2)}` : '—'}</p>
         </div>
       </div>
 
       {/* Rating and Notes */}
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-ink mb-2">
-            {t('brew_form.vibe_rating')}: {formData.vibe_rating}/10 — {vibeName} {vibeEmoji}
+          <label className="flex items-center gap-2 text-sm font-medium text-ink mb-2">
+            {t('brew_form.vibe_rating')}: <span className="num">{formData.vibe_rating}/10</span> — {vibeName}{' '}
+            <VibeIcon rating={rating} className="w-4 h-4 text-accent-ink" />
           </label>
           <input
             type="range"

@@ -10,6 +10,7 @@ import { AnalyticsScatterPlot, AnalyticsLineGraph } from '@/components/Analytics
 import BeanJournal from '@/components/BeanJournal'
 import DialIn from '@/components/DialIn'
 import { describeMix } from '@/lib/beans'
+import type { Brew } from '@/lib/types'
 import { ChevronDown, ChevronUp, Star, Clock, Coffee, Thermometer, Flame, Droplets, Filter, Settings } from 'lucide-react'
 
 type AnalyticsTab = 'brews' | 'beans' | 'top_brews' | 'dialin'
@@ -17,7 +18,7 @@ type AnalyticsTab = 'brews' | 'beans' | 'top_brews' | 'dialin'
 export default function AnalyticsPage() {
   const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState<AnalyticsTab>('beans')
-  const [brews, setBrews] = useState<any[]>([])
+  const [brews, setBrews] = useState<Brew[]>([])
   const [loading, setLoading] = useState(false)
   const [scatterMode, setScatterMode] = useState<'grind' | 'roast'>('grind')
   const [expandedBrew, setExpandedBrew] = useState<string | null>(null)
@@ -49,7 +50,7 @@ export default function AnalyticsPage() {
     .map((b) => {
       let grindValue = b.grinder_setting
       if (b.grinder?.microns_per_click) {
-        grindValue = b.grinder_setting * b.grinder.microns_per_click
+        grindValue = (b.grinder_setting ?? 0) * b.grinder.microns_per_click
       }
       let daysPastRoast = 0
       if (b.bean?.roast_date) {
@@ -115,7 +116,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
               <div className="card p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                  <h2 className="text-xl font-serif font-bold text-accent">
+                  <h2 className="text-xl font-display font-bold text-accent-ink">
                     {t('analytics.scatter_plot_title')}
                   </h2>
                   <div className="flex bg-canvas rounded-lg p-1 border border-line">
@@ -123,7 +124,7 @@ export default function AnalyticsPage() {
                       onClick={() => setScatterMode('grind')}
                       className={`px-3 py-1 rounded-md text-xs font-bold transition ${
                         scatterMode === 'grind'
-                          ? 'bg-accent text-canvas'
+                          ? 'bg-accent text-white'
                           : 'text-muted hover:text-ink'
                       }`}
                     >
@@ -133,7 +134,7 @@ export default function AnalyticsPage() {
                       onClick={() => setScatterMode('roast')}
                       className={`px-3 py-1 rounded-md text-xs font-bold transition ${
                         scatterMode === 'roast'
-                          ? 'bg-accent text-canvas'
+                          ? 'bg-accent text-white'
                           : 'text-muted hover:text-ink'
                       }`}
                     >
@@ -154,7 +155,7 @@ export default function AnalyticsPage() {
 
               <div className="card p-6">
                 <div className="mb-6">
-                  <h2 className="text-xl font-serif font-bold text-accent">
+                  <h2 className="text-xl font-display font-bold text-accent-ink">
                     {t('analytics.line_graph_title')}
                   </h2>
                   <p className="text-xs text-muted">{t('analytics.line_graph_subtitle')}</p>
@@ -166,7 +167,7 @@ export default function AnalyticsPage() {
         ) : (
           <section className="mb-12">
             <div className="mb-6">
-              <h2 className="text-3xl font-serif font-bold text-accent mb-1">
+              <h2 className="text-3xl font-display font-bold text-accent-ink mb-1">
                 {t('analytics.top_brews_title')}
               </h2>
               <p className="text-muted italic">{t('analytics.top_brews_subtitle')}</p>
@@ -186,10 +187,10 @@ export default function AnalyticsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div className="bg-canvas p-3 rounded-lg border border-accent/20">
-                        <Star className="w-5 h-5 text-accent fill-accent" />
+                        <Star className="w-5 h-5 text-accent-ink fill-accent-ink" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-ink">{brew.mix?.length > 1 ? describeMix(brew.mix) : brew.bean?.name}</h3>
+                        <h3 className="font-bold text-ink">{brew.mix && brew.mix.length > 1 ? describeMix(brew.mix) : brew.bean?.name}</h3>
                         <p className="text-xs text-muted">
                           {formatDate(brew.created_at)} •{' '}
                           {t('analytics.vibe_score', { rating: brew.vibe_rating })}
@@ -201,11 +202,11 @@ export default function AnalyticsPage() {
                         <span className="text-xs text-muted uppercase tracking-wider">
                           {t('brew_card.time')}
                         </span>
-                        <span className="font-mono text-accent">
+                        <span className="font-mono text-accent-ink">
                           {brew.extraction_time_s}s
                         </span>
                       </div>
-                      <button className="text-muted hover:text-accent transition">
+                      <button className="text-muted hover:text-accent-ink transition">
                         {expandedBrew === brew.id ? (
                           <ChevronUp className="w-6 h-6" />
                         ) : (

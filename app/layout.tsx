@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import { LanguageProvider } from "@/lib/LanguageContext";
@@ -9,19 +9,22 @@ import ChatAssistant from "@/components/ChatAssistant";
 import Footer from "@/components/Footer";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-sans-ui",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono-ui",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const fraunces = Fraunces({
+  variable: "--font-display-ui",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -36,7 +39,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#17110d",
+  themeColor: "#12100E",
 };
 
 export default function RootLayout({
@@ -48,8 +51,16 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${jetbrainsMono.variable} ${fraunces.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          // Apply the saved (or system) theme before first paint to avoid a flash.
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('moka_theme');if(!t&&window.matchMedia('(prefers-color-scheme: light)').matches)t='light';if(t==='light')document.documentElement.dataset.theme='light'}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-canvas text-ink">
         <LanguageProvider>
           <AuthProvider>

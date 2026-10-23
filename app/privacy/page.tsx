@@ -11,13 +11,13 @@ export default function PrivacyPolicy() {
       <Header />
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="card tricolore-top p-8 pt-10">
-          <h1 className="text-4xl font-serif font-bold gradient-text mb-8">
+          <h1 className="text-4xl font-display font-bold mb-8">
             Privacy Policy
           </h1>
 
           <div className="space-y-8 text-ink leading-relaxed">
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">1. Information We Collect</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">1. Information We Collect</h2>
               <p className="mb-4">
                 Moka Pot Brewing Tracker collects the following information to provide our services:
               </p>
@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">2. How We Use Your Information</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">2. How We Use Your Information</h2>
               <p className="mb-4">We use your information to:</p>
               <ul className="list-disc list-inside space-y-2 text-muted">
                 <li>Provide and improve our brewing tracking services</li>
@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">3. Data Storage and Security</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">3. Data Storage and Security</h2>
               <p className="mb-4">
                 All user data is stored securely using Supabase, which provides:
               </p>
@@ -58,7 +58,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">4. AI Features</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">4. AI Features</h2>
               <p className="mb-4">
                 When you use AI features (brew recaps, bean summaries, chat assistant), your brewing data is sent to Mistral AI for processing. We:
               </p>
@@ -71,7 +71,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">5. Authentication</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">5. Authentication</h2>
               <p className="mb-4">
                 We support multiple authentication methods:
               </p>
@@ -83,7 +83,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">6. Data Retention and Deletion</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">6. Data Retention and Deletion</h2>
               <p className="mb-4">
                 You have full control over your data:
               </p>
@@ -96,7 +96,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">7. Third-Party Services</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">7. Third-Party Services</h2>
               <p className="mb-4">
                 We use the following third-party services:
               </p>
@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">8. Your Rights</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">8. Your Rights</h2>
               <p className="mb-4">
                 You have the right to:
               </p>
@@ -127,24 +127,24 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">9. Children's Privacy</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">9. Children&apos;s Privacy</h2>
               <p>
                 Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13. If we become aware of such collection, we will take immediate steps to delete it.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">10. Changes to This Policy</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">10. Changes to This Policy</h2>
               <p>
-                We may update this privacy policy from time to time. We will notify users of significant changes by posting the new policy on this page and updating the "Last Updated" date.
+                We may update this privacy policy from time to time. We will notify users of significant changes by posting the new policy on this page and updating the &quot;Last Updated&quot; date.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">11. Contact Us</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">11. Contact Us</h2>
               <p>
                 If you have questions about this privacy policy or your data, please contact us at{' '}
-                <a href="mailto:support@mokatracker.com" className="text-accent underline hover:text-ink">
+                <a href="mailto:support@mokatracker.com" className="text-accent-ink underline hover:text-ink">
                   support@mokatracker.com
                 </a>
                 .

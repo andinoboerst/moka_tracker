@@ -64,8 +64,8 @@ export default function EditBrewPage({ params }: { params: Promise<{ id: string 
       <>
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center gap-4 p-4">
-          <h1 className="text-3xl font-serif font-bold text-ink">{t('brew_share_page.not_found')}</h1>
-          <Link href="/" className="text-accent hover:underline">
+          <h1 className="text-3xl font-display font-bold text-ink">{t('brew_share_page.not_found')}</h1>
+          <Link href="/" className="text-accent-ink hover:underline">
             {t('brew_share_page.back_to_brews')}
           </Link>
         </main>

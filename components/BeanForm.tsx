@@ -1,63 +1,67 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Bean } from '@/lib/types'
 import { X, Save, Plus } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
 
+export interface BeanFormData {
+  name: string
+  roaster: string
+  roast_level: string
+  roast_date: string
+  origin: string
+  weight_g: string
+  is_active: boolean
+  is_pre_ground: boolean
+  bean_type: string
+  arabica_percent: string
+}
+
+export type BeanFormPayload = BeanFormData & { id?: string }
+
+const emptyBeanForm: BeanFormData = {
+  name: '',
+  roaster: '',
+  roast_level: 'Medium',
+  roast_date: '',
+  origin: '',
+  weight_g: '',
+  is_active: true,
+  is_pre_ground: false,
+  bean_type: '',
+  arabica_percent: '',
+}
+
+function beanToFormData(bean?: Bean | null): BeanFormData {
+  if (!bean) return emptyBeanForm
+  return {
+    name: bean.name,
+    roaster: bean.roaster,
+    roast_level: bean.roast_level,
+    roast_date: bean.roast_date || '',
+    origin: bean.origin || '',
+    weight_g: bean.weight_g?.toString() || '',
+    is_active: bean.is_active !== false,
+    is_pre_ground: bean.is_pre_ground === true,
+    bean_type: bean.bean_type || '',
+    arabica_percent: bean.arabica_percent?.toString() || '',
+  }
+}
+
 interface BeanFormProps {
-  onSubmit: (bean: any) => Promise<void>
+  onSubmit: (bean: BeanFormPayload) => Promise<void>
   isLoading: boolean
+  /** Changing the `key` of this component resets the form to the new initialData. */
   initialData?: Bean | null
   onCancel?: () => void
 }
 
 export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }: BeanFormProps) {
   const { t } = useLanguage()
-  const [formData, setFormData] = useState({
-    name: '',
-    roaster: '',
-    roast_level: 'Medium',
-    roast_date: '',
-    origin: '',
-    weight_g: '',
-    is_active: true,
-    is_pre_ground: false,
-    bean_type: '',
-    arabica_percent: '',
-  })
+  const [formData, setFormData] = useState<BeanFormData>(() => beanToFormData(initialData))
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        name: initialData.name,
-        roaster: initialData.roaster,
-        roast_level: initialData.roast_level,
-        roast_date: initialData.roast_date || '',
-        origin: initialData.origin || '',
-        weight_g: initialData.weight_g?.toString() || '',
-        is_active: initialData.is_active !== false,
-        is_pre_ground: initialData.is_pre_ground === true,
-        bean_type: initialData.bean_type || '',
-        arabica_percent: initialData.arabica_percent?.toString() || '',
-      })
-    } else {
-      setFormData({
-        name: '',
-        roaster: '',
-        roast_level: 'Medium',
-        roast_date: '',
-        origin: '',
-        weight_g: '',
-        is_active: true,
-        is_pre_ground: false,
-        bean_type: '',
-        arabica_percent: '',
-      })
-    }
-  }, [initialData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -68,18 +72,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
       const payload = initialData ? { ...formData, id: initialData.id } : formData
       await onSubmit(payload)
       if (!initialData) {
-        setFormData({
-          name: '',
-          roaster: '',
-          roast_level: 'Medium',
-          roast_date: '',
-          origin: '',
-          weight_g: '',
-          is_active: true,
-          is_pre_ground: false,
-          bean_type: '',
-          arabica_percent: '',
-        })
+        setFormData(emptyBeanForm)
       }
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
@@ -94,7 +87,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
       className={`bg-surface border ${initialData ? 'border-accent' : 'border-line'} rounded-lg p-6 space-y-4`}
     >
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-accent">
+        <h3 className="text-lg font-semibold text-accent-ink">
           {initialData ? t('bean_form.edit_title') : t('bean_form.add_title')}
         </h3>
         {onCancel && (
@@ -223,7 +216,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             id="is_active"
             checked={formData.is_active}
             onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-            className="w-4 h-4 rounded border-line-strong bg-canvas text-accent focus:ring-accent"
+            className="w-4 h-4 rounded border-line-strong bg-canvas text-accent-ink focus:ring-accent"
           />
           <label htmlFor="is_active" className="text-sm font-medium text-ink">
             {t('bean_form.is_active')}
@@ -236,7 +229,7 @@ export default function BeanForm({ onSubmit, isLoading, initialData, onCancel }:
             id="is_pre_ground"
             checked={formData.is_pre_ground}
             onChange={(e) => setFormData({ ...formData, is_pre_ground: e.target.checked })}
-            className="w-4 h-4 rounded border-line-strong bg-canvas text-accent focus:ring-accent"
+            className="w-4 h-4 rounded border-line-strong bg-canvas text-accent-ink focus:ring-accent"
           />
           <label htmlFor="is_pre_ground" className="text-sm font-medium text-ink">
             {t('bean_form.is_pre_ground')}

@@ -2,11 +2,13 @@
 
 import { use, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { Coffee } from 'lucide-react'
+import VibeIcon from '@/components/VibeIcon'
 import { supabase } from '@/lib/supabase'
 import { MokaPotIcon } from '@/components/icons/MokaPotIcon'
 import ThemeToggle from '@/components/ThemeToggle'
 import { useLanguage } from '@/lib/LanguageContext'
-import { formatDate, getVibeEmoji, getVibeName, mokaPotName } from '@/lib/utils'
+import { formatDate, getVibeName, mokaPotName } from '@/lib/utils'
 import { translateRoastLevel, translateStoredExpertValue } from '@/lib/dbValues'
 import { mixArabicaShare, type MixComponent } from '@/lib/beans'
 
@@ -55,7 +57,7 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <MokaPotIcon className="w-10 h-10" />
-            <span className="text-xl font-serif font-bold text-accent">Moka Tracker</span>
+            <span className="text-xl font-display font-bold text-accent-ink">Moka Tracker</span>
           </Link>
           <ThemeToggle />
         </div>
@@ -66,9 +68,9 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
           <p className="text-center text-muted py-20">{t('dashboard.loading')}</p>
         ) : !brew ? (
           <div className="text-center py-20">
-            <div className="text-5xl mb-4">☕</div>
-            <h1 className="text-2xl font-serif font-bold text-ink mb-2">{t('feat.shared_not_found')}</h1>
-            <Link href="/" className="text-accent hover:underline">
+            <Coffee className="w-10 h-10 text-accent-ink mx-auto mb-4" />
+            <h1 className="text-2xl font-display font-bold text-ink mb-2">{t('feat.shared_not_found')}</h1>
+            <Link href="/" className="text-accent-ink hover:underline">
               {t('feat.shared_cta')}
             </Link>
           </div>
@@ -83,7 +85,7 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs text-muted">{t('feat.shared_by')} · {formatDate(brew.created_at)}</p>
-                  <h1 className="text-3xl font-serif font-bold text-accent mt-1">
+                  <h1 className="text-3xl font-display font-bold text-accent-ink mt-1">
                     {brew.mix?.length > 1
                       ? [...brew.mix].sort((a, b) => b.percentage - a.percentage).map((c) => `${c.percentage}% ${c.bean.name}`).join(' + ')
                       : brew.bean.name}
@@ -99,8 +101,8 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
                   )}
                 </div>
                 <div className="text-center shrink-0">
-                  <div className="text-5xl">{getVibeEmoji(brew.vibe_rating)}</div>
-                  <p className="text-xs text-accent font-semibold mt-1">
+                  <VibeIcon rating={brew.vibe_rating} className="w-10 h-10 text-accent-ink mx-auto" />
+                  <p className="text-xs text-accent-ink font-semibold mt-1">
                     {brew.vibe_rating}/10 · {getVibeName(brew.vibe_rating, language)}
                   </p>
                 </div>
@@ -114,7 +116,7 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
                 ].map(([label, value]) => (
                   <div key={label} className="bg-line rounded-xl p-3">
                     <p className="text-xs text-muted">{label}</p>
-                    <p className="text-lg font-semibold text-accent">{value}</p>
+                    <p className="text-lg font-semibold text-accent-ink">{value}</p>
                   </div>
                 ))}
               </div>

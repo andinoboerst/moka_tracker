@@ -2,8 +2,21 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, ChevronLeft, ChevronRight, Download, Search, X } from 'lucide-react'
+import {
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  HardDrive,
+  Package,
+  Plus,
+  Scale,
+  Search,
+  Sparkles,
+  X,
+} from 'lucide-react'
 import Header from '@/components/Header'
+import PageHeading from '@/components/PageHeading'
 import AuthModal from '@/components/AuthModal'
 import BrewCard from '@/components/BrewCard'
 import { MokaPotIcon } from '@/components/icons/MokaPotIcon'
@@ -32,7 +45,7 @@ const selectCls =
   'bg-canvas border border-line-strong rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:border-accent'
 
 export default function Home() {
-  const { language, t } = useLanguage()
+  const { t } = useLanguage()
   const { user, loading: authLoading, signInAnonymously } = useAuth()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 
@@ -111,6 +124,8 @@ export default function Home() {
 
   useEffect(() => {
     if (authLoading || !user) return
+    // fetchBrews toggles loading/error state as part of the data fetch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchBrews()
   }, [user, authLoading, fetchBrews])
 
@@ -194,75 +209,91 @@ export default function Home() {
       <Header onSignInClick={() => setIsAuthModalOpen(true)} />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <div className="mb-10 rise-in">
-          <p className="eyebrow mb-3">☕ Moka Tracker</p>
-          <h1 className="text-4xl md:text-5xl font-serif font-bold gradient-text mb-3 tracking-tight">
-            {t('dashboard.headline')}
-          </h1>
-          <p className="text-muted text-lg italic mb-5">{t('dashboard.subtitle')}</p>
-          <div className="tricolore w-20" aria-hidden="true" />
-        </div>
+        {/* Page header */}
+        <PageHeading title={t('dashboard.headline')} subtitle={t('dashboard.subtitle')} />
 
-        {/* Guest Mode Warning */}
+        {/* Guest mode: one quiet note, no alarm bells */}
         {user?.is_anonymous && (
-          <div className="mb-8 bg-yellow-900/20 border border-yellow-700/50 rounded-xl p-4 flex items-start gap-3">
-            <span className="text-xl mt-0.5">⚠️</span>
-            <div>
-              <p className="text-ink font-bold text-sm">{t('common.guest_mode_warning')}</p>
-              <p className="text-muted text-xs mt-1">{t('common.guest_mode_description')}</p>
-            </div>
-          </div>
+          <p className="mb-8 flex items-start gap-2.5 text-xs leading-relaxed text-muted max-w-2xl">
+            <HardDrive className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
+            {t('common.guest_mode_description')}
+          </p>
         )}
 
         {/* Not signed in */}
         {!authLoading && !user ? (
-          <div className="card tricolore-top text-center py-20 px-6 rise-in">
+          <section
+            className="card tricolore-top rounded-2xl relative px-6 py-14 sm:py-20 text-center rise-in"
+            aria-labelledby="welcome-heading"
+          >
+            <div className="absolute -right-10 -bottom-10 opacity-[0.05] pointer-events-none hidden md:block" aria-hidden="true">
+              <MokaPotIcon className="w-72 h-72" />
+            </div>
 
-            <div className="max-w-2xl mx-auto">
-              <div className="text-7xl mb-6">☕</div>
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-accent mb-4">
-                {language === 'it' ? 'Il tuo rituale, elevato.' : 'Your ritual, elevated.'}
+            <div className="relative max-w-2xl mx-auto">
+              <span className="badge mb-8">
+                <Sparkles className="w-3.5 h-3.5" />
+                {t('welcome.badge')}
+              </span>
+
+              <h2
+                id="welcome-heading"
+                className="text-4xl md:text-5xl font-display font-semibold text-ink leading-[1.1] mb-5"
+              >
+                {t('welcome.headline')}{' '}
+                <span className="text-muted italic font-normal">{t('welcome.headline_aside')}</span>
               </h2>
-              <p className="text-muted text-lg mb-10 leading-relaxed">
-                {language === 'it'
-                  ? "Traccia ogni dettaglio della tua Moka. Dalla macinatura alla temperatura, perfeziona il tuo caffè con l'aiuto dell'AI."
-                  : 'Track every detail of your Moka ritual. From grind size to water temperature, perfect your coffee with AI-driven insights.'}
-              </p>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <p className="text-muted text-lg leading-relaxed mb-8">{t('welcome.body')}</p>
+
+              <ul className="flex flex-wrap items-center justify-center gap-2.5 mb-10">
+                <li className="feature-pill">
+                  <Scale className="w-4 h-4" />
+                  {t('welcome.feature_dialin')}
+                </li>
+                <li className="feature-pill">
+                  <Package className="w-4 h-4" />
+                  {t('welcome.feature_stash')}
+                </li>
+                <li className="feature-pill">
+                  <Sparkles className="w-4 h-4" />
+                  {t('welcome.feature_ai')}
+                </li>
+              </ul>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="btn-primary w-full sm:w-auto py-3 px-10 text-lg"
+                  className="btn-primary w-full sm:w-auto h-12 px-8 text-base"
                 >
-                  {t('common.sign_in')}
+                  {t('welcome.cta_signin')}
                 </button>
                 <button
                   onClick={handleGuestSignIn}
-                  className="btn-ghost w-full sm:w-auto py-3 px-10 text-lg"
+                  className="btn-ghost w-full sm:w-auto h-12 px-8 text-base"
                 >
-                  {t('common.continue_as_guest')}
+                  {t('welcome.cta_guest')}
                 </button>
               </div>
 
-              <div className="mt-12 p-4 bg-canvas/50 rounded-lg border border-yellow-900/30">
-                <p className="text-yellow-600 font-bold text-sm mb-1">⚠️ {t('common.guest_mode_warning')}</p>
-                <p className="text-muted text-xs">{t('common.guest_mode_description')}</p>
-              </div>
+              <p className="mt-8 mx-auto max-w-md flex items-start justify-center gap-2 text-xs leading-relaxed text-muted text-left sm:text-center">
+                <HardDrive className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
+                <span>{t('common.guest_mode_description')}</span>
+              </p>
             </div>
-          </div>
+          </section>
         ) : (
           <>
             {/* Next Brew Guide Card */}
             {suggestion && stats?.latest && (
-              <div className="card tricolore-top mb-8 border-accent/30 p-6">
-                <div className="absolute top-0 right-0 p-4 opacity-10 text-accent">
+              <div className="card rounded-2xl relative overflow-hidden mb-8 p-6 sm:p-8">
+                <div className="absolute top-0 right-0 p-4 opacity-[0.06] text-ink pointer-events-none">
                   <MokaPotIcon className="w-32 h-32" />
                 </div>
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xl">✨</span>
-                    <h2 className="text-xl font-serif font-bold text-accent">{t('dashboard.next_brew_guide')}</h2>
+                    <Sparkles className="w-5 h-5 text-accent-ink" />
+                    <h2 className="text-xl font-display font-semibold text-ink">{t('dashboard.next_brew_guide')}</h2>
                   </div>
                   <p className="text-muted text-sm mb-3">
                     {t('dashboard.based_on_last', { bean: latestName || '?', rating: stats.latest.vibe_rating })}
@@ -282,8 +313,8 @@ export default function Home() {
 
             {/* Low stock */}
             {lowStock.length > 0 && (
-              <div className="mb-8 flex items-start gap-3 bg-yellow-900/20 border border-yellow-700/50 rounded-xl p-4">
-                <AlertTriangle className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
+              <div className="card mb-8 flex items-start gap-3 px-4 py-3">
+                <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <p className="text-ink font-semibold">{t('feat.stock_low_title')}</p>
                   <p className="text-muted">
@@ -297,11 +328,11 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
               <div className="card p-6 text-center">
                 <p className="eyebrow mb-3">{t('dashboard.total_brews')}</p>
-                <p className="text-5xl font-serif font-bold text-accent">{stats?.total ?? '—'}</p>
+                <p className="num text-5xl font-medium text-ink">{stats?.total ?? '—'}</p>
               </div>
               <div className="card p-6 text-center">
                 <p className="eyebrow mb-3">{t('dashboard.avg_vibe')}</p>
-                <p className="text-5xl font-serif font-bold text-accent">
+                <p className="num text-5xl font-medium text-ink">
                   {stats?.avg_rating != null ? stats.avg_rating.toFixed(1) : '—'}
                 </p>
               </div>
@@ -311,7 +342,8 @@ export default function Home() {
                   href="/brew"
                   className="btn-primary py-2.5 px-5"
                 >
-                  {t('nav.log_brew')} →
+                  <Plus className="w-4 h-4" />
+                  {t('nav.log_brew')}
                 </Link>
               </div>
             </div>
@@ -319,12 +351,12 @@ export default function Home() {
             {/* Brews List */}
             <section>
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <h2 className="text-2xl font-serif font-bold text-accent">{t('dashboard.recent_brews')}</h2>
+                <h2 className="text-2xl font-display font-semibold text-ink">{t('dashboard.recent_brews')}</h2>
                 {(stats?.total ?? 0) > 0 && (
                   <button
                     onClick={handleExport}
                     disabled={exporting}
-                    className="flex items-center gap-2 text-sm text-muted hover:text-accent border border-line-strong rounded-lg px-3 py-1.5 disabled:opacity-50"
+                    className="flex items-center gap-2 text-sm text-muted hover:text-accent-ink border border-line-strong rounded-lg px-3 py-1.5 disabled:opacity-50"
                   >
                     <Download className="w-4 h-4" /> {t('feat.export_csv')}
                   </button>
@@ -388,7 +420,7 @@ export default function Home() {
                     <p className="text-muted mb-4">{t('feat.no_results')}</p>
                     <button
                       onClick={clearFilters}
-                      className="inline-flex items-center gap-1 text-accent hover:underline"
+                      className="inline-flex items-center gap-1 text-accent-ink hover:underline"
                     >
                       <X className="w-4 h-4" /> {t('feat.clear_filters')}
                     </button>

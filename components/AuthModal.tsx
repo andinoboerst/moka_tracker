@@ -71,7 +71,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="card p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold text-accent mb-6">
+        <h2 className="text-2xl font-bold text-accent-ink mb-6">
           {isSignUp ? t('common.create_account') : t('common.sign_in')}
         </h2>
         
@@ -151,7 +151,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <div className="mt-4 text-center">
           <button
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-muted hover:text-accent text-sm"
+            className="text-muted hover:text-accent-ink text-sm"
           >
             {isSignUp ? t('common.already_have_account') : t('common.dont_have_account')}
           </button>
@@ -161,7 +161,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <div className="mt-2 text-center">
             <button
               onClick={() => setIsPasswordResetOpen(true)}
-              className="text-muted hover:text-accent text-sm"
+              className="text-muted hover:text-accent-ink text-sm"
             >
               {t('common.forgot_password')}
             </button>
@@ -170,7 +170,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         <button
           onClick={onClose}
-          className="mt-4 w-full text-muted hover:text-accent text-sm"
+          className="mt-4 w-full text-muted hover:text-accent-ink text-sm"
         >
           {t('common.cancel')}
         </button>

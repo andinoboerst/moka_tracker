@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
 import { useState } from 'react'
+import { Check } from 'lucide-react'
 
 export default function Footer() {
   const { user } = useAuth()
@@ -20,31 +21,40 @@ export default function Footer() {
     return null
   }
 
+  const linkCls = 'text-muted hover:text-ink transition-colors'
+
   return (
-    <footer className="py-8 px-4 mt-8">
-      <span className="tricolore-divider mb-5" aria-hidden="true" />
-      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-muted">
-        <Link
-          href="/privacy"
-          className="hover:text-accent transition"
+    <footer className="mt-12 border-t border-line">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center gap-4">
+        <span className="tricolore-divider" aria-hidden="true" />
+        <nav
+          aria-label="Footer"
+          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs"
         >
-          Privacy
-        </Link>
-        <Link
-          href="/terms"
-          className="hover:text-accent transition"
-        >
-          Terms
-        </Link>
-        <button
-          onClick={handleCopyEmail}
-          className="hover:text-accent transition cursor-pointer bg-transparent border-0 p-0 text-xs relative"
-          title="Click to copy"
-        >
-          {copied ? 'Copied!' : 'support@mokatracker.com'}
-        </button>
+          <Link href="/privacy" className={linkCls}>
+            Privacy
+          </Link>
+          <span className="text-line-strong" aria-hidden="true">/</span>
+          <Link href="/terms" className={linkCls}>
+            Terms
+          </Link>
+          <span className="text-line-strong" aria-hidden="true">/</span>
+          <button
+            onClick={handleCopyEmail}
+            className={`${linkCls} cursor-pointer bg-transparent border-0 p-0 text-xs inline-flex items-center gap-1.5`}
+            title="Click to copy"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-sage" /> Copied
+              </>
+            ) : (
+              'support@mokatracker.com'
+            )}
+          </button>
+        </nav>
+        <p className="text-xs text-muted/80">Fatto con passione. Servito senza fretta.</p>
       </div>
-      <p className="text-center text-[11px] text-muted/70 mt-4 italic font-serif">Fatto con ☕ e passione</p>
     </footer>
   )
 }

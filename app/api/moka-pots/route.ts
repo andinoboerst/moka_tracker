@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getErrorMessage, getErrorStack } from '@/lib/errors'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { normalizeMokaPotType } from '@/lib/dbValues'
@@ -99,9 +100,9 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(data[0], { status: 201 })
-  } catch (err: any) {
-    console.error('POST /api/moka-pots error:', err.message, err.stack)
-    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
+  } catch (err) {
+    console.error('POST /api/moka-pots error:', getErrorMessage(err), getErrorStack(err))
+    return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 })
   }
 }
 
@@ -133,8 +134,8 @@ export async function PUT(request: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(data[0])
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+  } catch (err) {
+    return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 })
   }
 }
 

@@ -11,20 +11,20 @@ export default function TermsOfService() {
       <Header />
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="card tricolore-top p-8 pt-10">
-          <h1 className="text-4xl font-serif font-bold gradient-text mb-8">
+          <h1 className="text-4xl font-display font-bold mb-8">
             Terms of Service
           </h1>
 
           <div className="space-y-8 text-ink leading-relaxed">
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">1. Acceptance of Terms</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">1. Acceptance of Terms</h2>
               <p>
                 By accessing or using the Moka Pot Brewing Tracker service, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">2. Description of Service</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">2. Description of Service</h2>
               <p className="mb-4">
                 Moka Pot Brewing Tracker is a web application that allows users to:
               </p>
@@ -38,7 +38,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">3. User Accounts</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">3. User Accounts</h2>
               <p className="mb-4">
                 To use certain features, you must create an account. You agree to:
               </p>
@@ -55,7 +55,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">4. User Responsibilities</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">4. User Responsibilities</h2>
               <p className="mb-4">
                 As a user of our service, you agree to:
               </p>
@@ -63,14 +63,14 @@ export default function TermsOfService() {
                 <li>Use the service for personal, non-commercial purposes</li>
                 <li>Not attempt to gain unauthorized access to our systems</li>
                 <li>Not use the service to distribute malware or harmful content</li>
-                <li>Not interfere with other users' use of the service</li>
+                <li>Not interfere with other users&apos; use of the service</li>
                 <li>Not reverse-engineer or attempt to extract source code</li>
                 <li>Comply with all applicable laws and regulations</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">5. Content and Data</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">5. Content and Data</h2>
               <p className="mb-4">
                 Regarding content you provide:
               </p>
@@ -83,7 +83,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">6. AI Features</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">6. AI Features</h2>
               <p className="mb-4">
                 When using AI-powered features:
               </p>
@@ -97,7 +97,7 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">7. Service Availability</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">7. Service Availability</h2>
               <p className="mb-4">
                 We strive to maintain high service availability, but:
               </p>
@@ -110,14 +110,14 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">8. Privacy</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">8. Privacy</h2>
               <p>
                 Your use of our service is also governed by our Privacy Policy, which describes how we collect, use, and protect your personal information. By using our service, you agree to the terms of our Privacy Policy.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">9. Intellectual Property</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">9. Intellectual Property</h2>
               <p className="mb-4">
                 The service and its original content, features, and functionality are owned by Moka Pot Brewing Tracker and are protected by international copyright, trademark, and other intellectual property laws.
               </p>
@@ -127,9 +127,9 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">10. Disclaimers</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">10. Disclaimers</h2>
               <p className="mb-4">
-                The service is provided "as is" and "as available" without warranties of any kind, either express or implied, including but not limited to:
+                The service is provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind, either express or implied, including but not limited to:
               </p>
               <ul className="list-disc list-inside space-y-2 text-muted">
                 <li>Merchantability and fitness for a particular purpose</li>
@@ -140,14 +140,14 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">11. Limitation of Liability</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">11. Limitation of Liability</h2>
               <p>
                 To the maximum extent permitted by law, Moka Pot Brewing Tracker shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of data, profits, or other intangible losses, resulting from your use or inability to use the service.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">12. Account Termination</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">12. Account Termination</h2>
               <p className="mb-4">
                 We reserve the right to:
               </p>
@@ -162,24 +162,24 @@ export default function TermsOfService() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">13. Changes to Terms</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">13. Changes to Terms</h2>
               <p>
                 We may modify these terms at any time. We will notify users of significant changes by posting the new terms on this page. Your continued use of the service after such modifications constitutes your acceptance of the new terms.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">14. Governing Law</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">14. Governing Law</h2>
               <p>
                 These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Moka Pot Brewing Tracker operates, without regard to its conflict of law provisions.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-accent mb-4">15. Contact Information</h2>
+              <h2 className="text-2xl font-bold text-accent-ink mb-4">15. Contact Information</h2>
               <p>
                 If you have questions about these Terms of Service, please contact us at{' '}
-                <a href="mailto:support@mokatracker.com" className="text-accent underline hover:text-ink">
+                <a href="mailto:support@mokatracker.com" className="text-accent-ink underline hover:text-ink">
                   support@mokatracker.com
                 </a>
                 .

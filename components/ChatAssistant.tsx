@@ -190,7 +190,7 @@ export default function ChatAssistant() {
                   key={prompt}
                   onClick={() => send(prompt)}
                   disabled={isSending}
-                  className="text-xs rounded-full border border-line-strong px-3 py-1.5 text-muted hover:text-accent hover:border-accent transition disabled:opacity-50"
+                  className="text-xs rounded-full border border-line-strong px-3 py-1.5 text-muted hover:text-accent-ink hover:border-accent transition disabled:opacity-50"
                 >
                   {prompt}
                 </button>
@@ -213,7 +213,7 @@ export default function ChatAssistant() {
             <button
               type="submit"
               disabled={isSending || !input.trim()}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent text-canvas transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Send message"
             >
               <Send className="w-4 h-4" />
@@ -223,7 +223,7 @@ export default function ChatAssistant() {
       ) : (
         <button
           onClick={() => setOpen(true)}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-canvas shadow-2xl hover:scale-105 transition"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white shadow-2xl hover:scale-105 transition"
           aria-label="Open Moka Brew chat"
         >
           <MessageCircle className="w-6 h-6" />

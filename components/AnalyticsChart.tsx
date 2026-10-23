@@ -17,8 +17,20 @@ import {
 } from 'recharts'
 import { useLanguage } from '@/lib/LanguageContext'
 
+export interface ScatterPoint {
+  id: string
+  rating: number
+  grind?: number
+  roast: number
+}
+
+export interface LinePoint {
+  index: number
+  time: number
+}
+
 interface ScatterPlotProps {
-  data: any[]
+  data: ScatterPoint[]
   yKey: string
   yLabel: string
 }
@@ -61,7 +73,7 @@ export function AnalyticsScatterPlot({ data, yKey, yLabel }: ScatterPlotProps) {
 }
 
 interface LineGraphProps {
-  data: any[]
+  data: LinePoint[]
 }
 
 export function AnalyticsLineGraph({ data }: LineGraphProps) {

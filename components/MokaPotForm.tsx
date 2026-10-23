@@ -1,42 +1,46 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { MokaPot } from '@/lib/types'
 import { X, Save, Plus } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
 
+export interface MokaPotFormData {
+  brand: string
+  model: string
+  nickname: string
+  type: string
+  size_cups: number
+}
+
+export type MokaPotFormPayload = MokaPotFormData & { id?: string }
+
+const emptyMokaPotForm: MokaPotFormData = { brand: '', model: '', nickname: '', type: 'Stovetop', size_cups: 2 }
+
+function mokaPotToFormData(pot?: MokaPot | null): MokaPotFormData {
+  if (!pot) return emptyMokaPotForm
+  return {
+    brand: pot.brand,
+    model: pot.model,
+    nickname: pot.nickname ?? '',
+    type: pot.type,
+    size_cups: pot.size_cups,
+  }
+}
+
 interface MokaPotFormProps {
-  onSubmit: (mokaPot: any) => Promise<void>
+  onSubmit: (mokaPot: MokaPotFormPayload) => Promise<void>
   isLoading: boolean
+  /** Changing the `key` of this component resets the form to the new initialData. */
   initialData?: MokaPot | null
   onCancel?: () => void
 }
 
 export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel }: MokaPotFormProps) {
   const { t } = useLanguage()
-  const [formData, setFormData] = useState({
-    brand: '',
-    model: '',
-    nickname: '',
-    type: 'Stovetop',
-    size_cups: 2,
-  })
+  const [formData, setFormData] = useState<MokaPotFormData>(() => mokaPotToFormData(initialData))
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        brand: initialData.brand,
-        model: initialData.model,
-        nickname: initialData.nickname ?? '',
-        type: initialData.type,
-        size_cups: initialData.size_cups,
-      })
-    } else {
-      setFormData({ brand: '', model: '', nickname: '', type: 'Stovetop', size_cups: 2 })
-    }
-  }, [initialData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,7 +51,7 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
       const payload = initialData ? { ...formData, id: initialData.id } : formData
       await onSubmit(payload)
       if (!initialData) {
-        setFormData({ brand: '', model: '', nickname: '', type: 'Stovetop', size_cups: 2 })
+        setFormData(emptyMokaPotForm)
       }
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2000)
@@ -62,7 +66,7 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
       className={`bg-surface border ${initialData ? 'border-accent' : 'border-line'} rounded-lg p-6 space-y-4`}
     >
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-accent">
+        <h3 className="text-lg font-semibold text-accent-ink">
           {initialData ? t('moka_form.edit_title') : t('moka_form.add_title')}
         </h3>
         {onCancel && (

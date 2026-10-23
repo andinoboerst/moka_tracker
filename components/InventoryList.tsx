@@ -5,12 +5,14 @@ import { Trash2, Edit2, Package, Scale, Calendar, Zap, ZapOff, Globe } from 'luc
 import { formatDate } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
 
+export type InventoryItem = Bean | Grinder | MokaPot
+
 interface InventoryListProps {
   items: Bean[] | Grinder[] | MokaPot[]
   type: 'beans' | 'grinders' | 'moka-pots'
   onDelete: (id: string) => Promise<void>
-  onEdit: (item: any) => void
-  onToggleActive?: (item: any) => Promise<void>
+  onEdit: (item: InventoryItem) => void
+  onToggleActive?: (item: InventoryItem) => Promise<void>
   isDeleting: boolean
 }
 
@@ -23,7 +25,7 @@ export default function InventoryList({
   isDeleting,
 }: InventoryListProps) {
   const { t } = useLanguage()
-  const renderItem = (item: any) => {
+  const renderItem = (item: InventoryItem) => {
     if (type === 'beans') {
       const bean = item as Bean
       return (
@@ -40,7 +42,7 @@ export default function InventoryList({
               </span>
             )}
             {bean.is_pre_ground && (
-              <span className="text-[10px] text-accent bg-line px-1.5 py-0.5 rounded border border-line-strong font-bold uppercase">
+              <span className="text-[10px] text-accent-ink bg-line px-1.5 py-0.5 rounded border border-line-strong font-bold uppercase">
                 {t('brew_form.pre_ground')}
               </span>
             )}
@@ -159,7 +161,7 @@ export default function InventoryList({
           <div className="flex items-center gap-1">
             <button
               onClick={() => onEdit(item)}
-              className="p-2 hover:bg-line rounded transition text-muted hover:text-accent"
+              className="p-2 hover:bg-line rounded transition text-muted hover:text-accent-ink"
               title={t('common.edit')}
             >
               <Edit2 className="w-4 h-4" />

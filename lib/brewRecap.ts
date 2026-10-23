@@ -120,8 +120,8 @@ If a brew is good, you are ecstatic. If a brew is bad, you are dramatic and hear
 
 Analyze the following CURRENT brew details, and consider the HISTORY of previous brews with this exact same setup, to provide a JSON response with two specific keys:
 
-1. "summary": A short 1-2 sentence recap explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Use a few emojis.
-2. "suggestion": Start by briefly acknowledging the current result in a few words, then give a detailed 2-3 sentence suggestion for the next brew. Give clear, exact instructions on what to change and why it will improve the coffee. Use a few emojis.
+1. "summary": A short 1-2 sentence recap explaining WHY the CURRENT brew came out the way it did based on the extraction ratios and tasting notes. Do NOT use emojis; let dry, deadpan wit carry the personality.
+2. "suggestion": Start by briefly acknowledging the current result in a few words, then give a detailed 2-3 sentence suggestion for the next brew. Give clear, exact instructions on what to change and why it will improve the coffee. Do NOT use emojis; let dry, deadpan wit carry the personality.
 
 CONTEXT:
 - This is for a MOKA POT brew. This is not espresso or pour-over.
@@ -167,8 +167,8 @@ Rules:
 
 Example Response:
 ${language === 'it'
-? '{"summary": "Mamma mia, il rapporto di estrazione di 1:1.7 era troppo basso, il caffè è acido e debole! 😰☕", "suggestion": "Peccato! La prossima volta macina più fine per rallentare l\'acqua e far uscire la dolcezza. 🤌✨"}'
-: '{"summary": "Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the cup sour and weak! 😰☕", "suggestion": "Peccato, a bit under-extracted. Next time grind one or two clicks finer to slow the water down and pull out more sweetness. Perfetto will follow! 🤌✨"}'}`
+? '{"summary":"Mamma mia, il rapporto di estrazione di 1:1.7 era troppo basso, il caffè è acido e debole!","suggestion":"Peccato! La prossima volta macina più fine per rallentare l\'acqua e far uscire la dolcezza."}'
+: '{"summary":"Mamma mia, the extraction ratio of 1:1.7 was far too low, leaving the cup sour and weak!","suggestion":"Peccato, a bit under-extracted. Next time grind one or two clicks finer to slow the water down and pull out more sweetness. Perfetto will follow!"}'}`
 
       const primaryModel = process.env.MISTRAL_MODEL || 'ministral-8b-latest'
       const candidateModels = [primaryModel, 'open-mistral-7b'].filter((m, i, arr) => arr.indexOf(m) === i)
@@ -231,22 +231,22 @@ ${language === 'it'
       let suggestion = ''
 
       if (vibe_rating <= 3) {
-        summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place, like a Vespa in a crowded piazza! 😰🇮🇹`
+        summary = `Mamma Mia! Che disastro! Your extraction ratio of 1:${extraction_ratio_output} was all over the place, like a Vespa in a crowded piazza!`
         if ((tasting_notes || '').toLowerCase().includes('bitter')) {
-          summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}. My soul is weeping! 😭☕`
-          suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect and it will love you back. It must be as smooth as a gondola ride! 🤌✨`
+          summary = `Sacrilegio! This brew is as bitter as a broken heart due to over-extraction at 1:${extraction_ratio_output}. My soul is weeping!`
+          suggestion = `For the next time, coarser grind and lower heat, per favore! Give the coffee some respect and it will love you back. It must be as smooth as a gondola ride!`
         } else if ((tasting_notes || '').toLowerCase().includes('sour')) {
-          summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love for these beans! 🍋☕`
-          suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer. Slow it down, let the flavors bloom like a spring day in Tuscany! 🤌🌸`
+          summary = `Che peccato! The sourness tells me you rushed the extraction. A 1:${brew_ratio_input} ratio is not enough love for these beans!`
+          suggestion = `Ottimo! Use a finer grind next time to let the water dance with the coffee longer. Slow it down, let the flavors bloom like a spring day in Tuscany!`
         } else {
-          suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time. Don't be afraid to try something new, fortune favors the bold! 🤌💪`
+          suggestion = `Che disastro! Experiment with your grinder and give it some Italian passion next time. Don't be afraid to try something new, fortune favors the bold!`
         }
       } else if (vibe_rating <= 6) {
-        summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}. Not bad, but we can do better! 🙂☕`
-        suggestion = `A small tweak to the clicks, and it will be Buonissimo! Just a little more precision with your grind and you will be singing like Pavarotti! 🤌🎶`
+        summary = `Bene! A solid effort. Your 1:${brew_ratio_input} brew ratio gave us a yield of 1:${extraction_ratio_output}. Not bad, but we can do better!`
+        suggestion = `A small tweak to the clicks, and it will be Buonissimo! Just a little more precision with your grind and you will be singing like Pavarotti!`
       } else {
-        summary = `Magnifico! Splendido! This brew is a work of art, a true Italian masterpiece. I am moved to tears! 🤩🇮🇹☕`
-        suggestion = `Perfetto! Keep these settings exactly as they are. You have found the soul of the moka pot, now go and enjoy this liquid gold! 🤌✨🥇`
+        summary = `Magnifico! Splendido! This brew is a work of art, a true Italian masterpiece. I am moved to tears!`
+        suggestion = `Perfetto! Keep these settings exactly as they are. You have found the soul of the moka pot, now go and enjoy this liquid gold!`
       }
       ai_recap = JSON.stringify({ summary, suggestion })
     }

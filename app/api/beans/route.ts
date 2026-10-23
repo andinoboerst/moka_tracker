@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getErrorMessage, getErrorStack } from '@/lib/errors'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { normalizeRoastLevel } from '@/lib/dbValues'
@@ -110,9 +111,9 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(data[0], { status: 201 })
-  } catch (err: any) {
-    console.error('POST /api/beans error:', err.message, err.stack)
-    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
+  } catch (err) {
+    console.error('POST /api/beans error:', getErrorMessage(err), getErrorStack(err))
+    return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 })
   }
 }
 
@@ -179,9 +180,9 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(data[0])
-  } catch (err: any) {
-    console.error('PUT /api/beans error:', err.message, err.stack)
-    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
+  } catch (err) {
+    console.error('PUT /api/beans error:', getErrorMessage(err), getErrorStack(err))
+    return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 })
   }
 }
 
@@ -249,7 +250,7 @@ export async function DELETE(request: NextRequest) {
           .select('id', { count: 'exact', head: true })
           .in(
             'bean_id',
-            (await userClient.from('beans').select('id').ilike('name', deletedBean.name.trim()).ilike('roaster', deletedBean.roaster.trim())).data?.map((b: any) => b.id) ?? []
+            (await userClient.from('beans').select('id').ilike('name', deletedBean.name.trim()).ilike('roaster', deletedBean.roaster.trim())).data?.map((b: { id: string }) => b.id) ?? []
           ),
       ])
 

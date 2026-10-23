@@ -40,7 +40,7 @@ export default function PasswordResetModal({ isOpen, onClose }: PasswordResetMod
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="card p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold text-accent mb-6">
+        <h2 className="text-2xl font-bold text-accent-ink mb-6">
           {t('common.reset_password')}
         </h2>
 
@@ -89,7 +89,7 @@ export default function PasswordResetModal({ isOpen, onClose }: PasswordResetMod
             <button
               type="button"
               onClick={onClose}
-              className="w-full text-muted hover:text-accent text-sm"
+              className="w-full text-muted hover:text-accent-ink text-sm"
             >
               {t('common.cancel')}
             </button>

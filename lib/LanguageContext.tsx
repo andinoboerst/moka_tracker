@@ -9,18 +9,28 @@ interface LanguageContextType {
   t: (path: string, variables?: Record<string, string | number>) => string
 }
 
+/** Walk a nested translation object; returns the string at `keys` or undefined. */
+function lookup(root: unknown, keys: string[]): string | undefined {
+  let node: unknown = root
+  for (const key of keys) {
+    if (typeof node !== 'object' || node === null || !(key in node)) return undefined
+    node = (node as Record<string, unknown>)[key]
+  }
+  return typeof node === 'string' ? node : undefined
+}
+
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en')
-  const [mounted, setMounted] = useState(false)
 
+  // Restore the saved language after hydration (reading localStorage during render would cause a hydration mismatch).
   useEffect(() => {
-    const saved = localStorage.getItem('moka_lang') as Language
-    if (saved && (saved === 'en' || saved === 'it')) {
+    const saved = localStorage.getItem('moka_lang')
+    if (saved === 'en' || saved === 'it') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLanguageState(saved)
     }
-    setMounted(true)
   }, [])
 
   useEffect(() => {
@@ -34,23 +44,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const t = (path: string, variables?: Record<string, string | number>): string => {
     const keys = path.split('.')
-    let current: any = translations[language]
+    // Fall back to English if the key is missing in the current language
+    const current = lookup(translations[language], keys) ?? lookup(translations.en, keys)
 
-    for (const key of keys) {
-      if (current[key] === undefined) {
-        // Fallback to English if key missing in current language
-        let fallback: any = translations.en
-        for (const fkey of keys) {
-          if (fallback[fkey] === undefined) return path
-          fallback = fallback[fkey]
-        }
-        current = fallback
-        break
-      }
-      current = current[key]
-    }
-
-    if (typeof current !== 'string') return path
+    if (current === undefined) return path
 
     let result = current
     if (variables) {

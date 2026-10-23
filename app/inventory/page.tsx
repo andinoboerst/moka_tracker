@@ -9,6 +9,9 @@ import MokaPotForm from '@/components/MokaPotForm'
 import InventoryList from '@/components/InventoryList'
 import MixManager from '@/components/MixManager'
 import { Bean, BeanMix, Grinder, MokaPot } from '@/lib/types'
+import type { BeanFormPayload } from '@/components/BeanForm'
+import type { GrinderFormPayload } from '@/components/GrinderForm'
+import type { MokaPotFormPayload } from '@/components/MokaPotForm'
 import { getAuthHeaders } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
 
@@ -24,12 +27,6 @@ export default function InventoryPage() {
   const [editingBean, setEditingBean] = useState<Bean | null>(null)
   const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null)
   const [editingMokaPot, setEditingMokaPot] = useState<MokaPot | null>(null)
-
-  useEffect(() => {
-    Promise.all([fetchBeans(), fetchGrinders(), fetchMokaPots(), fetchMixes()]).then(() =>
-      setLoading(false)
-    )
-  }, [])
 
   const fetchBeans = async () => {
     try {
@@ -85,7 +82,16 @@ export default function InventoryPage() {
     }
   }
 
-  const handleSaveBean = async (bean: any) => {
+  useEffect(() => {
+    // Initial load on mount: the fetchers set state as part of loading.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    Promise.all([fetchBeans(), fetchGrinders(), fetchMokaPots(), fetchMixes()]).then(() =>
+      setLoading(false)
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleSaveBean = async (bean: BeanFormPayload) => {
     const headers = await getAuthHeaders()
     const method = bean.id ? 'PUT' : 'POST'
     const response = await fetch('/api/beans', {
@@ -102,7 +108,7 @@ export default function InventoryPage() {
     }
   }
 
-  const handleSaveGrinder = async (grinder: any) => {
+  const handleSaveGrinder = async (grinder: GrinderFormPayload) => {
     const headers = await getAuthHeaders()
     const method = grinder.id ? 'PUT' : 'POST'
     const response = await fetch('/api/grinders', {
@@ -119,7 +125,7 @@ export default function InventoryPage() {
     }
   }
 
-  const handleSaveMokaPot = async (mokaPot: any) => {
+  const handleSaveMokaPot = async (mokaPot: MokaPotFormPayload) => {
     const headers = await getAuthHeaders()
     const method = mokaPot.id ? 'PUT' : 'POST'
     const response = await fetch('/api/moka-pots', {
@@ -204,18 +210,21 @@ export default function InventoryPage() {
           {/* Left column: Forms */}
           <div className="space-y-6">
             <BeanForm
+              key={editingBean?.id ?? 'new-bean'}
               onSubmit={handleSaveBean}
               isLoading={false}
               initialData={editingBean}
               onCancel={() => setEditingBean(null)}
             />
             <GrinderForm
+              key={editingGrinder?.id ?? 'new-grinder'}
               onSubmit={handleSaveGrinder}
               isLoading={false}
               initialData={editingGrinder}
               onCancel={() => setEditingGrinder(null)}
             />
             <MokaPotForm
+              key={editingMokaPot?.id ?? 'new-pot'}
               onSubmit={handleSaveMokaPot}
               isLoading={false}
               initialData={editingMokaPot}
@@ -226,40 +235,40 @@ export default function InventoryPage() {
           {/* Right column: Lists */}
           <div className="space-y-8">
             <section>
-              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('inventory.your_beans')}</h2>
+              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('inventory.your_beans')}</h2>
               <InventoryList
                 items={beans}
                 type="beans"
                 onDelete={handleDeleteBean}
-                onEdit={setEditingBean}
-                onToggleActive={handleToggleBeanActive}
+                onEdit={(item) => setEditingBean(item as Bean)}
+                onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
                 isDeleting={false}
               />
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('feat.mixes_title')}</h2>
+              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('feat.mixes_title')}</h2>
               <MixManager beans={beans} mixes={mixes} onChanged={fetchMixes} />
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('inventory.your_grinders')}</h2>
+              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('inventory.your_grinders')}</h2>
               <InventoryList
                 items={grinders}
                 type="grinders"
                 onDelete={handleDeleteGrinder}
-                onEdit={setEditingGrinder}
+                onEdit={(item) => setEditingGrinder(item as Grinder)}
                 isDeleting={false}
               />
             </section>
 
             <section>
-              <h2 className="text-2xl font-serif font-bold text-accent mb-4">{t('inventory.your_moka_pots')}</h2>
+              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('inventory.your_moka_pots')}</h2>
               <InventoryList
                 items={mokaPots}
                 type="moka-pots"
                 onDelete={handleDeleteMokaPot}
-                onEdit={setEditingMokaPot}
+                onEdit={(item) => setEditingMokaPot(item as MokaPot)}
                 isDeleting={false}
               />
             </section>

@@ -91,8 +91,8 @@ export default function DialIn({ brews }: { brews: Brew[] }) {
         {/* Best known recipe */}
         <div className="card border-accent/30 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Trophy className="w-5 h-5 text-accent" />
-            <h3 className="text-xl font-serif font-bold text-accent">{t('feat.dialin_best')}</h3>
+            <Trophy className="w-5 h-5 text-accent-ink" />
+            <h3 className="text-xl font-display font-bold text-accent-ink">{t('feat.dialin_best')}</h3>
           </div>
           <p className="text-sm text-muted mb-4">
             {best.vibe_rating}/10 · {formatDate(best.created_at)}
@@ -140,8 +140,8 @@ export default function DialIn({ brews }: { brews: Brew[] }) {
         {/* Sweet spot by grind */}
         <div className="card p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Target className="w-5 h-5 text-accent" />
-            <h3 className="text-xl font-serif font-bold text-accent">{t('feat.dialin_sweet')}</h3>
+            <Target className="w-5 h-5 text-accent-ink" />
+            <h3 className="text-xl font-display font-bold text-accent-ink">{t('feat.dialin_sweet')}</h3>
           </div>
 
           {rows.length === 0 ? (
@@ -168,7 +168,7 @@ export default function DialIn({ brews }: { brews: Brew[] }) {
               </ul>
               {sweetSpot && (
                 <div className="mt-5 flex items-start gap-2 text-sm text-ink bg-canvas/60 border border-line rounded-xl p-3">
-                  <Lightbulb className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                  <Lightbulb className="w-4 h-4 text-accent-ink shrink-0 mt-0.5" />
                   <p>
                     {t('feat.dialin_tip', { setting: sweetSpot.setting, avg: sweetSpot.avg.toFixed(1) })}
                     {untested !== undefined && ` ${t('feat.dialin_try', { setting: untested })}`}

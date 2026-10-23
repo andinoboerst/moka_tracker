@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 
-export default function ThemeToggle({ className = '' }: { className?: string }) {
+export default function ThemeToggle({ className = '', showLabel = false }: { className?: string; showLabel?: boolean }) {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
 
   useEffect(() => {
@@ -27,11 +27,12 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
   return (
     <button
       onClick={toggle}
-      className={`flex items-center justify-center w-10 h-10 rounded-full hover:bg-line text-muted hover:text-accent ${className}`}
+      className={`flex items-center justify-center rounded-lg hover:bg-surface text-muted hover:text-ink ${showLabel ? 'h-11' : 'w-9 h-9'} ${className}`}
       aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
       title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
     >
-      {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      {showLabel && <span className="text-base font-medium">{theme === 'dark' ? 'Light theme' : 'Dark theme'}</span>}
     </button>
   )
 }
