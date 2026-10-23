@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (body.kind === 'simulation') {
       const prompt = `${style}
 
-A user is exploring a "what if" in a simulator: they moved a slider away from a coffee they actually brewed. The numbers below are ESTIMATES from a small model fitted to their own brew history plus general coffee knowledge, not measurements. Give a short verdict (2 to 3 sentences, max 70 words) on what this change would likely do to the cup, mention how trustworthy the estimate is given the amount of data (the "confidence" field), and say whether they should actually try it.
+A user is exploring a "what if" in a simulator: they changed pre-brew settings (grinder clicks, coffee dose, water, starting water temperature, heat, paper filter) of a coffee they actually brewed. The numbers below are ESTIMATES from a small model fitted to their own brew history plus general coffee knowledge, not measurements. Give a short verdict (2 to 3 sentences, max 70 words) on what this combination of changes would likely do to the cup (name the changes that matter most), mention how trustworthy the estimate is given the amount of data (the "confidence" field), and say whether they should actually try it.
 Return raw JSON with exactly one key: "verdict" (a plain string).
 ${voice(language)}
 

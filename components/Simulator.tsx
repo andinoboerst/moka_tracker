@@ -12,7 +12,7 @@ import {
   CartesianGrid,
   ReferenceLine,
 } from 'recharts'
-import { FlaskConical, RotateCcw, Sparkles, Timer, Star, Gauge, Info } from 'lucide-react'
+import { FlaskConical, RotateCcw, Sparkles, Timer, Star, Gauge, Info, Droplets } from 'lucide-react'
 import type { Brew } from '@/lib/types'
 import {
   brewLabel,
@@ -20,12 +20,21 @@ import {
   groupRecipes,
   notesBalance,
   predictBrew,
+  setupEffect,
   simCurve,
+  type BrewSetup,
   type Confidence,
   type SimModel,
 } from '@/lib/analytics'
 import { formatDate, getAuthHeaders } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
+import {
+  HEAT_LEVELS,
+  WATER_TEMPS,
+  normalizeHeatLevel,
+  normalizeWaterTemp,
+  translateStoredExpertValue,
+} from '@/lib/dbValues'
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n))
 
@@ -114,34 +123,56 @@ function SimulatorBody({ groupBrews, anchor }: { groupBrews: Brew[]; anchor: Bre
   const { t, language } = useLanguage()
   const model = useMemo(() => buildSimModel(groupBrews), [groupBrews])
   const anchorSetting = anchor.grinder_setting as number
+  const anchorSetup: BrewSetup = {
+    coffeeG: anchor.coffee_weight_g,
+    waterG: anchor.water_added_g,
+    waterTemp: normalizeWaterTemp(anchor.water_temp),
+    heat: normalizeHeatLevel(anchor.heat_level),
+    paperFilter: !!anchor.has_paper_filter,
+  }
 
   const [setting, setSetting] = useState(anchorSetting)
-  const [heat, setHeat] = useState<-1 | 0 | 1>(0)
+  const [setup, setSetup] = useState<BrewSetup>(anchorSetup)
   const [verdict, setVerdict] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
 
   if (!model) return null
 
+  const update = (patch: Partial<BrewSetup>) => {
+    setSetup((s) => ({ ...s, ...patch }))
+    setVerdict(null)
+  }
+
   const lo = Math.max(0, Math.floor(Math.min(model.minX, anchorSetting)) - 4)
   const hi = Math.ceil(Math.max(model.maxX, anchorSetting)) + 4
   const x = clamp(setting, lo, hi)
   const microns = model.micronsPerClick
 
-  const base = predictBrew(model, anchorSetting, 0)
-  const sim = predictBrew(model, x, heat)
+  const effect = setupEffect(anchorSetup, setup)
+  const base = predictBrew(model, anchorSetting, 0, 1)
+  const sim = predictBrew(model, x, effect.shift, effect.timeFactor)
 
   // Anchor the estimate on the real brew: apply only the model's predicted *change*
   const rating = clamp(anchor.vibe_rating + (sim.rating - base.rating), 1, 10)
   const time = Math.round(anchor.extraction_time_s * (sim.time / base.time))
   const anchorBalance = notesBalance(anchor.tasting_notes) ?? base.balance
   const balance = clamp(anchorBalance + (sim.balance - base.balance), -1, 1)
+  const yieldG = Math.max(0, Math.round(anchor.final_yield_g + effect.yieldDelta))
+  const ratio = setup.coffeeG > 0 ? yieldG / setup.coffeeG : 0
 
   const dRating = rating - anchor.vibe_rating
   const dTime = time - anchor.extraction_time_s
-  const changed = x !== anchorSetting || heat !== 0
+  const dYield = yieldG - anchor.final_yield_g
+  const changed =
+    x !== anchorSetting ||
+    setup.coffeeG !== anchorSetup.coffeeG ||
+    setup.waterG !== anchorSetup.waterG ||
+    setup.waterTemp !== anchorSetup.waterTemp ||
+    setup.heat !== anchorSetup.heat ||
+    setup.paperFilter !== anchorSetup.paperFilter
 
-  const curve = simCurve(model, heat).map((r) => ({
+  const curve = simCurve(model, effect.shift, effect.timeFactor, lo, hi).map((r) => ({
     ...r,
     rating: Number(clamp(anchor.vibe_rating + (r.rating - base.rating), 1, 10).toFixed(2)),
     time: Math.round(anchor.extraction_time_s * (r.time / base.time)),
@@ -185,20 +216,29 @@ function SimulatorBody({ groupBrews, anchor }: { groupBrews: Brew[]; anchor: Bre
             recipe: brewLabel(anchor),
             starting_brew: {
               grinder_clicks: anchorSetting,
+              coffee_g: anchorSetup.coffeeG,
+              water_g: anchorSetup.waterG,
+              starting_water: anchorSetup.waterTemp,
+              heat: anchorSetup.heat,
+              paper_filter: anchorSetup.paperFilter,
               rating: anchor.vibe_rating,
               time_s: anchor.extraction_time_s,
+              yield_g: anchor.final_yield_g,
               notes: (anchor.tasting_notes || '').slice(0, 160),
-              heat: anchor.heat_level ?? null,
             },
-            simulated_change: {
+            simulated_setup: {
               grinder_clicks: x,
-              clicks_delta: x - anchorSetting,
               direction: x < anchorSetting ? 'finer' : x > anchorSetting ? 'coarser' : 'same',
-              heat_change: heat === 0 ? 'same' : heat > 0 ? 'higher' : 'lower',
+              coffee_g: setup.coffeeG,
+              water_g: setup.waterG,
+              starting_water: setup.waterTemp,
+              heat: setup.heat,
+              paper_filter: setup.paperFilter,
             },
             estimate: {
               rating: Number(rating.toFixed(1)),
               time_s: time,
+              yield_g: yieldG,
               cup_balance_minus1_sour_to_plus1_bitter: Number(balance.toFixed(2)),
             },
             confidence: sim.confidence,
@@ -219,71 +259,100 @@ function SimulatorBody({ groupBrews, anchor }: { groupBrews: Brew[]; anchor: Bre
 
   const reset = () => {
     setSetting(anchorSetting)
-    setHeat(0)
+    setSetup(anchorSetup)
     setVerdict(null)
   }
 
-  const fill = `${((x - lo) / Math.max(1, hi - lo)) * 100}%`
   const delta = (n: number, digits = 1) => `${n > 0 ? '+' : ''}${n.toFixed(digits)}`
+
+  const optionLabel = (v: string) => translateStoredExpertValue(v, t, v)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Controls */}
       <section className="card p-5 sm:p-6 lg:col-span-2 space-y-8">
-        <div>
-          <div className="flex items-end justify-between mb-4">
-            <div>
-              <p className="eyebrow">{t('analytics.lab_grind')}</p>
-              <p className="num text-4xl text-ink mt-1">
-                {x} <span className="text-base text-muted">{t('brew_card.clicks')}</span>
-              </p>
-              {microns ? <p className="num text-xs text-muted mt-1">~{Math.round(x * microns)} µm</p> : null}
-            </div>
-            <button onClick={reset} disabled={!changed} className="btn-ghost px-3 py-1.5 text-xs disabled:opacity-40">
-              <RotateCcw className="w-3.5 h-3.5" /> {t('analytics.lab_reset')}
-            </button>
-          </div>
-          <input
-            type="range"
-            className="slider"
-            min={lo}
-            max={hi}
-            step={1}
-            value={x}
-            style={{ ['--fill' as string]: fill }}
-            aria-label={t('analytics.lab_grind')}
-            onChange={(e) => {
-              setSetting(Number(e.target.value))
-              setVerdict(null)
-            }}
-          />
-          <div className="flex justify-between text-[0.68rem] text-muted mt-2 eyebrow">
-            <span>{t('analytics.lab_finer')}</span>
-            <span>
-              {t('analytics.lab_started_at', { setting: anchorSetting })}
-            </span>
-            <span>{t('analytics.lab_coarser')}</span>
-          </div>
+        <div className="flex items-center justify-between">
+          <p className="eyebrow">{t('analytics.lab_controls')}</p>
+          <button onClick={reset} disabled={!changed} className="btn-ghost px-3 py-1.5 text-xs disabled:opacity-40">
+            <RotateCcw className="w-3.5 h-3.5" /> {t('analytics.lab_reset')}
+          </button>
         </div>
 
-        <div>
-          <p className="eyebrow mb-3">{t('analytics.lab_heat')}</p>
-          <div className="segmented w-full">
-            {([-1, 0, 1] as const).map((h) => (
-              <button
-                key={h}
-                data-active={heat === h}
-                onClick={() => {
-                  setHeat(h)
-                  setVerdict(null)
-                }}
-                className="segmented-item flex-1 justify-center"
-              >
-                {t(h === -1 ? 'analytics.lab_heat_lower' : h === 0 ? 'analytics.lab_heat_same' : 'analytics.lab_heat_higher')}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-muted mt-2">{t('analytics.lab_heat_note')}</p>
+        <SliderField
+          label={t('analytics.lab_grind')}
+          value={x}
+          unit={t('brew_card.clicks')}
+          sub={microns ? `~${Math.round(x * microns)} µm` : undefined}
+          min={lo}
+          max={hi}
+          step={1}
+          marker={anchorSetting}
+          left={t('analytics.lab_finer')}
+          right={t('analytics.lab_coarser')}
+          markerLabel={t('analytics.lab_started_at', { setting: anchorSetting })}
+          onChange={(v) => {
+            setSetting(v)
+            setVerdict(null)
+          }}
+        />
+
+        <div className="border-t border-line pt-6 space-y-7">
+          <p className="eyebrow flex items-center gap-2">
+            {t('analytics.lab_setup')}
+            <span className="badge">{t('analytics.lab_rule_tag')}</span>
+          </p>
+
+          <SliderField
+            label={t('analytics.lab_coffee')}
+            value={setup.coffeeG}
+            unit="g"
+            min={Math.max(1, Math.round(anchorSetup.coffeeG * 0.6))}
+            max={Math.round(anchorSetup.coffeeG * 1.5)}
+            step={0.5}
+            marker={anchorSetup.coffeeG}
+            markerLabel={t('analytics.lab_started_at', { setting: `${anchorSetup.coffeeG}g` })}
+            onChange={(v) => update({ coffeeG: v })}
+          />
+
+          <SliderField
+            label={t('analytics.lab_water')}
+            value={setup.waterG}
+            unit="g"
+            min={Math.max(1, Math.round(anchorSetup.waterG * 0.6))}
+            max={Math.round(anchorSetup.waterG * 1.5)}
+            step={1}
+            marker={anchorSetup.waterG}
+            markerLabel={t('analytics.lab_started_at', { setting: `${anchorSetup.waterG}g` })}
+            onChange={(v) => update({ waterG: v })}
+          />
+
+          <OptionField
+            label={t('analytics.lab_temp')}
+            options={WATER_TEMPS}
+            value={setup.waterTemp}
+            original={anchorSetup.waterTemp}
+            render={optionLabel}
+            onChange={(v) => update({ waterTemp: v })}
+          />
+
+          <OptionField
+            label={t('analytics.lab_heat')}
+            options={HEAT_LEVELS}
+            value={setup.heat}
+            original={anchorSetup.heat}
+            render={optionLabel}
+            onChange={(v) => update({ heat: v })}
+          />
+
+          <OptionField
+            label={t('analytics.lab_filter')}
+            options={['yes', 'no'] as const}
+            value={setup.paperFilter ? 'yes' : 'no'}
+            original={anchorSetup.paperFilter ? 'yes' : 'no'}
+            render={(v) => (v === 'yes' ? t('common.yes') : t('common.no'))}
+            onChange={(v) => update({ paperFilter: v === 'yes' })}
+          />
+          <p className="text-xs text-muted">{t('analytics.lab_setup_note')}</p>
         </div>
 
         <div className="stat-tile p-4 text-sm">
@@ -300,7 +369,7 @@ function SimulatorBody({ groupBrews, anchor }: { groupBrews: Brew[]; anchor: Bre
 
       {/* Results */}
       <section className="lg:col-span-3 space-y-6">
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           <div className="card p-4 sm:p-5">
             <p className="eyebrow flex items-center gap-1.5">
               <Star className="w-3 h-3" /> {t('analytics.lab_est_rating')}
@@ -323,6 +392,18 @@ function SimulatorBody({ groupBrews, anchor }: { groupBrews: Brew[]; anchor: Bre
             </p>
             <p className="num text-xs mt-1 text-muted">
               {changed ? `${delta(dTime, 0)}s ${t('analytics.lab_vs_brew')}` : t('analytics.lab_no_change')}
+            </p>
+          </div>
+          <div className="card p-4 sm:p-5 col-span-2 sm:col-span-1">
+            <p className="eyebrow flex items-center gap-1.5">
+              <Droplets className="w-3 h-3" /> {t('analytics.lab_est_yield')}
+            </p>
+            <p className="num text-4xl text-ink mt-2">
+              {yieldG}
+              <span className="text-base text-muted">g</span>
+            </p>
+            <p className="num text-xs mt-1 text-muted">
+              {changed ? `${delta(dYield, 0)}g · 1:${ratio.toFixed(1)}` : `1:${ratio.toFixed(1)}`}
             </p>
           </div>
         </div>
@@ -435,5 +516,91 @@ function ModelNote({ model }: { model: SimModel }) {
         })}
       </span>
     </p>
+  )
+}
+
+interface SliderFieldProps {
+  label: string
+  value: number
+  unit: string
+  sub?: string
+  min: number
+  max: number
+  step: number
+  /** The original brew's value, shown as a reference under the slider */
+  marker: number
+  markerLabel: string
+  left?: string
+  right?: string
+  onChange: (value: number) => void
+}
+
+function SliderField({ label, value, unit, sub, min, max, step, marker, markerLabel, left, right, onChange }: SliderFieldProps) {
+  const fill = `${((value - min) / Math.max(step, max - min)) * 100}%`
+  const changed = value !== marker
+  return (
+    <div>
+      <div className="mb-3">
+        <p className="eyebrow">{label}</p>
+        <p className="num text-3xl text-ink mt-1">
+          {value} <span className="text-base text-muted">{unit}</span>
+          {changed && (
+            <span className="num text-xs text-accent-ink ml-2">
+              {value > marker ? '+' : ''}
+              {Number((value - marker).toFixed(1))}
+            </span>
+          )}
+        </p>
+        {sub && <p className="num text-xs text-muted mt-1">{sub}</p>}
+      </div>
+      <input
+        type="range"
+        className="slider"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        style={{ ['--fill' as string]: fill }}
+        aria-label={label}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+      <div className="flex justify-between gap-2 text-[0.68rem] mt-2 eyebrow">
+        <span>{left ?? ''}</span>
+        <span>{markerLabel}</span>
+        <span>{right ?? ''}</span>
+      </div>
+    </div>
+  )
+}
+
+interface OptionFieldProps<T extends string> {
+  label: string
+  options: readonly T[]
+  value: T
+  original: T
+  render: (value: T) => string
+  onChange: (value: T) => void
+}
+
+function OptionField<T extends string>({ label, options, value, original, render, onChange }: OptionFieldProps<T>) {
+  return (
+    <div>
+      <p className="eyebrow mb-3">{label}</p>
+      <div className="segmented w-full" role="radiogroup" aria-label={label}>
+        {options.map((o) => (
+          <button
+            key={o}
+            role="radio"
+            aria-checked={value === o}
+            data-active={value === o}
+            onClick={() => onChange(o)}
+            className="segmented-item flex-1 justify-center px-2 text-xs whitespace-nowrap"
+          >
+            {render(o)}
+            {o === original && value !== o && <span className="w-1 h-1 rounded-full bg-muted" aria-hidden />}
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }

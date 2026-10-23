@@ -446,11 +446,12 @@ export function buildSimModel(brews: Brew[]): SimModel | null {
 
 /**
  * Predicts a brew at a given grinder setting.
- * `heatShift` (-1 lower, 0 same, +1 higher) is modelled as roughly one click of extraction either way.
+ * `shift` is extra extraction from other variables in click-equivalents (positive acts like a finer grind);
+ * `timeFactor` scales the extraction time. Both come from `setupEffect`.
  */
-export function predictBrew(model: SimModel, setting: number, heatShift = 0): SimPrediction {
-  const effective = setting - heatShift
-  const time = Math.max(8, model.meanTime + model.timeSlope * (setting - model.meanX)) * (1 - 0.1 * heatShift)
+export function predictBrew(model: SimModel, setting: number, shift = 0, timeFactor = 1): SimPrediction {
+  const effective = setting - shift
+  const time = Math.max(8, model.meanTime + model.timeSlope * (setting - model.meanX)) * timeFactor
 
   const balance = clamp(model.balanceBase + model.balanceSlope * (effective - model.meanX), -1, 1)
 
@@ -469,14 +470,69 @@ export function predictBrew(model: SimModel, setting: number, heatShift = 0): Si
   return { time, rating, balance, support: wSum, confidence, yieldG: model.meanYield }
 }
 
-export function simCurve(model: SimModel, heatShift: number) {
-  const from = Math.max(0, Math.floor(model.minX) - 4)
-  const to = Math.ceil(model.maxX) + 4
+export function simCurve(model: SimModel, shift: number, timeFactor: number, from?: number, to?: number) {
+  const lo = from ?? Math.max(0, Math.floor(model.minX) - 4)
+  const hi = to ?? Math.ceil(model.maxX) + 4
   const rows: { x: number; rating: number; time: number }[] = []
-  for (let x = from; x <= to; x++) {
-    const p = predictBrew(model, x, heatShift)
+  for (let x = lo; x <= hi; x++) {
+    const p = predictBrew(model, x, shift, timeFactor)
     rows.push({ x, rating: Number(p.rating.toFixed(2)), time: Math.round(p.time) })
   }
   return rows
 }
+
+/* ------------------------------------------------------------------ */
+/* Pre-brew setup effects (rules of thumb, not learned from the data)  */
+/* ------------------------------------------------------------------ */
+
+/** Everything that can be decided before the pot goes on the stove (milk is added afterwards). */
+export interface BrewSetup {
+  coffeeG: number
+  waterG: number
+  waterTemp: 'Boiling' | 'Warm' | 'Cold'
+  heat: 'Low' | 'Medium-Low' | 'Medium' | 'High'
+  paperFilter: boolean
+}
+
+export interface SetupEffect {
+  /** Click-equivalents of extra extraction (positive behaves like a finer grind) */
+  shift: number
+  timeFactor: number
+  /** Grams of liquid in the cup relative to the original brew */
+  yieldDelta: number
+}
+
+const TEMP_EFFECT = { Boiling: { shift: 0, time: 1 }, Warm: { shift: -0.8, time: 1.15 }, Cold: { shift: -1.5, time: 1.3 } }
+const HEAT_ORDER = ['Low', 'Medium-Low', 'Medium', 'High'] as const
+// Grams of water a gram of ground coffee holds on to
+const ABSORPTION = 1.5
+
+/**
+ * Translates differences between two setups into extraction shift, time change and yield change.
+ * More coffee packs tighter (slower, stronger); more water dilutes; warmer start and higher heat extract faster;
+ * a paper filter adds resistance.
+ */
+export function setupEffect(from: BrewSetup, to: BrewSetup): SetupEffect {
+  const dCoffee = from.coffeeG > 0 ? (to.coffeeG - from.coffeeG) / from.coffeeG : 0
+  const dWater = from.waterG > 0 ? (to.waterG - from.waterG) / from.waterG : 0
+  const heatSteps = HEAT_ORDER.indexOf(to.heat) - HEAT_ORDER.indexOf(from.heat)
+
+  let shift = 8 * dCoffee - 4 * dWater + 0.8 * heatSteps
+  let timeFactor = (1 + 0.6 * dCoffee) * (1 + 0.8 * dWater) * (1 - 0.1 * heatSteps)
+
+  shift += TEMP_EFFECT[to.waterTemp].shift - TEMP_EFFECT[from.waterTemp].shift
+  timeFactor *= TEMP_EFFECT[to.waterTemp].time / TEMP_EFFECT[from.waterTemp].time
+
+  if (to.paperFilter !== from.paperFilter) {
+    shift += to.paperFilter ? 0.5 : -0.5
+    timeFactor *= to.paperFilter ? 1.08 : 1 / 1.08
+  }
+
+  return {
+    shift: clamp(shift, -6, 6),
+    timeFactor: clamp(timeFactor, 0.5, 2),
+    yieldDelta: to.waterG - from.waterG - ABSORPTION * (to.coffeeG - from.coffeeG),
+  }
+}
+
 
