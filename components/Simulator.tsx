@@ -156,7 +156,11 @@ function SimulatorBody({ groupBrews, anchor }: { groupBrews: Brew[]; anchor: Bre
   // Anchor the estimate on the real brew: apply only the model's predicted *change*
   const rating = clamp(anchor.vibe_rating + (sim.rating - base.rating), 1, 10)
   const time = Math.round(anchor.extraction_time_s * (sim.time / base.time))
-  const anchorBalance = notesBalance(anchor.tasting_notes) ?? base.balance
+  // Where the cup starts. Notes win; otherwise a well-rated brew starts balanced. The model's absolute
+  // balance is only used for the *change*, since extrapolating it would make far-off settings look extreme.
+  const noted = notesBalance(anchor.tasting_notes)
+  const anchorCap = anchor.vibe_rating >= 8 ? 0.25 : anchor.vibe_rating >= 7 ? 0.4 : 1
+  const anchorBalance = clamp(noted ?? (anchor.vibe_rating >= 7 ? 0 : clamp(base.balance, -0.5, 0.5)), -anchorCap, anchorCap)
   const balance = clamp(anchorBalance + (sim.balance - base.balance), -1, 1)
   const yieldG = Math.max(0, Math.round(anchor.final_yield_g + effect.yieldDelta))
   const ratio = setup.coffeeG > 0 ? yieldG / setup.coffeeG : 0

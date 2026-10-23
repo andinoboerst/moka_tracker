@@ -29,16 +29,38 @@ const daysPastRoast = (brew: Brew): number | null => {
 }
 
 const BITTER_WORDS = ['bitter', 'burnt', 'burned', 'harsh', 'astringent', 'ashy', 'amaro', 'bruciat', 'astringen']
-const SOUR_WORDS = ['sour', 'acid', 'sharp', 'thin', 'weak', 'watery', 'acido', 'acida', 'aspro', 'acerbo', 'debole']
+// "acidity" is deliberately absent: bright acidity is usually praise, not a flaw
+const SOUR_WORDS = ['sour', 'acidic', 'watery', 'weak', 'aspro', 'acerbo', 'acida', 'acido', 'debole']
+const NEGATIONS = /\b(not|no|non|never|without|less|barely|neither|nor|zero|senza|niente|mai|poco)\b|n't\b/
+const MILD = /\b(slightly|slight|bit|touch|hint|little|mild|mildly|tad|leggermente|lieve)\b/
+
+/** How strongly the notes state one of the words: 0 (absent or negated), 0.35 (mild) or 1. */
+function mention(text: string, words: string[]): number {
+  let best = 0
+  for (const w of words) {
+    let from = 0
+    for (;;) {
+      const at = text.indexOf(w, from)
+      if (at === -1) break
+      from = at + w.length
+      const before = text.slice(Math.max(0, at - 24), at)
+      // A negation earlier in the same clause ("not too bitter", "no harsh finish") cancels the word
+      const clause = before.split(/[,.;!?]/).pop() ?? ''
+      if (NEGATIONS.test(clause)) continue
+      best = Math.max(best, MILD.test(clause) ? 0.35 : 1)
+    }
+  }
+  return best
+}
 
 /** -1 (sour / under-extracted) .. +1 (bitter / over-extracted), or null if the notes don't say. */
 export function notesBalance(notes: string | undefined | null): number | null {
   const text = (notes || '').toLowerCase()
   if (!text) return null
-  const bitter = BITTER_WORDS.some((w) => text.includes(w))
-  const sour = SOUR_WORDS.some((w) => text.includes(w))
+  const bitter = mention(text, BITTER_WORDS)
+  const sour = mention(text, SOUR_WORDS)
   if (bitter === sour) return null
-  return bitter ? 1 : -1
+  return bitter > sour ? bitter : -sour
 }
 
 /* ------------------------------------------------------------------ */
