@@ -7,6 +7,7 @@ export interface RecapInput {
   bean_id: string
   grinder_id?: string | null
   moka_pot_id: string
+  portafilter?: string | null
   grinder_setting?: number | null
   coffee_weight_g: number
   water_added_g: number
@@ -41,7 +42,7 @@ export async function generateBrewRecap(
   excludeBrewId?: string
 ): Promise<string> {
   const {
-    bean_id, grinder_id, moka_pot_id, grinder_setting, coffee_weight_g, water_added_g,
+    bean_id, grinder_id, moka_pot_id, portafilter, grinder_setting, coffee_weight_g, water_added_g,
     final_yield_g, extraction_time_s, milk_added_g, milk_type, vibe_rating, tasting_notes,
     water_temp, heat_level, has_paper_filter, flow_type, brew_ratio_input,
     extraction_ratio_output, language = 'en', mix, brew_temp_c, pressure_profile, first_drip_s, taste_balance, used_wdt,
@@ -153,7 +154,7 @@ ${espresso
 - Taste balance according to the user: ${taste_balance || 'not recorded'}`
 
   const equipment = espresso
-    ? `Espresso machine: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.type}${mokaPot?.basket_diameter_mm ? `, ${mokaPot.basket_diameter_mm} mm basket` : ''})`
+    ? `Espresso machine: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.type}${mokaPot?.basket_diameter_mm ? `, ${mokaPot.basket_diameter_mm} mm basket` : ''})${portafilter ? `, portafilter: ${portafilter}` : ''}`
     : `Moka pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} cup, ${mokaPot?.type})`
 
   const beanLine = mixText || `- Bean: ${bean?.name} (${bean?.roaster}) - Species: ${bean?.bean_type || 'Unknown'}${bean?.bean_type === 'Blend' && bean?.arabica_percent != null ? ` (${bean.arabica_percent}% Arabica)` : ''} - Origin: ${bean?.origin || 'Unknown'} - Roast: ${bean?.roast_level}${bean?.tasting_notes ? ` - Advertised flavour notes: "${bean.tasting_notes}"` : ''}`

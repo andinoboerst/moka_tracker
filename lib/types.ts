@@ -107,6 +107,8 @@ export interface Brew {
   bean_id: string
   grinder_id?: string
   moka_pot_id: string
+  /** Espresso only: Pressurized | Spouted | Bottomless | Precision */
+  portafilter?: string | null
   grinder_setting?: number
   coffee_weight_g: number
   water_added_g: number
@@ -144,6 +146,7 @@ export interface BrewCreateInput {
   mix?: { bean_id: string; percentage: number }[]
   grinder_id?: string
   moka_pot_id: string
+  portafilter?: string
   grinder_setting?: number
   coffee_weight_g: number
   water_added_g: number

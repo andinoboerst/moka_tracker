@@ -4,7 +4,7 @@ import { Brew } from '@/lib/types'
 import { getVibeName, formatDate, mokaPotName, getAuthHeaders, grindLabel, isEspresso } from '@/lib/utils'
 import { PressureChart } from './PressureProfile'
 import { describeProfile } from '@/lib/pressure'
-import { translateStoredExpertValue, translateMilkType, translateRoastLevel } from '@/lib/dbValues'
+import { translateStoredExpertValue, translateMilkType, translateRoastLevel, normalizePortafilter, PORTAFILTER_I18N } from '@/lib/dbValues'
 import { Trash2, Sparkles, Share2, Download, Pencil, Copy, Link2Off, Thermometer, Flame, Waves, FileText } from 'lucide-react'
 import VibeIcon from './VibeIcon'
 import ActionMenu from './ActionMenu'
@@ -242,6 +242,9 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
             {brew.moka_pot ? mokaPotName(brew.moka_pot) : ''}
             {!isEspresso(brew.moka_pot) && ` (${t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})`}
           </p>
+          {isEspresso(brew.moka_pot) && normalizePortafilter(brew.portafilter) && (
+            <p className="text-xs text-muted">{t(PORTAFILTER_I18N[normalizePortafilter(brew.portafilter)!])}</p>
+          )}
         </div>
 
         <div className="stat-tile p-3">

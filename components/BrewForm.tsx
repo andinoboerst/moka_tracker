@@ -6,6 +6,7 @@ import { Bean, BeanMix, Brew, Grinder, MokaPot, BrewCreateInput } from '@/lib/ty
 import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeaders, formatDate, isEspresso } from '@/lib/utils'
 import { PressureProfileEditor } from './PressureProfile'
 import EspressoTimes, { type TimeField } from './EspressoTimes'
+import { PORTAFILTER_TYPES, PORTAFILTER_I18N } from '@/lib/dbValues'
 import { useWakeLock } from '@/lib/useWakeLock'
 import type { PressureStage } from '@/lib/pressure'
 import { mixArabicaShare, mixSignature } from '@/lib/beans'
@@ -42,6 +43,7 @@ const emptyForm = {
   bean_id: '',
   grinder_id: '',
   moka_pot_id: '',
+  portafilter: '',
   grinder_setting: '',
   coffee_weight_g: '',
   water_added_g: '',
@@ -68,6 +70,7 @@ function formFromBrew(brew: Brew, keepResult: boolean): FormState {
     bean_id: brew.bean_id,
     grinder_id: brew.grinder_id || '',
     moka_pot_id: brew.moka_pot_id,
+    portafilter: brew.portafilter ?? '',
     grinder_setting: brew.grinder_setting?.toString() ?? '',
     coffee_weight_g: brew.coffee_weight_g.toString(),
     water_added_g: brew.water_added_g.toString(),
@@ -210,6 +213,19 @@ export default function BrewForm({
   const espresso = isEspresso(selectedPot)
   const selectedGrinder = grinders.find((g) => g.id === formData.grinder_id)
   const stepless = selectedGrinder?.adjustment_type === 'stepless'
+
+  // Portafilter defaults to the one used last on this machine (then the last one used at all), and stays changeable
+  const defaultPortafilter = useMemo(() => {
+    if (!espresso) return ''
+    const last = history.find((b) => b.moka_pot_id === formData.moka_pot_id && b.portafilter) ?? history.find((b) => b.portafilter)
+    return last?.portafilter ?? ''
+  }, [espresso, history, formData.moka_pot_id])
+
+  useEffect(() => {
+    if (isEdit || !defaultPortafilter) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFormData((prev) => (prev.portafilter === '' ? { ...prev, portafilter: defaultPortafilter } : prev))
+  }, [defaultPortafilter, isEdit, formData.moka_pot_id])
 
   // Baseline for the grinder: the most recent brew that used the same grinder
   const lastForGrinder = useMemo(
@@ -406,6 +422,7 @@ export default function BrewForm({
         mix,
         grinder_id: formData.grinder_id || undefined,
         moka_pot_id: formData.moka_pot_id,
+        portafilter: espresso && formData.portafilter ? formData.portafilter : undefined,
         grinder_setting: formData.grinder_id && formData.grinder_setting !== '' ? parseFloat(formData.grinder_setting) : undefined,
         coffee_weight_g: parseFloat(formData.coffee_weight_g),
         // An espresso machine has no boiler load to weigh: the ratio is dose in : liquid out
@@ -623,7 +640,7 @@ export default function BrewForm({
             <label className={labelCls}>{t('brew_form.moka_pot')}</label>
             <select
               value={formData.moka_pot_id}
-              onChange={(e) => set({ moka_pot_id: e.target.value })}
+              onChange={(e) => set({ moka_pot_id: e.target.value, portafilter: '' })}
               required
               className={inputCls}
             >
@@ -635,6 +652,18 @@ export default function BrewForm({
               ))}
             </select>
           </div>
+
+          {espresso && (
+            <div>
+              <label className={labelCls}>{t('brew_form.portafilter')}</label>
+              <select value={formData.portafilter} onChange={(e) => set({ portafilter: e.target.value })} className={inputCls}>
+                <option value="">{t('brew_form.portafilter_none')}</option>
+                {PORTAFILTER_TYPES.map((type) => (
+                  <option key={type} value={type}>{t(PORTAFILTER_I18N[type])}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {!isPreGround && grinders.length === 0 && (

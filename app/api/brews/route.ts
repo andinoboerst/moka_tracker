@@ -10,6 +10,7 @@ import {
   normalizeFlowType,
   normalizeHeatLevel,
   normalizeMilkType,
+  normalizePortafilter,
   normalizeTasteBalance,
   normalizeWaterTemp,
 } from '@/lib/dbValues'
@@ -90,6 +91,7 @@ type BrewFields = {
   bean_id: string
   grinder_id: string | null
   moka_pot_id: string
+  portafilter: string | null
   grinder_setting: number | null
   coffee_weight_g: number
   water_added_g: number
@@ -166,6 +168,7 @@ function parseBrewBody(body: any): { error: string } | { fields: BrewFields; mix
       bean_id: body.bean_id,
       grinder_id: body.grinder_id || null,
       moka_pot_id: body.moka_pot_id,
+      portafilter: normalizePortafilter(body.portafilter),
       grinder_setting: Number.isFinite(grinderSetting) ? grinderSetting : null,
       coffee_weight_g: coffee,
       water_added_g: water,

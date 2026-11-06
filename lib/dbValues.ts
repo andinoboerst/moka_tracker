@@ -45,6 +45,18 @@ export type EspressoMachineType = (typeof ESPRESSO_MACHINE_TYPES)[number]
 
 export const normalizeBrewerKind = (value: unknown): BrewerKind => (value === 'espresso' ? 'espresso' : 'moka')
 
+/** Common portafilter / basket types, chosen per espresso brew. Stored in English, shown translated. */
+export const PORTAFILTER_TYPES = ['Pressurized', 'Spouted', 'Bottomless', 'Precision'] as const
+export type PortafilterType = (typeof PORTAFILTER_TYPES)[number]
+export const PORTAFILTER_I18N: Record<PortafilterType, string> = {
+  Pressurized: 'brew_form.pf_pressurized',
+  Spouted: 'brew_form.pf_spouted',
+  Bottomless: 'brew_form.pf_bottomless',
+  Precision: 'brew_form.pf_precision',
+}
+export const normalizePortafilter = (value: unknown): PortafilterType | null =>
+  (PORTAFILTER_TYPES as readonly string[]).includes(value as string) ? (value as PortafilterType) : null
+
 export const TASTE_BALANCES = ['sour', 'balanced', 'bitter'] as const
 export type TasteBalance = (typeof TASTE_BALANCES)[number]
 export const normalizeTasteBalance = (value: unknown): TasteBalance | null =>

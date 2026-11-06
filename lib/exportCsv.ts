@@ -9,7 +9,7 @@ const escapeCell = (value: unknown): string => {
 
 export function brewsToCsv(brews: Brew[]): string {
   const header = [
-    'Date', 'Bean / Mix', 'Bean type', 'Roaster', 'Roast level', 'Moka pot', 'Grinder', 'Grinder setting',
+    'Date', 'Bean / Mix', 'Bean type', 'Roaster', 'Roast level', 'Moka pot', 'Portafilter', 'Grinder', 'Grinder setting',
     'Coffee (g)', 'Water (g)', 'Yield (g)', 'Time (s)', 'Brew ratio', 'Extraction ratio',
     'Start water temp', 'Heat', 'Flow', 'Paper filter', 'Milk (g)', 'Milk type', 'Rating', 'Notes',
   ]
@@ -22,6 +22,7 @@ export function brewsToCsv(brews: Brew[]): string {
       b.bean?.roaster,
       b.bean?.roast_level,
       b.moka_pot ? mokaPotName(b.moka_pot) : '',
+      b.portafilter ?? '',
       b.grinder ? `${b.grinder.brand} ${b.grinder.model}` : 'Pre-ground',
       b.grinder_setting,
       b.coffee_weight_g,
