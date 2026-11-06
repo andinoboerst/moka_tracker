@@ -280,10 +280,10 @@ ${examples}`
   return ai_recap
 }
 
-type Tier = { group: 'positive' | 'mixed' | 'negative'; meaning: string }
+export type Tier = { group: 'positive' | 'mixed' | 'negative'; meaning: string }
 
 /** Turns the 1-10 rating into a verdict the model has to respect. */
-function ratingTier(rating: number): Tier {
+export function ratingTier(rating: number): Tier {
   if (rating >= 9) return { group: 'positive', meaning: 'outstanding, one of the best cups they could hope for' }
   if (rating >= 7) return { group: 'positive', meaning: 'a good to very good cup that they are happy with' }
   if (rating >= 5) return { group: 'mixed', meaning: 'an average, so-so cup with room to improve' }
@@ -295,7 +295,7 @@ const NEGATIVE_WORDS = /terrible|disaster|disastro|sacril|undrinkable|heartbroke
 const GLOWING_WORDS = /masterpiece|capolavoro|flawless|impeccab|ecstatic|perfection|magnifico|splendid/i
 
 /** Small safety net: catches the rare answer whose mood is the opposite of the user's rating. */
-function toneContradictsRating(group: Tier['group'], summary: string, suggestion: string): boolean {
+export function toneContradictsRating(group: Tier['group'], summary: string, suggestion: string): boolean {
   if (group === 'positive') return NEGATIVE_WORDS.test(`${summary} ${suggestion}`)
   if (group === 'negative') return GLOWING_WORDS.test(summary)
   return false

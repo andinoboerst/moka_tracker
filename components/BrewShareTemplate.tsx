@@ -15,6 +15,8 @@ import { forwardRef } from 'react'
 interface BrewShareTemplateProps {
   brew: Brew
   id?: string
+  /** Short funny caption, generated when the image is made. Without it the longer recap is shown. */
+  shareLine?: string
 }
 
 // Rendered off-screen and exported as a PNG, so it uses fixed brand colours
@@ -40,19 +42,21 @@ function Stat({ icon: Icon, label, value, sub }: { icon: typeof Scale; label: st
   )
 }
 
-const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ brew, id }, ref) => {
+const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ brew, id, shareLine }, ref) => {
   const { language, t } = useLanguage()
   const espresso = isEspresso(brew.moka_pot)
   const hasProfile = espresso && !!brew.pressure_profile?.length
   const ratio = brew.extraction_ratio_output || brew.final_yield_g / brew.coffee_weight_g || 0
 
+  // The short caption when we have one; otherwise fall back to the longer recap
   const recap = (() => {
-    if (!brew.ai_recap) return ''
+    if (shareLine) return { text: shareLine, short: true }
+    if (!brew.ai_recap) return { text: '', short: false }
     try {
       const parsed = JSON.parse(brew.ai_recap)
-      return parsed.summary || parsed.suggestion || brew.ai_recap
+      return { text: (parsed.summary || parsed.suggestion || brew.ai_recap) as string, short: false }
     } catch {
-      return brew.ai_recap
+      return { text: brew.ai_recap, short: false }
     }
   })()
 
@@ -91,13 +95,13 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
           </p>
         </div>
         <div className="flex items-center gap-6" style={{ color: C.accent }}>
-          <VibeIcon rating={brew.vibe_rating} className="w-40 h-40" strokeWidth={1.3} />
+          <VibeIcon rating={brew.vibe_rating} size={150} />
           <div>
             <p className="leading-none font-semibold" style={{ ...display, fontSize: '130px', color: C.ink }}>
               {brew.vibe_rating}
               <span className="text-5xl ml-1" style={{ ...mono, color: C.muted }}>/10</span>
             </p>
-            <p className="text-2xl uppercase tracking-[0.2em] mt-2" style={mono}>
+            <p className="text-2xl uppercase tracking-[0.14em] mt-2" style={mono}>
               {getVibeName(brew.vibe_rating, language)}
             </p>
           </div>
@@ -176,9 +180,11 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
           </div>
         )}
 
-        {recap && (
+        {recap.text && (
           <div className="mt-9 p-9 rounded-[1.75rem] border border-l-[10px]" style={{ background: C.canvas, borderColor: C.line, borderLeftColor: C.accentFill }}>
-            <p className="text-3xl leading-relaxed italic line-clamp-4" style={display}>&ldquo;{recap}&rdquo;</p>
+            <p className={`${recap.short ? 'text-5xl leading-snug' : 'text-3xl leading-relaxed line-clamp-3'} italic`} style={display}>
+              &ldquo;{recap.text}&rdquo;
+            </p>
             <p className="text-right mt-4 text-2xl" style={{ color: C.muted }}>— {t('brew_share.brew_master')}</p>
           </div>
         )}

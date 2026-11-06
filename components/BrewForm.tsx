@@ -920,7 +920,7 @@ export default function BrewForm({
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-ink mb-2">
             {t('brew_form.vibe_rating')}: <span className="num">{formData.vibe_rating}/10</span> — {vibeName}{' '}
-            <VibeIcon rating={rating} className="w-4 h-4 text-accent-ink" />
+            <VibeIcon rating={rating} size={18} />
           </label>
           <input
             type="range"

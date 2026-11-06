@@ -105,7 +105,7 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
                   )}
                 </div>
                 <div className="text-center shrink-0">
-                  <VibeIcon rating={brew.vibe_rating} className="w-10 h-10 text-accent-ink mx-auto" />
+                  <VibeIcon rating={brew.vibe_rating} size={40} className="mx-auto" />
                   <p className="text-xs text-accent-ink font-semibold mt-1">
                     {brew.vibe_rating}/10 · {getVibeName(brew.vibe_rating, language)}
                   </p>

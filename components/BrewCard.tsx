@@ -13,6 +13,7 @@ import { useLanguage } from '@/lib/LanguageContext'
 import { toPng } from 'html-to-image'
 import BrewShareTemplate from './BrewShareTemplate'
 import { useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 
 interface BrewCardProps {
   brew: Brew
@@ -27,6 +28,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
   const shareRef = useRef<HTMLDivElement>(null)
   const [isSharing, setIsSharing] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [shareLine, setShareLine] = useState('')
   const hasMix = (brew.mix?.length ?? 0) > 1
   const mixShare = hasMix ? mixArabicaShare(brew.mix!) : null
 
@@ -51,10 +53,30 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
     link.click()
   }
 
+  // The caption is only generated when an image is made, and kept so download and share match
+  const prepareShareLine = async () => {
+    if (shareLine) return
+    try {
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/share-line', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({ id: brew.id, language }),
+      })
+      if (!response.ok) return
+      const { share } = await response.json()
+      // Render the caption into the hidden template before it is captured
+      if (share) flushSync(() => setShareLine(share))
+    } catch (err) {
+      console.error('Share line failed (using the recap instead):', err)
+    }
+  }
+
   const handleDownload = async () => {
     if (!shareRef.current) return
     setIsDownloading(true)
     try {
+      await prepareShareLine()
       const dataUrl = await toPng(shareRef.current, {
         quality: 1,
         pixelRatio: 2,
@@ -73,6 +95,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
     if (!shareRef.current) return
     setIsSharing(true)
     try {
+      await prepareShareLine()
       const dataUrl = await toPng(shareRef.current, {
         quality: 1,
         pixelRatio: 2,
@@ -135,7 +158,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
         </div>
         <div className="flex items-center gap-2">
           <span title={getVibeName(brew.vibe_rating, language)} className="text-accent-ink px-1">
-            <VibeIcon rating={brew.vibe_rating} className="w-6 h-6" />
+            <VibeIcon rating={brew.vibe_rating} size={26} />
           </span>
           <Link
             href={`/brew/${brew.id}/edit`}
@@ -387,7 +410,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
 
       {/* Hidden Share Template */}
       <div className="fixed -left-[4000px] -top-[4000px]">
-        <BrewShareTemplate brew={brew} ref={shareRef} />
+        <BrewShareTemplate brew={brew} shareLine={shareLine} ref={shareRef} />
       </div>
     </div>
   )
