@@ -1,10 +1,11 @@
 'use client'
 
 import { Brew } from '@/lib/types'
-import { getVibeName, formatDate, mokaPotName } from '@/lib/utils'
+import { getVibeName, formatDate, mokaPotName, isEspresso } from '@/lib/utils'
 import { describeMix } from '@/lib/beans'
-import { translateRoastLevel } from '@/lib/dbValues'
+import { translateRoastLevel, translateMilkType } from '@/lib/dbValues'
 import { MokaPotIcon } from './icons/MokaPotIcon'
+import { PressureChart } from './PressureProfile'
 import VibeIcon from './VibeIcon'
 import { Scale, Timer, Droplets, Settings } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -16,19 +17,58 @@ interface BrewShareTemplateProps {
   id?: string
 }
 
-/**
- * Rendered off-screen and exported as a PNG, so it uses fixed brand colours
- * (espresso canvas, terracotta accent) rather than the live theme tokens.
- */
+// Rendered off-screen and exported as a PNG, so it uses fixed brand colours
+// (espresso canvas, terracotta accent) rather than the live theme tokens.
+const C = { canvas: '#12100E', surface: '#1C1917', line: '#2E2925', ink: '#F2E8DA', muted: '#AB9E8F', accent: '#E58A62', accentFill: '#C85A32' }
+const mono = { fontFamily: 'var(--font-mono-ui)' }
+const display = { fontFamily: 'var(--font-display-ui)' }
+
+function Stat({ icon: Icon, label, value, sub }: { icon: typeof Scale; label: string; value: string; sub?: string }) {
+  return (
+    <div className="flex items-center gap-7">
+      <div className="p-5 rounded-3xl border" style={{ background: C.canvas, borderColor: C.line }}>
+        <Icon className="w-11 h-11" style={{ color: C.accent }} strokeWidth={1.75} />
+      </div>
+      <div>
+        <p className="text-2xl mb-1.5" style={{ color: C.muted }}>{label}</p>
+        <p className="text-4xl font-semibold whitespace-nowrap" style={mono}>
+          {value}
+          {sub && <span className="text-2xl font-normal ml-3" style={{ color: C.muted }}>{sub}</span>}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ brew, id }, ref) => {
   const { language, t } = useLanguage()
+  const espresso = isEspresso(brew.moka_pot)
+  const hasProfile = espresso && !!brew.pressure_profile?.length
+  const ratio = brew.extraction_ratio_output || brew.final_yield_g / brew.coffee_weight_g || 0
+
+  const recap = (() => {
+    if (!brew.ai_recap) return ''
+    try {
+      const parsed = JSON.parse(brew.ai_recap)
+      return parsed.summary || parsed.suggestion || brew.ai_recap
+    } catch {
+      return brew.ai_recap
+    }
+  })()
+
+  const chips = [
+    brew.milk_added_g ? `${translateMilkType(brew.milk_type, t)} ${brew.milk_added_g}g` : '',
+    brew.taste_balance ? t(`brew_form.taste_${brew.taste_balance}`) : '',
+    espresso && brew.first_drip_s != null ? `${t('brew_card.first_drip')} ${brew.first_drip_s}s` : '',
+    espresso && brew.used_wdt ? 'WDT' : '',
+  ].filter(Boolean)
 
   return (
     <div
       id={id}
       ref={ref}
-      className="bg-[#12100E] w-[1080px] h-[1920px] flex flex-col items-center justify-between p-16 pb-32 text-[#F2E8DA] relative overflow-hidden"
-      style={{ fontFamily: 'var(--font-sans-ui)', paddingTop: '140px' }}
+      className="w-[1080px] h-[1920px] flex flex-col justify-between px-16 pb-24 relative overflow-hidden"
+      style={{ background: C.canvas, color: C.ink, fontFamily: 'var(--font-sans-ui)', paddingTop: '120px' }}
     >
       {/* Tricolore hairline */}
       <div className="absolute top-0 left-0 w-full h-3 flex">
@@ -41,113 +81,113 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
         <MokaPotIcon className="w-[600px] h-[600px]" />
       </div>
 
-      {/* Header */}
+      {/* Header: brand on the left, the rating as the hero on the right */}
       <div className="w-full flex justify-between items-center z-10">
         <div>
-          <h1 className="text-7xl font-semibold text-[#F2E8DA] mb-4 tracking-tight" style={{ fontFamily: 'var(--font-display-ui)' }}>
-            Moka Tracker
-          </h1>
-          <p className="text-3xl text-[#AB9E8F]">
+          <h1 className="text-7xl font-semibold mb-4 tracking-tight" style={display}>Moka Tracker</h1>
+          <p className="text-3xl" style={{ color: C.muted }}>
             {t('brew_share.ritual')} <span className="mx-2">/</span>
-            <span style={{ fontFamily: 'var(--font-mono-ui)' }}>{formatDate(brew.created_at)}</span>
+            <span style={mono}>{formatDate(brew.created_at)}</span>
           </p>
         </div>
-        <div className="flex flex-col items-end text-[#E58A62]">
-          <VibeIcon rating={brew.vibe_rating} className="w-32 h-32 mb-4" strokeWidth={1.5} />
-          <span className="text-3xl uppercase tracking-[0.2em]" style={{ fontFamily: 'var(--font-mono-ui)' }}>
-            {getVibeName(brew.vibe_rating, language)}
-          </span>
+        <div className="flex items-center gap-6" style={{ color: C.accent }}>
+          <VibeIcon rating={brew.vibe_rating} className="w-40 h-40" strokeWidth={1.3} />
+          <div>
+            <p className="leading-none font-semibold" style={{ ...display, fontSize: '130px', color: C.ink }}>
+              {brew.vibe_rating}
+              <span className="text-5xl ml-1" style={{ ...mono, color: C.muted }}>/10</span>
+            </p>
+            <p className="text-2xl uppercase tracking-[0.2em] mt-2" style={mono}>
+              {getVibeName(brew.vibe_rating, language)}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Main Content Card */}
-      <div className="w-full bg-[#1C1917] border border-[#2E2925] rounded-[2.5rem] p-16 z-10 shadow-2xl relative min-h-[900px] flex flex-col justify-between">
+      {/* Main card */}
+      <div className="w-full rounded-[2.5rem] border p-14 z-10 shadow-2xl relative" style={{ background: C.surface, borderColor: C.line }}>
         {brew.moka_pot && (
-          <div className="absolute top-12 right-12 bg-[#12100E] px-8 py-4 rounded-full border border-[#2E2925]">
-            <p className="text-3xl text-[#E58A62]" style={{ fontFamily: 'var(--font-mono-ui)' }}>
-              {mokaPotName(brew.moka_pot)}
-            </p>
+          <div className="absolute top-10 right-10 px-7 py-3.5 rounded-full border" style={{ background: C.canvas, borderColor: C.line }}>
+            <p className="text-3xl" style={{ ...mono, color: C.accent }}>{mokaPotName(brew.moka_pot)}</p>
           </div>
         )}
 
-        <div className="mb-12 border-b border-[#2E2925] pb-10">
-          <h2 className="text-6xl font-semibold text-[#F2E8DA] mb-4" style={{ fontFamily: 'var(--font-display-ui)' }}>
+        <div className="mb-10 pb-8 border-b pr-64" style={{ borderColor: C.line }}>
+          <h2 className="text-6xl font-semibold mb-3 leading-tight" style={display}>
             {brew.mix && brew.mix.length > 1 ? describeMix(brew.mix) : brew.bean?.name}
           </h2>
-          <p className="text-4xl text-[#E58A62]">
+          <p className="text-4xl" style={{ color: C.accent }}>
             {brew.bean?.origin ? `${brew.bean.origin} • ` : ''}{translateRoastLevel(brew.bean?.roast_level, t)} {t('brew_share.roast')}
           </p>
-          <p className="text-2xl text-[#AB9E8F] mt-4">{brew.bean?.roaster}</p>
+          <p className="text-2xl mt-3" style={{ color: C.muted }}>{brew.bean?.roaster}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-16 mb-16">
-          <div className="flex items-center gap-8">
-            <div className="bg-[#12100E] p-6 rounded-3xl border border-[#2E2925]">
-              <Scale className="w-12 h-12 text-[#E58A62]" strokeWidth={1.75} />
-            </div>
-            <div>
-              <p className="text-2xl text-[#AB9E8F] mb-2">{t('brew_share.coffee_water')}</p>
-              <p className="text-4xl font-semibold" style={{ fontFamily: 'var(--font-mono-ui)' }}>{brew.coffee_weight_g || 0}g / {brew.water_added_g || 0}g</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-8">
-            <div className="bg-[#12100E] p-6 rounded-3xl border border-[#2E2925]">
-              <Timer className="w-12 h-12 text-[#E58A62]" strokeWidth={1.75} />
-            </div>
-            <div>
-              <p className="text-2xl text-[#AB9E8F] mb-2">{t('brew_share.brew_time')}</p>
-              <p className="text-4xl font-semibold" style={{ fontFamily: 'var(--font-mono-ui)' }}>{brew.extraction_time_s || 0}s</p>
-            </div>
-          </div>
-          {brew.grinder_id && brew.grinder_setting && (
-            <div className="flex items-center gap-8">
-              <div className="bg-[#12100E] p-6 rounded-3xl border border-[#2E2925]">
-                <Settings className="w-12 h-12 text-[#E58A62]" strokeWidth={1.75} />
-              </div>
-              <div>
-                <p className="text-2xl text-[#AB9E8F] mb-2">{t('brew_share.grind_size')}</p>
-                <p className="text-4xl font-semibold" style={{ fontFamily: 'var(--font-mono-ui)' }}>
-                  {brew.grinder?.adjustment_type === 'stepless'
-                    ? `${brew.grinder_setting}μm`
-                    : brew.grinder?.microns_per_click
-                      ? `${Math.round(brew.grinder_setting * brew.grinder.microns_per_click)}μm`
-                      : `${brew.grinder_setting} ${t('brew_card.clicks')}`}
-                </p>
-              </div>
-            </div>
+        <div className="grid grid-cols-2 gap-x-12 gap-y-9">
+          <Stat
+            icon={Scale}
+            label={espresso ? t('brew_share.dose_yield') : t('brew_share.coffee_water')}
+            value={espresso ? `${brew.coffee_weight_g}g → ${brew.final_yield_g}g` : `${brew.coffee_weight_g || 0}g / ${brew.water_added_g || 0}g`}
+          />
+          <Stat icon={Timer} label={t('brew_share.brew_time')} value={`${brew.extraction_time_s || 0}s`} />
+          {brew.grinder_id && brew.grinder_setting != null && (
+            <Stat
+              icon={Settings}
+              label={t('brew_share.grind_size')}
+              value={brew.grinder?.adjustment_type === 'stepless' ? `${brew.grinder_setting}μm` : `${brew.grinder_setting} ${t('brew_card.clicks')}`}
+              sub={
+                brew.grinder?.adjustment_type !== 'stepless' && brew.grinder?.microns_per_click
+                  ? `~${Math.round(brew.grinder_setting * brew.grinder.microns_per_click)}μm`
+                  : undefined
+              }
+            />
           )}
-          <div className="flex items-center gap-8">
-            <div className="bg-[#12100E] p-6 rounded-3xl border border-[#2E2925]">
-              <Droplets className="w-12 h-12 text-[#E58A62]" strokeWidth={1.75} />
-            </div>
-            <div>
-              <p className="text-2xl text-[#AB9E8F] mb-2">{t('brew_share.extraction_ratio')}</p>
-              <p className="text-4xl font-semibold" style={{ fontFamily: 'var(--font-mono-ui)' }}>1:{(brew.extraction_ratio_output || (brew.final_yield_g / brew.coffee_weight_g) || 0).toFixed(1)}</p>
-            </div>
-          </div>
+          <Stat icon={Droplets} label={t('brew_share.extraction_ratio')} value={`1:${ratio.toFixed(1)}`} />
         </div>
 
-        {brew.ai_recap && (
-          <div className="bg-[#12100E] p-12 rounded-[2rem] border border-[#2E2925] border-l-[10px] border-l-[#C85A32] mt-8">
-            <p className="text-4xl text-[#F2E8DA] leading-relaxed italic" style={{ fontFamily: 'var(--font-display-ui)' }}>
-              &ldquo;{(() => {
-                try {
-                  const parsed = JSON.parse(brew.ai_recap);
-                  return parsed.summary || parsed.suggestion || brew.ai_recap;
-                } catch {
-                  return brew.ai_recap;
-                }
-              })()}&rdquo;
-            </p>
-            <p className="text-right text-[#AB9E8F] mt-8 text-3xl">— {t('brew_share.brew_master')}</p>
+        {hasProfile && (
+          <div className="mt-10 rounded-[2rem] border p-7" style={{ background: C.canvas, borderColor: C.line }}>
+            <div className="flex justify-between items-baseline mb-2">
+              <p className="text-2xl" style={{ color: C.muted }}>{t('brew_card.pressure_profile')}</p>
+              {brew.brew_temp_c != null && <p className="text-3xl" style={{ ...mono, color: C.accent }}>{brew.brew_temp_c}°C</p>}
+            </div>
+            <PressureChart
+              profile={brew.pressure_profile!}
+              maxBar={brew.moka_pot?.max_pressure_bar}
+              colors={{ accent: C.accent, grid: C.line, text: C.muted }}
+              size={{ w: 640, h: 150, font: 14 }}
+            />
+          </div>
+        )}
+
+        {chips.length > 0 && (
+          <div className="flex flex-wrap gap-3 mt-9">
+            {chips.map((chip) => (
+              <span key={chip} className="px-6 py-2.5 rounded-full border text-2xl" style={{ ...mono, background: C.canvas, borderColor: C.line, color: C.ink }}>
+                {chip}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {brew.tasting_notes && (
+          <div className="mt-9">
+            <p className="text-2xl mb-2" style={{ color: C.muted }}>{t('brew_share.your_notes')}</p>
+            <p className="text-3xl leading-snug line-clamp-3" style={{ color: C.ink }}>{brew.tasting_notes}</p>
+          </div>
+        )}
+
+        {recap && (
+          <div className="mt-9 p-9 rounded-[1.75rem] border border-l-[10px]" style={{ background: C.canvas, borderColor: C.line, borderLeftColor: C.accentFill }}>
+            <p className="text-3xl leading-relaxed italic line-clamp-4" style={display}>&ldquo;{recap}&rdquo;</p>
+            <p className="text-right mt-4 text-2xl" style={{ color: C.muted }}>— {t('brew_share.brew_master')}</p>
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <div className="w-full flex justify-between items-center z-10 text-[#AB9E8F]">
+      <div className="w-full flex justify-between items-center z-10" style={{ color: C.muted }}>
         <p className="text-3xl">{t('brew_share.shared_via')}</p>
-        <p className="text-3xl tracking-tight italic" style={{ fontFamily: 'var(--font-display-ui)' }}>{t('brew_share.good_coffee')}</p>
+        <p className="text-3xl tracking-tight italic" style={display}>{t('brew_share.good_coffee')}</p>
       </div>
     </div>
   )

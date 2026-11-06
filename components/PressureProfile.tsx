@@ -20,13 +20,29 @@ const STAGE_LABEL_KEY: Record<PressureStageType, string> = {
 }
 
 /** Line chart of a pressure profile (bar over seconds). */
-export function PressureChart({ profile, maxBar }: { profile: PressureStage[]; maxBar?: number | null }) {
+export function PressureChart({
+  profile,
+  maxBar,
+  colors,
+  size,
+}: {
+  profile: PressureStage[]
+  maxBar?: number | null
+  /** Fixed colours for places that ignore the live theme (the exported share image) */
+  colors?: { accent: string; grid: string; text: string }
+  /** Drawing area and label size, for larger placements than the default 320x110 */
+  size?: { w: number; h: number; font: number }
+}) {
+  const accent = colors?.accent ?? 'var(--accent)'
+  const grid = colors?.grid ?? 'var(--line)'
+  const text = colors?.text ?? 'var(--muted)'
   const total = profileDuration(profile)
   if (profile.length === 0 || total <= 0) return null
 
-  const W = 320
-  const H = 110
-  const pad = { l: 28, r: 8, t: 8, b: 20 }
+  const W = size?.w ?? 320
+  const H = size?.h ?? 110
+  const font = size?.font ?? 9
+  const pad = { l: font * 3, r: 8, t: 8, b: font * 2.2 }
   const top = Math.max(maxBar ?? 0, Math.ceil(profilePeak(profile)), 1)
   const x = (s: number) => pad.l + (s / total) * (W - pad.l - pad.r)
   const y = (bar: number) => H - pad.b - (bar / top) * (H - pad.t - pad.b)
@@ -38,16 +54,16 @@ export function PressureChart({ profile, maxBar }: { profile: PressureStage[]; m
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Pressure profile">
       {ticks.map((tick) => (
         <g key={tick}>
-          <line x1={pad.l} x2={W - pad.r} y1={y(tick)} y2={y(tick)} stroke="var(--line)" strokeWidth="1" />
-          <text x={pad.l - 4} y={y(tick) + 3} textAnchor="end" fontSize="9" fill="var(--muted)">
+          <line x1={pad.l} x2={W - pad.r} y1={y(tick)} y2={y(tick)} stroke={grid} strokeWidth="1" />
+          <text x={pad.l - 4} y={y(tick) + 3} textAnchor="end" fontSize={font} fill={text}>
             {tick}
           </text>
         </g>
       ))}
-      <path d={`${path} L${x(total)},${y(0)} L${x(0)},${y(0)} Z`} fill="var(--accent)" opacity="0.15" />
-      <path d={path} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round" />
-      <text x={pad.l} y={H - 5} fontSize="9" fill="var(--muted)">0s</text>
-      <text x={W - pad.r} y={H - 5} textAnchor="end" fontSize="9" fill="var(--muted)">{total}s</text>
+      <path d={`${path} L${x(total)},${y(0)} L${x(0)},${y(0)} Z`} fill={accent} opacity="0.15" />
+      <path d={path} fill="none" stroke={accent} strokeWidth="2" strokeLinejoin="round" />
+      <text x={pad.l} y={H - 5} fontSize={font} fill={text}>0s</text>
+      <text x={W - pad.r} y={H - 5} textAnchor="end" fontSize={font} fill={text}>{total}s</text>
     </svg>
   )
 }

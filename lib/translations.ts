@@ -281,6 +281,8 @@ export const translations = {
     brew_share: {
       ritual: "Rituale del Caffè",
       coffee_water: "Coffee / Water",
+      dose_yield: "Dose → Yield",
+      your_notes: "Tasting notes",
       brew_time: "Brew Time",
       grind_size: "Grind Size",
       extraction_ratio: "Extraction Ratio",
@@ -822,6 +824,8 @@ export const translations = {
     brew_share: {
       ritual: "Rituale del Caffè",
       coffee_water: "Caffè / Acqua",
+      dose_yield: "Dose → Resa",
+      your_notes: "Note di degustazione",
       brew_time: "Tempo di Estrazione",
       grind_size: "Macinatura",
       extraction_ratio: "Resa d'Estrazione",

@@ -5,7 +5,7 @@ import { getVibeName, formatDate, mokaPotName, getAuthHeaders, grindLabel, isEsp
 import { PressureChart } from './PressureProfile'
 import { describeProfile } from '@/lib/pressure'
 import { translateStoredExpertValue, translateMilkType, translateRoastLevel } from '@/lib/dbValues'
-import { Trash2, Sparkles, Share2, Download, Pencil, Copy, Link2, Link2Off, Check, Thermometer, Flame, Waves, FileText } from 'lucide-react'
+import { Trash2, Sparkles, Share2, Download, Pencil, Copy, Link2Off, Thermometer, Flame, Waves, FileText } from 'lucide-react'
 import VibeIcon from './VibeIcon'
 import Link from 'next/link'
 import { describeMix, mixArabicaShare } from '@/lib/beans'
@@ -18,7 +18,7 @@ interface BrewCardProps {
   brew: Brew
   onDelete: (id: string) => Promise<void>
   isDeleting: boolean
-  /** Called when the brew changes (e.g. public link toggled) */
+  /** Called when the brew changes (e.g. an old public link was revoked) */
   onUpdate?: (brew: Brew) => void
 }
 
@@ -27,31 +27,8 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
   const shareRef = useRef<HTMLDivElement>(null)
   const [isSharing, setIsSharing] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
-  const [linkCopied, setLinkCopied] = useState(false)
   const hasMix = (brew.mix?.length ?? 0) > 1
   const mixShare = hasMix ? mixArabicaShare(brew.mix!) : null
-
-  const copyPublicLink = async () => {
-    try {
-      let token = brew.share_token
-      if (!token) {
-        const headers = await getAuthHeaders()
-        const response = await fetch('/api/brews', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', ...headers },
-          body: JSON.stringify({ id: brew.id, share: true }),
-        })
-        if (!response.ok) throw new Error('Failed to create link')
-        token = (await response.json()).share_token
-        onUpdate?.({ ...brew, share_token: token })
-      }
-      await navigator.clipboard.writeText(`${window.location.origin}/s/${token}`)
-      setLinkCopied(true)
-      setTimeout(() => setLinkCopied(false), 2000)
-    } catch (err) {
-      console.error('Share link failed:', err)
-    }
-  }
 
   const stopSharing = async () => {
     try {
@@ -174,13 +151,6 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
           >
             <Copy className="w-4 h-4" />
           </Link>
-          <button
-            onClick={copyPublicLink}
-            className="p-2 hover:bg-line rounded transition text-accent-ink"
-            title={linkCopied ? t('feat.link_copied') : t('feat.share_link')}
-          >
-            {linkCopied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
-          </button>
           {brew.share_token && (
             <button
               onClick={stopSharing}
