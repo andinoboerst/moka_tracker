@@ -9,7 +9,7 @@ import { ESPRESSO_MACHINE_TYPES } from '@/lib/dbValues'
 export interface MokaPotFormData {
   kind: 'moka' | 'espresso'
   max_pressure_bar: string
-  basket_size_g: string
+  basket_diameter_mm: string
   brand: string
   model: string
   nickname: string
@@ -22,7 +22,7 @@ export type MokaPotFormPayload = MokaPotFormData & { id?: string }
 const emptyMokaPotForm: MokaPotFormData = {
   kind: 'moka',
   max_pressure_bar: '',
-  basket_size_g: '',
+  basket_diameter_mm: '',
   brand: '',
   model: '',
   nickname: '',
@@ -35,7 +35,7 @@ function mokaPotToFormData(pot?: MokaPot | null): MokaPotFormData {
   return {
     kind: pot.kind === 'espresso' ? 'espresso' : 'moka',
     max_pressure_bar: pot.max_pressure_bar?.toString() ?? '',
-    basket_size_g: pot.basket_size_g?.toString() ?? '',
+    basket_diameter_mm: pot.basket_diameter_mm?.toString() ?? '',
     brand: pot.brand,
     model: pot.model,
     nickname: pot.nickname ?? '',
@@ -203,14 +203,20 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
               <label className="block text-sm font-medium text-ink mb-1">{t('moka_form.basket')}</label>
               <input
                 type="number"
-                min="5"
-                max="40"
+                min="30"
+                max="80"
                 step="0.5"
-                value={formData.basket_size_g}
-                onChange={(e) => setFormData({ ...formData, basket_size_g: e.target.value })}
-                placeholder="e.g., 18"
+                list="basket-diameters"
+                value={formData.basket_diameter_mm}
+                onChange={(e) => setFormData({ ...formData, basket_diameter_mm: e.target.value })}
+                placeholder="e.g., 58"
                 className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
               />
+              <datalist id="basket-diameters">
+                {[49, 51, 53, 54, 58, 58.5].map((mm) => (
+                  <option key={mm} value={mm} />
+                ))}
+              </datalist>
               <p className="text-xs text-muted mt-1">{t('moka_form.basket_hint')}</p>
             </div>
           </>

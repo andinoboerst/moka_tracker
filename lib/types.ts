@@ -93,8 +93,8 @@ export interface MokaPot {
   type: string
   size_cups?: number | null
   max_pressure_bar?: number | null
-  /** Espresso only: grams of coffee the basket is designed for */
-  basket_size_g?: number | null
+  /** Espresso only: basket diameter in mm (e.g. 49, 54, 58) */
+  basket_diameter_mm?: number | null
   created_at: string
   updated_at: string
 }

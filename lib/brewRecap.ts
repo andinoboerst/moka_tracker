@@ -156,7 +156,7 @@ ${espresso
 - Flow observation: ${flow_type || 'Steady'}`
 
   const equipment = espresso
-    ? `Espresso machine: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.type}${mokaPot?.basket_size_g ? `, ${mokaPot.basket_size_g} g basket` : ''})`
+    ? `Espresso machine: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.type}${mokaPot?.basket_diameter_mm ? `, ${mokaPot.basket_diameter_mm} mm basket` : ''})`
     : `Moka pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} cup, ${mokaPot?.type})`
 
   const beanLine = mixText || `- Bean: ${bean?.name} (${bean?.roaster}) - Species: ${bean?.bean_type || 'Unknown'}${bean?.bean_type === 'Blend' && bean?.arabica_percent != null ? ` (${bean.arabica_percent}% Arabica)` : ''} - Origin: ${bean?.origin || 'Unknown'} - Roast: ${bean?.roast_level}${bean?.tasting_notes ? ` - Advertised flavour notes: "${bean.tasting_notes}"` : ''}`

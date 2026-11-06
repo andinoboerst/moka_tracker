@@ -220,7 +220,7 @@ export default function InventoryPage() {
         <PageHeading title={t('inventory.title')} subtitle={t('inventory.subtitle')} className="mb-12" />
 
         <div className="max-w-3xl mx-auto">
-          <div role="tablist" className="flex gap-1 border-b border-line mb-6 overflow-x-auto">
+          <div role="tablist" className="flex border-b border-line mb-6">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -229,7 +229,7 @@ export default function InventoryPage() {
                 aria-selected={activeTab === tab.id}
                 aria-controls={`panel-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition ${
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${
                   activeTab === tab.id
                     ? 'border-accent text-accent-ink'
                     : 'border-transparent text-muted hover:text-ink'

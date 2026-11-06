@@ -634,17 +634,12 @@ export default function BrewForm({
         )}
 
         <div>
-          <label className={labelCls}>
-            {t('brew_form.coffee_weight')}
-            {espresso && selectedPot?.basket_size_g ? (
-              <span className="text-muted font-normal"> · {t('inventory.basket', { grams: selectedPot.basket_size_g })}</span>
-            ) : null}
-          </label>
+          <label className={labelCls}>{t('brew_form.coffee_weight')}</label>
           <input
             type="number"
             value={formData.coffee_weight_g}
             onChange={(e) => set({ coffee_weight_g: e.target.value })}
-            placeholder={espresso && selectedPot?.basket_size_g ? `e.g., ${selectedPot.basket_size_g}` : 'e.g., 18'}
+            placeholder="e.g., 18"
             required
             min="0"
             step="0.1"
