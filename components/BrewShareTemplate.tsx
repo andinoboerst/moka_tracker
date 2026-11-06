@@ -60,12 +60,13 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
     }
   })()
 
-  const chips = [
-    brew.milk_added_g ? `${translateMilkType(brew.milk_type, t)} ${brew.milk_added_g}g` : '',
-    brew.taste_balance ? t(`brew_form.taste_${brew.taste_balance}`) : '',
-    espresso && brew.first_drip_s != null ? `${t('brew_card.first_drip')} ${brew.first_drip_s}s` : '',
-    espresso && brew.used_wdt ? 'WDT' : '',
-  ].filter(Boolean)
+  // Moka only: espresso cards are tall enough already (pressure profile) and these add little there
+  const chips = espresso
+    ? []
+    : [
+        brew.milk_added_g ? `${translateMilkType(brew.milk_type, t)} ${brew.milk_added_g}g` : '',
+        brew.taste_balance ? t(`brew_form.taste_${brew.taste_balance}`) : '',
+      ].filter(Boolean)
 
   return (
     <div
