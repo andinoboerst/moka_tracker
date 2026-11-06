@@ -6,6 +6,7 @@ import { Bean, BeanMix, Brew, Grinder, MokaPot, BrewCreateInput } from '@/lib/ty
 import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeaders, formatDate, isEspresso } from '@/lib/utils'
 import { PressureProfileEditor } from './PressureProfile'
 import EspressoTimes, { type TimeField } from './EspressoTimes'
+import { useWakeLock } from '@/lib/useWakeLock'
 import type { PressureStage } from '@/lib/pressure'
 import { mixArabicaShare, mixSignature } from '@/lib/beans'
 import { X, Plus, Minus, Play, Square, RotateCcw, History, Save, AlertTriangle, FlaskConical } from 'lucide-react'
@@ -121,6 +122,9 @@ export default function BrewForm({
   const [timerSeconds, setTimerSeconds] = useState(0)
   const [splitTaken, setSplitTaken] = useState(false)
   const startedAt = useRef<number>(0)
+
+  // Keep the phone awake only while the stopwatch is running
+  useWakeLock(timerRunning)
 
   useEffect(() => {
     if (!timerRunning) return
