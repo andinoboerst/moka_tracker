@@ -144,11 +144,29 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
     }
   }
   return (
-    <div className="card card-interactive p-6 space-y-4">
+    <div className="card card-interactive relative overflow-hidden p-6 space-y-4">
+      {/* Kind banner: a slim coloured edge tells moka and espresso brews apart at a glance */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-1"
+        style={{ background: isEspresso(brew.moka_pot) ? 'var(--accent)' : 'var(--sage)' }}
+      />
       {/* Header with date and delete */}
       <div className="flex justify-between items-start">
         <div>
-          <p className="eyebrow">{formatDate(brew.created_at)}</p>
+          <p className="eyebrow flex items-center gap-2">
+            {formatDate(brew.created_at)}
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wider"
+              style={{
+                color: isEspresso(brew.moka_pot) ? 'var(--accent-ink)' : 'var(--sage)',
+                borderColor: 'currentColor',
+              }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-current" />
+              {isEspresso(brew.moka_pot) ? t('dashboard.kind_espresso') : t('dashboard.kind_moka')}
+            </span>
+          </p>
           <h3 className="text-xl font-display font-bold text-ink mt-1.5">
             {hasMix ? describeMix(brew.mix!) : brew.bean?.name}
           </h3>
@@ -255,8 +273,8 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
         <div className="stat-tile p-3">
           <p className="eyebrow mb-1.5">{t('brew_card.moka_pot')}</p>
           <p className="text-sm font-medium text-ink">
-            {brew.moka_pot ? mokaPotName(brew.moka_pot) : ''} (
-            {isEspresso(brew.moka_pot) ? t('moka_form.kind_espresso') : t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})
+            {brew.moka_pot ? mokaPotName(brew.moka_pot) : ''}
+            {!isEspresso(brew.moka_pot) && ` (${t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})`}
           </p>
         </div>
 
@@ -269,27 +287,18 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       </div>
 
       {/* Measurements */}
-      <div className={`grid grid-cols-3 gap-3`}>
-        <div className="stat-tile-strong p-3 text-center">
+      <div className={`grid ${isEspresso(brew.moka_pot) ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
+        <div className="stat-tile-strong p-3 text-center flex flex-col justify-center">
           <p className="eyebrow">{t('brew_card.coffee')}</p>
           <p className="num text-lg font-medium text-ink">{brew.coffee_weight_g}g</p>
         </div>
-        {isEspresso(brew.moka_pot) ? (
-          <div className="stat-tile-strong p-3 text-center">
-            <p className="eyebrow">{t('brew_form.grind')}</p>
-            <p className="num text-lg font-medium text-ink">
-              {brew.grinder_id && brew.grinder_setting != null
-                ? grindLabel(brew.grinder_setting, brew.grinder, t('brew_card.clicks'))
-                : t('brew_form.pre_ground')}
-            </p>
-          </div>
-        ) : (
-          <div className="stat-tile-strong p-3 text-center">
+        {!isEspresso(brew.moka_pot) && (
+          <div className="stat-tile-strong p-3 text-center flex flex-col justify-center">
             <p className="eyebrow">{t('brew_card.water_in')}</p>
             <p className="num text-lg font-medium text-ink">{brew.water_added_g}g</p>
           </div>
         )}
-        <div className="stat-tile-strong p-3 text-center">
+        <div className="stat-tile-strong p-3 text-center flex flex-col justify-center">
           <p className="eyebrow">{t('brew_card.yield')}</p>
           <p className="num text-lg font-medium text-ink">{brew.final_yield_g}g</p>
         </div>

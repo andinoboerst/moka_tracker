@@ -129,8 +129,8 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
                 <div>
                   <dt className="text-xs text-muted">{t('brew_card.moka_pot')}</dt>
                   <dd className="text-ink">
-                    {mokaPotName(brew.moka_pot)} (
-                    {brew.moka_pot.kind === 'espresso' ? t('moka_form.kind_espresso') : t('moka_form.cup_count', { count: brew.moka_pot.size_cups ?? 0 })})
+                    {mokaPotName(brew.moka_pot)}
+                    {brew.moka_pot.kind !== 'espresso' && ` (${t('moka_form.cup_count', { count: brew.moka_pot.size_cups ?? 0 })})`}
                   </dd>
                 </div>
                 <div>
