@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { Bean, BeanMix, Brew, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
 import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeaders, formatDate, isEspresso } from '@/lib/utils'
 import { PressureProfileEditor } from './PressureProfile'
@@ -54,7 +55,6 @@ const emptyForm = {
   flow_type: 'Steady',
   brew_temp_c: '',
   first_drip_s: '',
-  tds_percent: '',
   taste_balance: '',
   used_wdt: false,
 }
@@ -81,7 +81,6 @@ function formFromBrew(brew: Brew, keepResult: boolean): FormState {
     flow_type: brew.flow_type || 'Steady',
     brew_temp_c: brew.brew_temp_c?.toString() ?? '',
     first_drip_s: brew.first_drip_s?.toString() ?? '',
-    tds_percent: brew.tds_percent?.toString() ?? '',
     taste_balance: brew.taste_balance ?? '',
     used_wdt: !!brew.used_wdt,
   }
@@ -300,19 +299,12 @@ export default function BrewForm({
     return c > 0 && y > 0 ? calculateExtractionRatio(c, y) : 0
   }, [formData.coffee_weight_g, formData.final_yield_g])
 
-  // Espresso extras: flow rate and extraction yield (needs a refractometer reading)
+  // Espresso extra: average flow rate
   const flowRate = useMemo(() => {
     const y = parseFloat(formData.final_yield_g)
     const s = parseFloat(formData.extraction_time_s)
     return y > 0 && s > 0 ? y / s : 0
   }, [formData.final_yield_g, formData.extraction_time_s])
-
-  const extractionYield = useMemo(() => {
-    const c = parseFloat(formData.coffee_weight_g)
-    const y = parseFloat(formData.final_yield_g)
-    const tds = parseFloat(formData.tds_percent)
-    return c > 0 && y > 0 && tds > 0 ? (y * tds) / c : 0
-  }, [formData.coffee_weight_g, formData.final_yield_g, formData.tds_percent])
 
   // Stock warning: coffee needed per bag vs what is left
   const stockWarning = useMemo(() => {
@@ -362,8 +354,7 @@ export default function BrewForm({
         flow_type: formData.flow_type,
         brew_temp_c: espresso && formData.brew_temp_c !== '' ? parseFloat(formData.brew_temp_c) : undefined,
         first_drip_s: espresso && formData.first_drip_s !== '' ? parseFloat(formData.first_drip_s) : undefined,
-        tds_percent: espresso && formData.tds_percent !== '' ? parseFloat(formData.tds_percent) : undefined,
-        taste_balance: espresso && formData.taste_balance ? formData.taste_balance : undefined,
+        taste_balance: formData.taste_balance || undefined,
         used_wdt: espresso ? formData.used_wdt : undefined,
         pressure_profile: espresso && pressureProfile.length > 0 ? pressureProfile.filter((s) => s.duration_s > 0) : undefined,
       })
@@ -578,6 +569,13 @@ export default function BrewForm({
           </div>
         </div>
 
+        {!isPreGround && grinders.length === 0 && (
+          <p className="text-sm text-yellow-400">
+            {t('brew_form.no_grinder_hint')}{' '}
+            <Link href="/inventory" className="underline">{t('inventory.go_to_inventory')}</Link>
+          </p>
+        )}
+
         {similarBrew && (
           <button
             type="button"
@@ -784,37 +782,6 @@ export default function BrewForm({
                 className={inputCls}
               />
             </div>
-            <div>
-              <label className={labelCls}>{t('brew_form.tds')}</label>
-              <input
-                type="number" min="0" max="25" step="0.01"
-                value={formData.tds_percent}
-                onChange={(e) => set({ tds_percent: e.target.value })}
-                placeholder="e.g., 9.2"
-                className={inputCls}
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className={labelCls}>{t('brew_form.taste_balance')}</label>
-              <div role="radiogroup" className="grid grid-cols-3 gap-2">
-                {(['sour', 'balanced', 'bitter'] as const).map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    role="radio"
-                    aria-checked={formData.taste_balance === value}
-                    onClick={() => set({ taste_balance: formData.taste_balance === value ? '' : value })}
-                    className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                      formData.taste_balance === value
-                        ? 'border-accent bg-accent/15 text-accent-ink'
-                        : 'border-line-strong text-muted hover:text-ink'
-                    }`}
-                  >
-                    {t(`brew_form.taste_${value}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
             <label className="flex items-center gap-2 text-sm font-medium text-ink cursor-pointer">
               <input
                 type="checkbox"
@@ -912,9 +879,9 @@ export default function BrewForm({
         </div>
         {espresso && (
           <div>
-            <p className="text-sm text-muted mb-1">{extractionYield ? t('brew_form.extraction_yield') : t('brew_form.flow_rate')}</p>
+            <p className="text-sm text-muted mb-1">{t('brew_form.flow_rate')}</p>
             <p className="text-lg font-semibold text-accent-ink">
-              {extractionYield ? `${extractionYield.toFixed(1)}%` : flowRate ? `${flowRate.toFixed(2)} g/s` : '—'}
+              {flowRate ? `${flowRate.toFixed(2)} g/s` : '—'}
             </p>
           </div>
         )}
@@ -922,6 +889,28 @@ export default function BrewForm({
 
       {/* Rating and Notes */}
       <div className="space-y-4">
+        <div>
+          <label className={labelCls}>{t('brew_form.taste_balance')}</label>
+          <div role="radiogroup" className="grid grid-cols-3 gap-2">
+            {(['sour', 'balanced', 'bitter'] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={formData.taste_balance === value}
+                onClick={() => set({ taste_balance: formData.taste_balance === value ? '' : value })}
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                  formData.taste_balance === value
+                    ? 'border-accent bg-accent/15 text-accent-ink'
+                    : 'border-line-strong text-muted hover:text-ink'
+                }`}
+              >
+                {t(`brew_form.taste_${value}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-ink mb-2">
             {t('brew_form.vibe_rating')}: <span className="num">{formData.vibe_rating}/10</span> — {vibeName}{' '}

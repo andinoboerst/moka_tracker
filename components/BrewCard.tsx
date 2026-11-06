@@ -276,12 +276,21 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       </div>
 
       {/* Measurements */}
-      <div className={`grid ${isEspresso(brew.moka_pot) ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
+      <div className={`grid grid-cols-3 gap-3`}>
         <div className="stat-tile-strong p-3 text-center">
           <p className="eyebrow">{t('brew_card.coffee')}</p>
           <p className="num text-lg font-medium text-ink">{brew.coffee_weight_g}g</p>
         </div>
-        {!isEspresso(brew.moka_pot) && (
+        {isEspresso(brew.moka_pot) ? (
+          <div className="stat-tile-strong p-3 text-center">
+            <p className="eyebrow">{t('brew_form.grind')}</p>
+            <p className="num text-lg font-medium text-ink">
+              {brew.grinder_id && brew.grinder_setting != null
+                ? grindLabel(brew.grinder_setting, brew.grinder, t('brew_card.clicks'))
+                : t('brew_form.pre_ground')}
+            </p>
+          </div>
+        ) : (
           <div className="stat-tile-strong p-3 text-center">
             <p className="eyebrow">{t('brew_card.water_in')}</p>
             <p className="num text-lg font-medium text-ink">{brew.water_added_g}g</p>
@@ -334,11 +343,6 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
             {brew.extraction_time_s > 0 && brew.final_yield_g > 0 && (
               <div className="chip">{(brew.final_yield_g / brew.extraction_time_s).toFixed(2)} g/s</div>
             )}
-            {brew.tds_percent != null && brew.coffee_weight_g > 0 && (
-              <div className="chip">
-                TDS {brew.tds_percent}% · EY {((brew.final_yield_g * brew.tds_percent) / brew.coffee_weight_g).toFixed(1)}%
-              </div>
-            )}
             {brew.taste_balance && <div className="chip">{t(`brew_form.taste_${brew.taste_balance}`)}</div>}
             {brew.used_wdt && <div className="chip">WDT</div>}
             {brew.has_paper_filter && <div className="chip">{t('brew_form.espresso_paper')}</div>}
@@ -362,6 +366,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
         <div className="chip">
           <Waves className="w-3.5 h-3.5" /> {translateStoredExpertValue(brew.flow_type, t, 'Steady')}
         </div>
+        {brew.taste_balance && <div className="chip">{t(`brew_form.taste_${brew.taste_balance}`)}</div>}
         {brew.has_paper_filter && (
           <div className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded flex items-center gap-1 border border-blue-800/30">
             <FileText className="w-3.5 h-3.5" /> {t('brew_card.paper_filter')}

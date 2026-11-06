@@ -23,7 +23,6 @@ export interface RecapInput {
   brew_temp_c?: number | null
   pressure_profile?: PressureStage[] | null
   first_drip_s?: number | null
-  tds_percent?: number | null
   taste_balance?: string | null
   used_wdt?: boolean | null
   brew_ratio_input: number
@@ -45,7 +44,7 @@ export async function generateBrewRecap(
     bean_id, grinder_id, moka_pot_id, grinder_setting, coffee_weight_g, water_added_g,
     final_yield_g, extraction_time_s, milk_added_g, milk_type, vibe_rating, tasting_notes,
     water_temp, heat_level, has_paper_filter, flow_type, brew_ratio_input,
-    extraction_ratio_output, language = 'en', mix, brew_temp_c, pressure_profile, first_drip_s, tds_percent, taste_balance, used_wdt,
+    extraction_ratio_output, language = 'en', mix, brew_temp_c, pressure_profile, first_drip_s, taste_balance, used_wdt,
   } = input
 
   // Fetch entity details for richer AI context
@@ -137,7 +136,6 @@ ${espresso
   const preinfusionSeconds = (pressure_profile || [])
     .filter((s) => s.type === 'preinfusion')
     .reduce((sum, s) => sum + s.duration_s, 0)
-  const extractionYield = tds_percent && coffee_weight_g > 0 ? (final_yield_g * tds_percent) / coffee_weight_g : null
   const flowRate = extraction_time_s > 0 ? final_yield_g / extraction_time_s : null
 
   const brewDetails = espresso
@@ -145,7 +143,6 @@ ${espresso
 - First drip: ${first_drip_s != null ? first_drip_s + 's' : 'not recorded'}
 - Brew temperature: ${brew_temp_c != null ? brew_temp_c + '°C' : 'not recorded'}
 - Pressure profile: ${profileText}${preinfusionSeconds ? ` (pre-infusion ${preinfusionSeconds}s)` : ''}
-- TDS / extraction yield: ${tds_percent ? `${tds_percent}% / ${extractionYield?.toFixed(1)}%` : 'not measured'}
 - Taste balance according to the user: ${taste_balance || 'not recorded'}
 - Puck prep: ${used_wdt ? 'stirred (WDT)' : 'no WDT'}${has_paper_filter ? ', paper filter on puck' : ''}`
     : `- Coffee ${coffee_weight_g}g, water in boiler ${water_added_g}g, yield ${final_yield_g}g, brew ratio 1:${brew_ratio_input}, extraction ratio 1:${extraction_ratio_output}
@@ -153,7 +150,8 @@ ${espresso
 - Starting water temp: ${water_temp || 'Boiling'}
 - Heat level: ${heat_level || 'Medium-Low'}
 - Paper filter: ${has_paper_filter ? 'yes' : 'no'}
-- Flow observation: ${flow_type || 'Steady'}`
+- Flow observation: ${flow_type || 'Steady'}
+- Taste balance according to the user: ${taste_balance || 'not recorded'}`
 
   const equipment = espresso
     ? `Espresso machine: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.type}${mokaPot?.basket_diameter_mm ? `, ${mokaPot.basket_diameter_mm} mm basket` : ''})`

@@ -14,6 +14,7 @@ import {
   BeanBarChart,
 } from '@/components/AnalyticsChart'
 import BeanJournal from '@/components/BeanJournal'
+import BrewerKindToggle, { type KindFilter } from '@/components/BrewerKindToggle'
 import DialIn from '@/components/DialIn'
 import InsightsPanel from '@/components/InsightsPanel'
 import Simulator from '@/components/Simulator'
@@ -63,7 +64,8 @@ function Detail({ icon: Icon, label, children, className = '' }: { icon?: typeof
 export default function AnalyticsPage() {
   const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState<AnalyticsTab>('insights')
-  const [brews, setBrews] = useState<Brew[]>([])
+  const [allBrews, setAllBrews] = useState<Brew[]>([])
+  const [kind, setKind] = useState<KindFilter>('')
   const [loading, setLoading] = useState(false)
   const [scatterMode, setScatterMode] = useState<'grind' | 'roast'>('grind')
   const [expandedBrew, setExpandedBrew] = useState<string | null>(null)
@@ -76,7 +78,7 @@ export default function AnalyticsPage() {
       try {
         const headers = await getAuthHeaders()
         const response = await fetch('/api/brews?all=1', { headers })
-        if (response.ok) setBrews(await response.json())
+        if (response.ok) setAllBrews(await response.json())
       } catch (err) {
         console.error('Error fetching analytics data:', err)
       } finally {
@@ -85,6 +87,13 @@ export default function AnalyticsPage() {
     }
     load()
   }, [activeTab])
+
+  const hasBothKinds =
+    allBrews.some((b) => b.moka_pot?.kind === 'espresso') && allBrews.some((b) => b.moka_pot?.kind !== 'espresso')
+  const brews = useMemo(
+    () => (kind ? allBrews.filter((b) => (b.moka_pot?.kind === 'espresso') === (kind === 'espresso')) : allBrews),
+    [allBrews, kind]
+  )
 
   const scatterData = useMemo(
     () =>
@@ -155,6 +164,12 @@ export default function AnalyticsPage() {
           subtitle={t('analytics.subtitle')}
           className="mb-8"
         />
+
+        {hasBothKinds && (
+          <div className="mb-4">
+            <BrewerKindToggle value={kind} onChange={setKind} />
+          </div>
+        )}
 
         <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto mb-8 pb-1">
           <div className="segmented w-max" role="tablist" aria-label={t('analytics.title')}>

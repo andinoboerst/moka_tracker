@@ -20,6 +20,7 @@ import PageHeading from '@/components/PageHeading'
 import AuthModal from '@/components/AuthModal'
 import BrewCard from '@/components/BrewCard'
 import { MokaPotIcon } from '@/components/icons/MokaPotIcon'
+import BrewerKindToggle, { type KindFilter } from '@/components/BrewerKindToggle'
 import { Bean, Brew, MokaPot } from '@/lib/types'
 import { getAuthHeaders, mokaPotName } from '@/lib/utils'
 import { brewsToCsv, downloadCsv } from '@/lib/exportCsv'
@@ -66,6 +67,7 @@ export default function Home() {
   const [potId, setPotId] = useState('')
   const [minRating, setMinRating] = useState('')
   const [sort, setSort] = useState('newest')
+  const [kind, setKind] = useState<KindFilter>('')
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedSearch(search.trim()), 300)
@@ -83,6 +85,7 @@ export default function Home() {
       if (debouncedSearch) qs.set('q', debouncedSearch)
       if (beanId) qs.set('bean_id', beanId)
       if (potId) qs.set('moka_pot_id', potId)
+      if (kind) qs.set('kind', kind)
       if (minRating) qs.set('min_rating', minRating)
       const response = await fetch(`/api/brews?${qs}`, { headers })
       if (!response.ok) throw new Error('Failed to fetch brews')
@@ -94,17 +97,22 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
-  }, [page, sort, debouncedSearch, beanId, potId, minRating])
+  }, [page, sort, debouncedSearch, beanId, potId, minRating, kind])
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const headers = await getAuthHeaders()
+      const s = await fetch(`/api/brews?stats=1${kind ? `&kind=${kind}` : ''}`, { headers })
+      if (s.ok) setStats(await s.json())
+    } catch (err) {
+      console.error('Error loading stats:', err)
+    }
+  }, [kind])
 
   const fetchOverview = useCallback(async () => {
     try {
       const headers = await getAuthHeaders()
-      const [s, b, p] = await Promise.all([
-        fetch('/api/brews?stats=1', { headers }),
-        fetch('/api/beans', { headers }),
-        fetch('/api/moka-pots', { headers }),
-      ])
-      if (s.ok) setStats(await s.json())
+      const [b, p] = await Promise.all([fetch('/api/beans', { headers }), fetch('/api/moka-pots', { headers })])
       if (b.ok) setBeans(await b.json())
       if (p.ok) setPots(await p.json())
     } catch (err) {
@@ -124,6 +132,13 @@ export default function Home() {
 
   useEffect(() => {
     if (authLoading || !user) return
+    // fetchStats only sets state once the request resolves
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchStats()
+  }, [user, authLoading, fetchStats])
+
+  useEffect(() => {
+    if (authLoading || !user) return
     // fetchBrews toggles loading/error state as part of the data fetch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchBrews()
@@ -134,6 +149,15 @@ export default function Home() {
     setter(value)
     setPage(1)
   }
+
+  const changeKind = (next: KindFilter) => {
+    setKind(next)
+    setPotId('') // a brewer of the other kind would match nothing
+    setPage(1)
+  }
+
+  const hasBothKinds = pots.some((p) => p.kind === 'espresso') && pots.some((p) => p.kind !== 'espresso')
+  const visiblePots = kind ? pots.filter((p) => (kind === 'espresso') === (p.kind === 'espresso')) : pots
 
   const clearFilters = () => {
     setSearch('')
@@ -156,7 +180,7 @@ export default function Home() {
       const response = await fetch(`/api/brews?id=${id}`, { method: 'DELETE', headers })
       if (!response.ok) throw new Error('Failed to delete brew')
       fetchBrews()
-      fetchOverview()
+      fetchStats()
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete')
     }
@@ -284,6 +308,12 @@ export default function Home() {
           </section>
         ) : (
           <>
+            {hasBothKinds && (
+              <div className="mb-8">
+                <BrewerKindToggle value={kind} onChange={changeKind} />
+              </div>
+            )}
+
             {/* Next Brew Guide Card */}
             {suggestion && stats?.latest && (
               <div className="card rounded-2xl relative overflow-hidden mb-8 p-6 sm:p-8">
@@ -298,15 +328,9 @@ export default function Home() {
                   <p className="text-muted text-sm mb-3">
                     {t('dashboard.based_on_last', { bean: latestName || '?', rating: stats.latest.vibe_rating })}
                   </p>
-                  <p className="text-ink text-lg font-medium leading-relaxed mb-6 max-w-3xl">
+                  <p className="text-ink text-lg font-medium leading-relaxed max-w-3xl">
                     &ldquo;{suggestion}&rdquo;
                   </p>
-                  <Link
-                    href="/brew"
-                    className="btn-primary py-2.5 px-6"
-                  >
-                    {t('dashboard.log_next')}
-                  </Link>
                 </div>
               </div>
             )}
@@ -386,7 +410,7 @@ export default function Home() {
                   </select>
                   <select value={potId} onChange={(e) => changeFilter(setPotId)(e.target.value)} className={selectCls}>
                     <option value="">{t('feat.filter_all_pots')}</option>
-                    {pots.map((p) => (
+                    {visiblePots.map((p) => (
                       <option key={p.id} value={p.id}>
                         {mokaPotName(p)}
                       </option>

@@ -115,7 +115,6 @@ export interface Brew {
   brew_temp_c?: number | null
   pressure_profile?: PressureStage[] | null
   first_drip_s?: number | null
-  tds_percent?: number | null
   taste_balance?: 'sour' | 'balanced' | 'bitter' | null
   used_wdt?: boolean | null
   brew_ratio_input?: number
@@ -159,7 +158,6 @@ export interface BrewCreateInput {
   brew_temp_c?: number
   pressure_profile?: PressureStage[]
   first_drip_s?: number
-  tds_percent?: number
   taste_balance?: string
   used_wdt?: boolean
   /** UI locale only — not persisted; all DB enum fields use English canonical values */

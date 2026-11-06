@@ -85,7 +85,6 @@ type BrewFields = {
   brew_temp_c: number | null
   pressure_profile: PressureStage[] | null
   first_drip_s: number | null
-  tds_percent: number | null
   taste_balance: string | null
   used_wdt: boolean | null
 }
@@ -136,12 +135,8 @@ function parseBrewBody(body: any): { error: string } | { fields: BrewFields; mix
   }
   const optionalNumber = (v: unknown) => (v === '' || v == null ? null : Number(v))
   const firstDrip = optionalNumber(body.first_drip_s)
-  const tds = optionalNumber(body.tds_percent)
   if (firstDrip !== null && (!Number.isFinite(firstDrip) || firstDrip < 0 || firstDrip > 120)) {
     return { error: 'First drip time must be between 0 and 120 seconds' }
-  }
-  if (tds !== null && (!Number.isFinite(tds) || tds <= 0 || tds > 25)) {
-    return { error: 'TDS must be between 0 and 25 %' }
   }
   const milk = body.milk_added_g ? parseFloat(body.milk_added_g) : null
 
@@ -166,7 +161,6 @@ function parseBrewBody(body: any): { error: string } | { fields: BrewFields; mix
       brew_temp_c: brewTemp,
       pressure_profile: profile.profile,
       first_drip_s: firstDrip,
-      tds_percent: tds,
       taste_balance: normalizeTasteBalance(body.taste_balance),
       used_wdt: typeof body.used_wdt === 'boolean' ? body.used_wdt : null,
     },
@@ -182,16 +176,30 @@ export async function GET(request: NextRequest) {
 
     const sp = new URL(request.url).searchParams
 
+    // Optional filter on the kind of brewer: 'moka' | 'espresso'
+    const kind = sp.get('kind')
+    let kindPotIds: string[] | null = null
+    if (kind === 'moka' || kind === 'espresso') {
+      const { data } = await client.from('moka_pots').select('id').eq('kind', kind)
+      kindPotIds = (data || []).map((p: { id: string }) => p.id)
+      // An empty IN () list is invalid; use an id that matches nothing
+      if (!kindPotIds.length) kindPotIds = ['00000000-0000-0000-0000-000000000000']
+    }
+
     // Lightweight totals for the dashboard (not limited by pagination)
     if (sp.get('stats') === '1') {
-      const rows = await fetchAllRows<{ vibe_rating: number }>((from, to) =>
-        client.from('brews').select('vibe_rating').order('created_at', { ascending: false }).range(from, to)
-      )
+      const rows = await fetchAllRows<{ vibe_rating: number }>((from, to) => {
+        let query: any = client.from('brews').select('vibe_rating')
+        if (kindPotIds) query = query.in('moka_pot_id', kindPotIds)
+        return query.order('created_at', { ascending: false }).range(from, to)
+      })
       const total = rows.length
       const avg = total ? rows.reduce((sum, r) => sum + (r.vibe_rating || 0), 0) / total : null
-      const { data: latest } = await client
+      let latestQuery: any = client
         .from('brews')
         .select('id, ai_recap, vibe_rating, bean:beans(name), mix:brew_beans(percentage, bean:beans(name))')
+      if (kindPotIds) latestQuery = latestQuery.in('moka_pot_id', kindPotIds)
+      const { data: latest } = await latestQuery
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()
@@ -219,6 +227,7 @@ export async function GET(request: NextRequest) {
         query = query.or(parts.join(','))
       }
       if (sp.get('bean_id')) query = query.eq('bean_id', sp.get('bean_id'))
+      if (kindPotIds) query = query.in('moka_pot_id', kindPotIds)
       if (sp.get('moka_pot_id')) query = query.eq('moka_pot_id', sp.get('moka_pot_id'))
       if (sp.get('min_rating')) query = query.gte('vibe_rating', parseInt(sp.get('min_rating')!))
       if (sp.get('max_rating')) query = query.lte('vibe_rating', parseInt(sp.get('max_rating')!))

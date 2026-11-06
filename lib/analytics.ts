@@ -324,10 +324,10 @@ export function summariseForAI(brews: Brew[], stats: BrewStats) {
               ? b.pressure_profile.map((s) => `${s.type} ${s.duration_s}s @ ${s.pressure_bar} bar`).join(', ')
               : null,
             first_drip_s: b.first_drip_s ?? null,
-            tds_percent: b.tds_percent ?? null,
             taste_balance: b.taste_balance ?? null,
           }
         : { heat: b.heat_level ?? null, start_water: b.water_temp ?? null }),
+      taste_balance: b.taste_balance ?? null,
       paper_filter: !!b.has_paper_filter,
       days_past_roast: daysPastRoast(b),
       notes: (b.tasting_notes || '').slice(0, 120),
