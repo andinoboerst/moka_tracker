@@ -34,6 +34,8 @@ export default function InventoryPage() {
   >(null)
   const closeModal = useCallback(() => setModal(null), [])
 
+  const activeBeans = beans.filter((b) => b.is_active !== false)
+  const inactiveBeans = beans.filter((b) => b.is_active === false)
   const [activeTab, setActiveTab] = useState<'beans' | 'gear' | 'grinders'>('beans')
   const tabs = [
     { id: 'beans' as const, label: t('inventory.your_beans'), count: beans.length },
@@ -244,18 +246,33 @@ export default function InventoryPage() {
             {activeTab === 'beans' && (
               <>
                 <SectionHeader title={t('inventory.your_beans')} addLabel={t('inventory.add_bean')} onAdd={() => setModal({ type: 'bean', item: null })} />
-                <InventoryList
-                  items={beans}
-                  type="beans"
-                  onDelete={handleDeleteBean}
-                  onEdit={(item) => setModal({ type: 'bean', item: item as Bean })}
-                  onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
-                  isDeleting={false}
-                />
+                {(activeBeans.length > 0 || beans.length === 0) && (
+                  <InventoryList
+                    items={activeBeans}
+                    type="beans"
+                    onDelete={handleDeleteBean}
+                    onEdit={(item) => setModal({ type: 'bean', item: item as Bean })}
+                    onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
+                    isDeleting={false}
+                  />
+                )}
                 <div className="mt-8">
                   <h3 className="text-lg font-display font-bold text-accent-ink mb-3">{t('feat.mixes_title')}</h3>
                   <MixManager beans={beans} mixes={mixes} onChanged={fetchMixes} />
                 </div>
+                {inactiveBeans.length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="text-lg font-display font-bold text-muted mb-3">{t('inventory.inactive_beans')}</h3>
+                    <InventoryList
+                      items={inactiveBeans}
+                      type="beans"
+                      onDelete={handleDeleteBean}
+                      onEdit={(item) => setModal({ type: 'bean', item: item as Bean })}
+                      onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
+                      isDeleting={false}
+                    />
+                  </div>
+                )}
               </>
             )}
 
