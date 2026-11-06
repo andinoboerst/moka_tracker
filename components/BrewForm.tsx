@@ -53,6 +53,10 @@ const emptyForm = {
   has_paper_filter: false,
   flow_type: 'Steady',
   brew_temp_c: '',
+  first_drip_s: '',
+  tds_percent: '',
+  taste_balance: '',
+  used_wdt: false,
 }
 
 type FormState = typeof emptyForm
@@ -76,6 +80,10 @@ function formFromBrew(brew: Brew, keepResult: boolean): FormState {
     has_paper_filter: !!brew.has_paper_filter,
     flow_type: brew.flow_type || 'Steady',
     brew_temp_c: brew.brew_temp_c?.toString() ?? '',
+    first_drip_s: brew.first_drip_s?.toString() ?? '',
+    tds_percent: brew.tds_percent?.toString() ?? '',
+    taste_balance: brew.taste_balance ?? '',
+    used_wdt: !!brew.used_wdt,
   }
 }
 
@@ -267,6 +275,20 @@ export default function BrewForm({
     return c > 0 && y > 0 ? calculateExtractionRatio(c, y) : 0
   }, [formData.coffee_weight_g, formData.final_yield_g])
 
+  // Espresso extras: flow rate and extraction yield (needs a refractometer reading)
+  const flowRate = useMemo(() => {
+    const y = parseFloat(formData.final_yield_g)
+    const s = parseFloat(formData.extraction_time_s)
+    return y > 0 && s > 0 ? y / s : 0
+  }, [formData.final_yield_g, formData.extraction_time_s])
+
+  const extractionYield = useMemo(() => {
+    const c = parseFloat(formData.coffee_weight_g)
+    const y = parseFloat(formData.final_yield_g)
+    const tds = parseFloat(formData.tds_percent)
+    return c > 0 && y > 0 && tds > 0 ? (y * tds) / c : 0
+  }, [formData.coffee_weight_g, formData.final_yield_g, formData.tds_percent])
+
   // Stock warning: coffee needed per bag vs what is left
   const stockWarning = useMemo(() => {
     const coffee = parseFloat(formData.coffee_weight_g)
@@ -314,6 +336,10 @@ export default function BrewForm({
         has_paper_filter: formData.has_paper_filter,
         flow_type: formData.flow_type,
         brew_temp_c: espresso && formData.brew_temp_c !== '' ? parseFloat(formData.brew_temp_c) : undefined,
+        first_drip_s: espresso && formData.first_drip_s !== '' ? parseFloat(formData.first_drip_s) : undefined,
+        tds_percent: espresso && formData.tds_percent !== '' ? parseFloat(formData.tds_percent) : undefined,
+        taste_balance: espresso && formData.taste_balance ? formData.taste_balance : undefined,
+        used_wdt: espresso ? formData.used_wdt : undefined,
         pressure_profile: espresso && pressureProfile.length > 0 ? pressureProfile.filter((s) => s.duration_s > 0) : undefined,
       })
     } catch (err) {
@@ -696,6 +722,67 @@ export default function BrewForm({
               className={inputCls}
             />
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelCls}>{t('brew_form.first_drip')}</label>
+              <input
+                type="number" min="0" max="120" step="0.5"
+                value={formData.first_drip_s}
+                onChange={(e) => set({ first_drip_s: e.target.value })}
+                placeholder="e.g., 8"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>{t('brew_form.tds')}</label>
+              <input
+                type="number" min="0" max="25" step="0.01"
+                value={formData.tds_percent}
+                onChange={(e) => set({ tds_percent: e.target.value })}
+                placeholder="e.g., 9.2"
+                className={inputCls}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelCls}>{t('brew_form.taste_balance')}</label>
+              <div role="radiogroup" className="grid grid-cols-3 gap-2">
+                {(['sour', 'balanced', 'bitter'] as const).map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    role="radio"
+                    aria-checked={formData.taste_balance === value}
+                    onClick={() => set({ taste_balance: formData.taste_balance === value ? '' : value })}
+                    className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                      formData.taste_balance === value
+                        ? 'border-accent bg-accent/15 text-accent-ink'
+                        : 'border-line-strong text-muted hover:text-ink'
+                    }`}
+                  >
+                    {t(`brew_form.taste_${value}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm font-medium text-ink cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.used_wdt}
+                onChange={(e) => set({ used_wdt: e.target.checked })}
+                className="w-4 h-4 rounded border-line-strong bg-canvas accent-[var(--accent)]"
+              />
+              {t('brew_form.used_wdt')}
+            </label>
+            <label className="flex items-center gap-2 text-sm font-medium text-ink cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.has_paper_filter}
+                onChange={(e) => set({ has_paper_filter: e.target.checked })}
+                className="w-4 h-4 rounded border-line-strong bg-canvas accent-[var(--accent)]"
+              />
+              {t('brew_form.espresso_paper')}
+            </label>
+          </div>
           <PressureProfileEditor
             value={pressureProfile}
             onChange={setPressureProfile}
@@ -761,7 +848,7 @@ export default function BrewForm({
       )}
 
       {/* Auto-Calculated Ratios */}
-      <div className="grid grid-cols-2 gap-4 p-4 bg-line rounded-xl border border-line-strong">
+      <div className={`grid ${espresso ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2'} gap-4 p-4 bg-line rounded-xl border border-line-strong`}>
         {!espresso && (
           <div>
             <p className="text-sm text-muted mb-1">{t('brew_form.brew_ratio')}</p>
@@ -772,6 +859,14 @@ export default function BrewForm({
           <p className="text-sm text-muted mb-1">{t('brew_form.extraction_ratio')}</p>
           <p className="text-lg font-semibold text-accent-ink">{extractionRatio ? `1:${extractionRatio.toFixed(2)}` : '—'}</p>
         </div>
+        {espresso && (
+          <div>
+            <p className="text-sm text-muted mb-1">{extractionYield ? t('brew_form.extraction_yield') : t('brew_form.flow_rate')}</p>
+            <p className="text-lg font-semibold text-accent-ink">
+              {extractionYield ? `${extractionYield.toFixed(1)}%` : flowRate ? `${flowRate.toFixed(2)} g/s` : '—'}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Rating and Notes */}

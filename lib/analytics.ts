@@ -310,13 +310,24 @@ export function summariseForAI(brews: Brew[], stats: BrewStats) {
     recent_brews: recent.map((b) => ({
       bean: brewLabel(b),
       rating: b.vibe_rating,
-      grinder_clicks: b.grinder_setting ?? null,
+      brewer: b.moka_pot?.kind === 'espresso' ? 'espresso machine' : 'moka pot',
+      grind_setting: b.grinder_setting ?? null,
+      grind_unit: b.grinder?.adjustment_type === 'stepless' ? 'microns' : 'clicks',
       coffee_g: b.coffee_weight_g,
       water_g: b.water_added_g,
       yield_g: b.final_yield_g,
       time_s: b.extraction_time_s,
-      heat: b.heat_level ?? null,
-      start_water: b.water_temp ?? null,
+      ...(b.moka_pot?.kind === 'espresso'
+        ? {
+            brew_temp_c: b.brew_temp_c ?? null,
+            pressure_profile: b.pressure_profile?.length
+              ? b.pressure_profile.map((s) => `${s.type} ${s.duration_s}s @ ${s.pressure_bar} bar`).join(', ')
+              : null,
+            first_drip_s: b.first_drip_s ?? null,
+            tds_percent: b.tds_percent ?? null,
+            taste_balance: b.taste_balance ?? null,
+          }
+        : { heat: b.heat_level ?? null, start_water: b.water_temp ?? null }),
       paper_filter: !!b.has_paper_filter,
       days_past_roast: daysPastRoast(b),
       notes: (b.tasting_notes || '').slice(0, 120),

@@ -2,7 +2,7 @@
  * Minimal Mistral chat helper shared by analytics routes.
  * Tries the configured model, then a fallback; returns null if the key is missing or every call fails.
  */
-export async function mistralComplete(prompt: string, opts: { json?: boolean; maxTokens?: number } = {}): Promise<string | null> {
+export async function mistralComplete(prompt: string, opts: { json?: boolean; maxTokens?: number; temperature?: number } = {}): Promise<string | null> {
   const apiKey = process.env.MISTRAL_API_KEY
   if (!apiKey) return null
 
@@ -17,7 +17,7 @@ export async function mistralComplete(prompt: string, opts: { json?: boolean; ma
         body: JSON.stringify({
           model,
           messages: [{ role: 'user', content: prompt }],
-          temperature: 0.6,
+          temperature: opts.temperature ?? 0.6,
           max_tokens: opts.maxTokens ?? 700,
           ...(opts.json ? { response_format: { type: 'json_object' } } : {}),
         }),

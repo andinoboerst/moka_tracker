@@ -34,6 +34,13 @@ export default function InventoryPage() {
   >(null)
   const closeModal = useCallback(() => setModal(null), [])
 
+  const [activeTab, setActiveTab] = useState<'beans' | 'gear' | 'grinders'>('beans')
+  const tabs = [
+    { id: 'beans' as const, label: t('inventory.your_beans'), count: beans.length },
+    { id: 'gear' as const, label: t('inventory.brewing_gear'), count: mokaPots.length },
+    { id: 'grinders' as const, label: t('inventory.your_grinders'), count: grinders.length },
+  ]
+
   const fetchBeans = async () => {
     try {
       const headers = await getAuthHeaders()
@@ -212,43 +219,71 @@ export default function InventoryPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <PageHeading title={t('inventory.title')} subtitle={t('inventory.subtitle')} className="mb-12" />
 
-        <div className="space-y-12 max-w-3xl mx-auto">
-          <section>
-            <SectionHeader title={t('inventory.your_beans')} addLabel={t('inventory.add_bean')} onAdd={() => setModal({ type: 'bean', item: null })} />
-            <InventoryList
-              items={beans}
-              type="beans"
-              onDelete={handleDeleteBean}
-              onEdit={(item) => setModal({ type: 'bean', item: item as Bean })}
-              onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
-              isDeleting={false}
-            />
-            <div className="mt-6">
-              <h3 className="text-lg font-display font-bold text-accent-ink mb-3">{t('feat.mixes_title')}</h3>
-              <MixManager beans={beans} mixes={mixes} onChanged={fetchMixes} />
-            </div>
-          </section>
+        <div className="max-w-3xl mx-auto">
+          <div role="tablist" className="flex gap-1 border-b border-line mb-6 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                role="tab"
+                id={`tab-${tab.id}`}
+                aria-selected={activeTab === tab.id}
+                aria-controls={`panel-${tab.id}`}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition ${
+                  activeTab === tab.id
+                    ? 'border-accent text-accent-ink'
+                    : 'border-transparent text-muted hover:text-ink'
+                }`}
+              >
+                {tab.label} <span className="num text-xs opacity-70">{tab.count}</span>
+              </button>
+            ))}
+          </div>
 
-          <section>
-            <SectionHeader title={t('inventory.brewing_gear')} addLabel={t('inventory.add_gear')} onAdd={() => setModal({ type: 'gear', item: null })} />
-            <InventoryList
-              items={mokaPots}
-              type="gear"
-              onDelete={handleDeleteMokaPot}
-              onEdit={(item) => setModal({ type: 'gear', item: item as MokaPot })}
-              isDeleting={false}
-            />
-          </section>
+          <section role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
+            {activeTab === 'beans' && (
+              <>
+                <SectionHeader title={t('inventory.your_beans')} addLabel={t('inventory.add_bean')} onAdd={() => setModal({ type: 'bean', item: null })} />
+                <InventoryList
+                  items={beans}
+                  type="beans"
+                  onDelete={handleDeleteBean}
+                  onEdit={(item) => setModal({ type: 'bean', item: item as Bean })}
+                  onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
+                  isDeleting={false}
+                />
+                <div className="mt-8">
+                  <h3 className="text-lg font-display font-bold text-accent-ink mb-3">{t('feat.mixes_title')}</h3>
+                  <MixManager beans={beans} mixes={mixes} onChanged={fetchMixes} />
+                </div>
+              </>
+            )}
 
-          <section>
-            <SectionHeader title={t('inventory.your_grinders')} addLabel={t('inventory.add_grinder')} onAdd={() => setModal({ type: 'grinder', item: null })} />
-            <InventoryList
-              items={grinders}
-              type="grinders"
-              onDelete={handleDeleteGrinder}
-              onEdit={(item) => setModal({ type: 'grinder', item: item as Grinder })}
-              isDeleting={false}
-            />
+            {activeTab === 'gear' && (
+              <>
+                <SectionHeader title={t('inventory.brewing_gear')} addLabel={t('inventory.add_gear')} onAdd={() => setModal({ type: 'gear', item: null })} />
+                <InventoryList
+                  items={mokaPots}
+                  type="gear"
+                  onDelete={handleDeleteMokaPot}
+                  onEdit={(item) => setModal({ type: 'gear', item: item as MokaPot })}
+                  isDeleting={false}
+                />
+              </>
+            )}
+
+            {activeTab === 'grinders' && (
+              <>
+                <SectionHeader title={t('inventory.your_grinders')} addLabel={t('inventory.add_grinder')} onAdd={() => setModal({ type: 'grinder', item: null })} />
+                <InventoryList
+                  items={grinders}
+                  type="grinders"
+                  onDelete={handleDeleteGrinder}
+                  onEdit={(item) => setModal({ type: 'grinder', item: item as Grinder })}
+                  isDeleting={false}
+                />
+              </>
+            )}
           </section>
         </div>
       </main>

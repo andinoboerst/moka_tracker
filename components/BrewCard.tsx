@@ -329,6 +329,20 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
               <Thermometer className="w-3.5 h-3.5" /> {t('brew_card.brew_temp')}: {brew.brew_temp_c}°C
             </div>
           )}
+          <div className="flex flex-wrap gap-2">
+            {brew.first_drip_s != null && <div className="chip">{t('brew_card.first_drip')}: {brew.first_drip_s}s</div>}
+            {brew.extraction_time_s > 0 && brew.final_yield_g > 0 && (
+              <div className="chip">{(brew.final_yield_g / brew.extraction_time_s).toFixed(2)} g/s</div>
+            )}
+            {brew.tds_percent != null && brew.coffee_weight_g > 0 && (
+              <div className="chip">
+                TDS {brew.tds_percent}% · EY {((brew.final_yield_g * brew.tds_percent) / brew.coffee_weight_g).toFixed(1)}%
+              </div>
+            )}
+            {brew.taste_balance && <div className="chip">{t(`brew_form.taste_${brew.taste_balance}`)}</div>}
+            {brew.used_wdt && <div className="chip">WDT</div>}
+            {brew.has_paper_filter && <div className="chip">{t('brew_form.espresso_paper')}</div>}
+          </div>
           {brew.pressure_profile && brew.pressure_profile.length > 0 && (
             <div className="stat-tile p-3">
               <p className="eyebrow mb-1.5">{t('brew_card.pressure_profile')}</p>

@@ -10,7 +10,7 @@ const voice = (language: Lang) =>
     ? 'RESPOND IN ITALIAN.'
     : 'RESPOND IN ENGLISH. Italian is only allowed as at most one short exclamation in the whole answer.'
 
-const style = `You are a veteran Italian barista who takes moka pots far too seriously. Your tone is dry, deadpan and warm. Never use emojis, markdown, asterisks or bullet characters. Be specific: quote the actual numbers you are given and never invent data that is not in the input. This is for a MOKA POT, not espresso or pour-over.`
+const style = `You are a veteran Italian barista who takes moka pots and manual espresso far too seriously. Your tone is dry, deadpan and warm. Never use emojis, markdown, asterisks or bullet characters. Be specific: quote the actual numbers you are given and never invent data that is not in the input. Ratings are the user's own 1-10 verdict: 8 and above is a good cup, 5-6 is average, 4 and below is poor. Never call a brew or a recipe bad if the user rated it 7 or higher, and never call a low-rated one great. Each brew says which brewer was used (a moka pot or an espresso machine): for moka brews talk about grinder, heat, starting water and filter; for espresso brews talk about grind, dose, yield, time, temperature and the pressure profile (pre-infusion, ramp, hold, decline) instead. Never apply moka advice to espresso or the other way round.`
 
 const asStrings = (value: unknown, max: number): string[] =>
   Array.isArray(value)
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (body.kind === 'simulation') {
       const prompt = `${style}
 
-A user is exploring a "what if" in a simulator: they changed pre-brew settings (grinder clicks, coffee dose, water, starting water temperature, heat, paper filter) of a coffee they actually brewed. The numbers below are ESTIMATES from a small model fitted to their own brew history plus general coffee knowledge, not measurements. Give a short verdict (2 to 3 sentences, max 70 words) on what this combination of changes would likely do to the cup (name the changes that matter most), mention how trustworthy the estimate is given the amount of data (the "confidence" field), and say whether they should actually try it.
+A user is exploring a "what if" in a simulator: they changed pre-brew settings (grind setting, coffee dose, water, starting water temperature, heat, paper filter) of a coffee they actually brewed. The numbers below are ESTIMATES from a small model fitted to their own brew history plus general coffee knowledge, not measurements. Give a short verdict (2 to 3 sentences, max 70 words) on what this combination of changes would likely do to the cup (name the changes that matter most), mention how trustworthy the estimate is given the amount of data (the "confidence" field), and say whether they should actually try it.
 Return raw JSON with exactly one key: "verdict" (a plain string).
 ${voice(language)}
 
@@ -59,10 +59,10 @@ Below are aggregate statistics and the most recent brews of one user. Write a ca
 - "headline": one sentence (max 25 words) summing up where this person is at.
 - "good": array of 2 to 4 short strings on what is going well.
 - "bad": array of 0 to 3 short strings on what is going badly (empty array if truly nothing, do not invent problems).
-- "improve": array of 2 to 4 short, concrete, actionable strings on what to change next (grinder clicks, heat, starting water, dose, freshness, paper filter, which beans to keep or drop). Prefer one change at a time.
+- "improve": array of 2 to 4 short, concrete, actionable strings on what to change next (grind setting, heat or pressure profile, starting water or brew temperature, dose, yield, freshness, paper filter, which beans to keep or drop). Prefer one change at a time.
 - "experiment": one string describing the single most informative next brew to try.
 Every string must be at most 35 words and use the real numbers provided. If there is little data, say so honestly instead of guessing.
-Do not suggest changing the grind for pre-ground coffee. Refer to water as "starting water" and use general terms (warmer, cooler) rather than exact degrees.
+Do not suggest changing the grind for pre-ground coffee. For moka brews refer to water as "starting water" and use general terms (warmer, cooler) rather than exact degrees. For espresso brews exact °C and bar values are fine.
 ${voice(language)}
 
 DATA:

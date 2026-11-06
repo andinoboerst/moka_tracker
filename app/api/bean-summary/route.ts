@@ -65,6 +65,7 @@ Speak directly to the person — as if you are narrating their experience back t
 Use phrases like "Your cup sang with...", "When you nailed it, the result was...", "There were moments when bitterness crept into your brew...", etc.
 Do NOT use first-person ("I tasted", "My experience"). Do NOT say "the user" or "users found".
 ${language === 'it' ? '' : 'Write the summary itself in plain English; Italian is only allowed as one or two short exclamations. '}Mix in occasional Italian flair words naturally, BUT ensure they match the rating sentiment! Use "Magnifico!", "Ottimo!", or "Buonissimo!" ONLY if the average rating is high (8+). Use "Mamma mia...", "Che disastro", or "Peccato" if the rating is low. Do NOT use emojis; let dry, deadpan wit carry the personality.
+The average rating of ${avgRating.toFixed(1)}/10 is the user's own verdict: ${avgRating >= 7.5 ? 'overall POSITIVE, so keep the tone positive' : avgRating >= 5.5 ? 'overall MIXED, so keep the tone balanced' : 'overall DISAPPOINTING, so keep the tone sympathetic'}. Never contradict it.
 Focus on tasting notes, overall impression, and whether the experience was generally positive, mixed, or disappointing.
 Keep it warm, vivid, and under 3 sentences, and less than 80 words! Absolutely no bullet points, no asterisks, no markdown — plain flowing text only.
 Include a short final verdict on wether they should rebuy, avoid or neutral on the bean and based on what conditions. For example you could recommend a certain bean if the user was looking for fruity notes, etc.
@@ -89,7 +90,7 @@ ${language === 'it' ? 'RESPOND IN ITALIAN. Even if the tasting notes are in Engl
               body: JSON.stringify({
                 model,
                 messages: [{ role: 'user', content: prompt }],
-                temperature: 0.7,
+                temperature: 0.5,
                 max_tokens: 400,
               }),
             })
