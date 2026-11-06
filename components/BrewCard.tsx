@@ -308,14 +308,14 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
 
       {/* Pressure profile: grouped with the tiles, above the divider */}
       {isEspresso(brew.moka_pot) && brew.pressure_profile && brew.pressure_profile.length > 0 && (
-        <div className="stat-tile flex items-center gap-4 p-3">
-          <div className="w-28 shrink-0">
-            <PressureChart compact profile={brew.pressure_profile} maxBar={brew.moka_pot?.max_pressure_bar} />
-          </div>
-          <div className="min-w-0">
-            <p className="eyebrow mb-1">{t('brew_card.pressure_profile')}</p>
-            <p className="num text-xs text-muted">{describeProfile(brew.pressure_profile)}</p>
-          </div>
+        <div className="stat-tile p-3">
+          <p className="eyebrow mb-2">{t('brew_card.pressure_profile')}</p>
+          <PressureChart
+            profile={brew.pressure_profile}
+            maxBar={brew.moka_pot?.max_pressure_bar}
+            size={{ w: 560, h: 120, font: 12 }}
+          />
+          <p className="num text-xs text-muted mt-2">{describeProfile(brew.pressure_profile)}</p>
         </div>
       )}
 
