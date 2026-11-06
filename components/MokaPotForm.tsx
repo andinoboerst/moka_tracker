@@ -9,6 +9,7 @@ import { ESPRESSO_MACHINE_TYPES } from '@/lib/dbValues'
 export interface MokaPotFormData {
   kind: 'moka' | 'espresso'
   max_pressure_bar: string
+  basket_size_g: string
   brand: string
   model: string
   nickname: string
@@ -21,6 +22,7 @@ export type MokaPotFormPayload = MokaPotFormData & { id?: string }
 const emptyMokaPotForm: MokaPotFormData = {
   kind: 'moka',
   max_pressure_bar: '',
+  basket_size_g: '',
   brand: '',
   model: '',
   nickname: '',
@@ -33,6 +35,7 @@ function mokaPotToFormData(pot?: MokaPot | null): MokaPotFormData {
   return {
     kind: pot.kind === 'espresso' ? 'espresso' : 'moka',
     max_pressure_bar: pot.max_pressure_bar?.toString() ?? '',
+    basket_size_g: pot.basket_size_g?.toString() ?? '',
     brand: pot.brand,
     model: pot.model,
     nickname: pot.nickname ?? '',
@@ -195,6 +198,20 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
                 className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
               />
               <p className="text-xs text-muted mt-1">{t('moka_form.max_pressure_hint')}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-ink mb-1">{t('moka_form.basket')}</label>
+              <input
+                type="number"
+                min="5"
+                max="40"
+                step="0.5"
+                value={formData.basket_size_g}
+                onChange={(e) => setFormData({ ...formData, basket_size_g: e.target.value })}
+                placeholder="e.g., 18"
+                className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
+              />
+              <p className="text-xs text-muted mt-1">{t('moka_form.basket_hint')}</p>
             </div>
           </>
         ) : (

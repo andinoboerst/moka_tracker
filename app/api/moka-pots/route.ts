@@ -17,14 +17,18 @@ function parseBrewer(body: any): { error: string } | { fields: Record<string, un
     if (pressure !== null && (!Number.isFinite(pressure) || pressure <= 0 || pressure > 20)) {
       return { error: 'Max pressure must be between 0 and 20 bar' }
     }
+    const basket = body.basket_size_g === '' || body.basket_size_g == null ? null : Number(body.basket_size_g)
+    if (basket !== null && (!Number.isFinite(basket) || basket < 5 || basket > 40)) {
+      return { error: 'Basket size must be between 5 and 40 g' }
+    }
     const machineType = (ESPRESSO_MACHINE_TYPES as readonly string[]).includes(type) ? type : ESPRESSO_MACHINE_TYPES[0]
-    return { fields: { kind, brand, model, nickname, type: machineType, size_cups: null, max_pressure_bar: pressure } }
+    return { fields: { kind, brand, model, nickname, type: machineType, size_cups: null, max_pressure_bar: pressure, basket_size_g: basket } }
   }
 
   const sizeCups = Number(body.size_cups)
   if (!type || !(sizeCups > 0)) return { error: 'Missing required fields: brand, model, type, size_cups' }
   return {
-    fields: { kind, brand, model, nickname, type: normalizeMokaPotType(type), size_cups: sizeCups, max_pressure_bar: null },
+    fields: { kind, brand, model, nickname, type: normalizeMokaPotType(type), size_cups: sizeCups, max_pressure_bar: null, basket_size_g: null },
   }
 }
 

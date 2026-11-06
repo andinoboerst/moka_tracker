@@ -131,6 +131,9 @@ export default function InventoryList({
                   <Gauge className="w-3 h-3" /> {t('inventory.max_pressure', { bar: pot.max_pressure_bar })}
                 </span>
               ) : null}
+              {pot.basket_size_g ? (
+                <span className="text-[11px]">{t('inventory.basket', { grams: pot.basket_size_g })}</span>
+              ) : null}
             </p>
           ) : (
             <p className="text-sm text-muted">

@@ -6,7 +6,7 @@ import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeade
 import { PressureProfileEditor } from './PressureProfile'
 import type { PressureStage } from '@/lib/pressure'
 import { mixArabicaShare, mixSignature } from '@/lib/beans'
-import { X, Plus, Play, Square, RotateCcw, History, Save, AlertTriangle, FlaskConical } from 'lucide-react'
+import { X, Plus, Minus, Play, Square, RotateCcw, History, Save, AlertTriangle, FlaskConical } from 'lucide-react'
 import VibeIcon from './VibeIcon'
 import { useLanguage } from '@/lib/LanguageContext'
 
@@ -160,6 +160,31 @@ export default function BrewForm({
   const espresso = isEspresso(selectedPot)
   const selectedGrinder = grinders.find((g) => g.id === formData.grinder_id)
   const stepless = selectedGrinder?.adjustment_type === 'stepless'
+
+  // Baseline for the grinder: the most recent brew that used the same grinder
+  const lastForGrinder = useMemo(
+    () => (formData.grinder_id ? history.find((b) => b.grinder_id === formData.grinder_id && b.grinder_setting != null) : undefined),
+    [history, formData.grinder_id]
+  )
+  const lastSetting = lastForGrinder ? Number(lastForGrinder.grinder_setting) : null
+
+  useEffect(() => {
+    if (isEdit || lastSetting === null) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFormData((prev) =>
+      prev.grinder_id && prev.grinder_setting === '' ? { ...prev, grinder_setting: String(lastSetting) } : prev
+    )
+  }, [lastSetting, isEdit, formData.grinder_id])
+
+  // +/- nudges: "one click finer" is easier to think in than an absolute number
+  const nudgeStep = stepless ? 5 : 1
+  const nudgeSetting = (direction: 1 | -1) => {
+    const current = parseFloat(formData.grinder_setting)
+    const base = Number.isFinite(current) ? current : (lastSetting ?? 0)
+    set({ grinder_setting: String(Math.max(0, Math.round((base + direction * nudgeStep) * 100) / 100)) })
+  }
+  const currentSetting = parseFloat(formData.grinder_setting)
+  const settingDelta = lastSetting !== null && Number.isFinite(currentSetting) ? Math.round((currentSetting - lastSetting) * 100) / 100 : null
 
   const selectedBeanIds = useMix ? mixRows.map((r) => r.bean_id).filter(Boolean) : [formData.bean_id].filter(Boolean)
   const selectedBeans = selectedBeanIds.map((id) => beans.find((b) => b.id === id)).filter(Boolean) as Bean[]
@@ -522,7 +547,7 @@ export default function BrewForm({
               <label className={labelCls}>{t('brew_form.grinder')}</label>
               <select
                 value={formData.grinder_id}
-                onChange={(e) => set({ grinder_id: e.target.value })}
+                onChange={(e) => set({ grinder_id: e.target.value, grinder_setting: '' })}
                 className={inputCls}
               >
                 <option value="">{t('brew_form.pre_ground')}</option>
@@ -569,26 +594,57 @@ export default function BrewForm({
         {formData.grinder_id && !isPreGround && (
           <div>
             <label className={labelCls}>{stepless ? t('brew_form.grinder_setting_um') : t('brew_form.grinder_setting')}</label>
-            <input
-              type="number"
-              step={stepless ? '0.1' : '1'}
-              value={formData.grinder_setting}
-              onChange={(e) => set({ grinder_setting: e.target.value })}
-              placeholder={stepless ? 'e.g., 250' : 'e.g., 15'}
-              required
-              min="0"
-              className={inputCls}
-            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => nudgeSetting(-1)}
+                className="shrink-0 w-10 rounded-lg border border-line-strong text-accent-ink hover:border-accent flex items-center justify-center"
+                aria-label={t('brew_form.setting_down', { step: nudgeStep })}
+                title={t('brew_form.setting_down', { step: nudgeStep })}
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <input
+                type="number"
+                step={stepless ? '0.1' : '1'}
+                value={formData.grinder_setting}
+                onChange={(e) => set({ grinder_setting: e.target.value })}
+                placeholder={stepless ? 'e.g., 250' : 'e.g., 15'}
+                required
+                min="0"
+                className={`${inputCls} text-center`}
+              />
+              <button
+                type="button"
+                onClick={() => nudgeSetting(1)}
+                className="shrink-0 w-10 rounded-lg border border-line-strong text-accent-ink hover:border-accent flex items-center justify-center"
+                aria-label={t('brew_form.setting_up', { step: nudgeStep })}
+                title={t('brew_form.setting_up', { step: nudgeStep })}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+            {lastSetting !== null && (
+              <p className="text-xs text-muted mt-1">
+                {t('brew_form.last_setting', { value: lastSetting })}
+                {settingDelta ? ` · ${settingDelta > 0 ? '+' : '−'}${Math.abs(settingDelta)}` : ''}
+              </p>
+            )}
           </div>
         )}
 
         <div>
-          <label className={labelCls}>{t('brew_form.coffee_weight')}</label>
+          <label className={labelCls}>
+            {t('brew_form.coffee_weight')}
+            {espresso && selectedPot?.basket_size_g ? (
+              <span className="text-muted font-normal"> · {t('inventory.basket', { grams: selectedPot.basket_size_g })}</span>
+            ) : null}
+          </label>
           <input
             type="number"
             value={formData.coffee_weight_g}
             onChange={(e) => set({ coffee_weight_g: e.target.value })}
-            placeholder="e.g., 18"
+            placeholder={espresso && selectedPot?.basket_size_g ? `e.g., ${selectedPot.basket_size_g}` : 'e.g., 18'}
             required
             min="0"
             step="0.1"

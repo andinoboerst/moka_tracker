@@ -35,7 +35,7 @@ const buildInventorySummary = (beans: any[], grinders: any[], mokaPots: any[]) =
     ? mokaPots
         .map(
           (pot) =>
-            `- ${pot.kind === 'espresso' ? 'Espresso machine: ' : 'Moka pot: '}${pot.brand} ${pot.model}${pot.nickname ? ` (nicknamed "${pot.nickname}")` : ''} (${pot.kind === 'espresso' ? `${pot.type}${pot.max_pressure_bar ? `, up to ${pot.max_pressure_bar} bar` : ''}` : `${pot.size_cups} cups${pot.type ? `, ${pot.type}` : ''}`})`
+            `- ${pot.kind === 'espresso' ? 'Espresso machine: ' : 'Moka pot: '}${pot.brand} ${pot.model}${pot.nickname ? ` (nicknamed "${pot.nickname}")` : ''} (${pot.kind === 'espresso' ? `${pot.type}${pot.max_pressure_bar ? `, up to ${pot.max_pressure_bar} bar` : ''}${pot.basket_size_g ? `, ${pot.basket_size_g} g basket` : ''}` : `${pot.size_cups} cups${pot.type ? `, ${pot.type}` : ''}`})`
         )
         .join('\n')
     : '- None'
