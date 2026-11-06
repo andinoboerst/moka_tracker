@@ -76,6 +76,8 @@ export interface Grinder {
   model: string
   /** 'stepped': settings are clicks. 'stepless': the setting is the grind size itself (µm). */
   adjustment_type?: 'stepped' | 'stepless'
+  /** The setting used in the most recent brew on this grinder (clicks, or µm when stepless) */
+  last_setting?: number | null
   microns_per_click?: number
   created_at: string
   updated_at: string

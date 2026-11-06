@@ -165,7 +165,13 @@ export default function BrewForm({
     () => (formData.grinder_id ? history.find((b) => b.grinder_id === formData.grinder_id && b.grinder_setting != null) : undefined),
     [history, formData.grinder_id]
   )
-  const lastSetting = lastForGrinder ? Number(lastForGrinder.grinder_setting) : null
+  // The value stored on the grinder wins; the brew history is only a fallback
+  const lastSetting =
+    selectedGrinder?.last_setting != null
+      ? Number(selectedGrinder.last_setting)
+      : lastForGrinder
+        ? Number(lastForGrinder.grinder_setting)
+        : null
 
   useEffect(() => {
     if (isEdit || lastSetting === null) return

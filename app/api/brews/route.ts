@@ -36,6 +36,27 @@ async function adjustBeanStock(client: SupabaseClient, beanId: string, grams: nu
   await client.from('beans').update({ weight_g: next }).eq('id', beanId)
 }
 
+/**
+ * Remembers the most recent grind setting on the grinder, so the next brew can start from it.
+ * Always recomputed from the brews, so edits and deletes stay consistent. Best effort: never fails a brew.
+ */
+async function syncGrinderLastSetting(client: SupabaseClient, grinderId?: string | null) {
+  if (!grinderId) return
+  try {
+    const { data } = await client
+      .from('brews')
+      .select('grinder_setting')
+      .eq('grinder_id', grinderId)
+      .not('grinder_setting', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    await client.from('grinders').update({ last_setting: data?.grinder_setting ?? null }).eq('id', grinderId)
+  } catch (err) {
+    console.error('Could not update grinder last_setting:', err)
+  }
+}
+
 type MixItem = { bean_id: string; percentage: number }
 
 /** Grams of coffee drawn from each bean bag for a brew (single bean or mix). */
@@ -301,6 +322,7 @@ export async function POST(request: NextRequest) {
 
     await replaceMix(client, user.id, data[0].id, mix)
     await applyStock(client, f.bean_id, f.coffee_weight_g, mix, 1)
+    await syncGrinderLastSetting(client, f.grinder_id)
 
     const { data: full } = await client.from('brews').select(BREW_SELECT).eq('id', data[0].id).single()
     return NextResponse.json(full ?? data[0], { status: 201 })
@@ -326,7 +348,7 @@ export async function PUT(request: NextRequest) {
 
     const { data: existing } = await client
       .from('brews')
-      .select('bean_id, coffee_weight_g, mix:brew_beans(bean_id, percentage)')
+      .select('bean_id, grinder_id, coffee_weight_g, mix:brew_beans(bean_id, percentage)')
       .eq('id', body.id)
       .maybeSingle()
     if (!existing) return NextResponse.json({ error: 'Brew not found' }, { status: 404 })
@@ -371,6 +393,8 @@ export async function PUT(request: NextRequest) {
     await applyStock(client, existing.bean_id, Number(existing.coffee_weight_g), existing.mix as MixItem[], -1)
     await replaceMix(client, user.id, body.id, mix)
     await applyStock(client, f.bean_id, f.coffee_weight_g, mix, 1)
+    await syncGrinderLastSetting(client, f.grinder_id)
+    if (existing.grinder_id && existing.grinder_id !== f.grinder_id) await syncGrinderLastSetting(client, existing.grinder_id)
 
     const { data: full } = await client.from('brews').select(BREW_SELECT).eq('id', body.id).single()
     return NextResponse.json(full ?? data[0])
@@ -418,7 +442,7 @@ export async function DELETE(request: NextRequest) {
 
     const { data: existing } = await client
       .from('brews')
-      .select('bean_id, coffee_weight_g, mix:brew_beans(bean_id, percentage)')
+      .select('bean_id, grinder_id, coffee_weight_g, mix:brew_beans(bean_id, percentage)')
       .eq('id', id)
       .maybeSingle()
 
@@ -428,6 +452,7 @@ export async function DELETE(request: NextRequest) {
     // Put the coffee back into the bean's stock
     if (existing) {
       await applyStock(client, existing.bean_id, Number(existing.coffee_weight_g), existing.mix as MixItem[], -1)
+      await syncGrinderLastSetting(client, existing.grinder_id)
     }
 
     return NextResponse.json({ success: true })
