@@ -114,6 +114,7 @@ export function PressureProfileEditor({ value, onChange, maxBar, onUseTime }: Ed
   }
 
   const valid = value.filter((s) => s.duration_s > 0)
+  const total = profileDuration(valid)
 
   return (
     <div className="space-y-3">
@@ -188,7 +189,7 @@ export function PressureProfileEditor({ value, onChange, maxBar, onUseTime }: Ed
             {onUseTime && (
               <button
                 type="button"
-                onClick={() => onUseTime(Math.round(profileDuration(valid)))}
+                onClick={() => onUseTime(Math.round(total * 10) / 10)}
                 className="ml-auto text-xs text-accent-ink hover:text-accent-hover"
               >
                 {t('brew_form.use_profile_time')}

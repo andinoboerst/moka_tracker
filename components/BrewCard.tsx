@@ -289,6 +289,14 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
         <div className="stat-tile p-3">
           <p className="eyebrow mb-1.5">{t('brew_card.time')}</p>
           <p className="num text-sm font-medium text-ink">{brew.extraction_time_s}s</p>
+          {isEspresso(brew.moka_pot) && brew.first_drip_s != null && (
+            <p className="num text-[11px] text-muted mt-0.5">
+              {t('brew_card.time_split', {
+                total: Math.round((Number(brew.extraction_time_s) + Number(brew.first_drip_s)) * 10) / 10,
+                drop: brew.first_drip_s,
+              })}
+            </p>
+          )}
         </div>
         <div className="stat-tile p-3">
           <p className="eyebrow mb-1.5">{t('brew_card.style')}</p>
@@ -301,20 +309,6 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       {/* Expert Metrics Display */}
       {isEspresso(brew.moka_pot) ? (
         <div className="space-y-3 pt-2 border-t border-line/50">
-          {brew.brew_temp_c != null && (
-            <div className="chip w-fit">
-              <Thermometer className="w-3.5 h-3.5" /> {t('brew_card.brew_temp')}: {brew.brew_temp_c}°C
-            </div>
-          )}
-          <div className="flex flex-wrap gap-2">
-            {brew.first_drip_s != null && <div className="chip">{t('brew_card.first_drip')}: {brew.first_drip_s}s</div>}
-            {brew.extraction_time_s > 0 && brew.final_yield_g > 0 && (
-              <div className="chip">{(brew.final_yield_g / brew.extraction_time_s).toFixed(2)} g/s</div>
-            )}
-            {brew.taste_balance && <div className="chip">{t(`brew_form.taste_${brew.taste_balance}`)}</div>}
-            {brew.used_wdt && <div className="chip">WDT</div>}
-            {brew.has_paper_filter && <div className="chip">{t('brew_form.espresso_paper')}</div>}
-          </div>
           {brew.pressure_profile && brew.pressure_profile.length > 0 && (
             <div className="stat-tile flex items-center gap-4 p-3">
               <div className="w-28 shrink-0">
@@ -326,6 +320,19 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
               </div>
             </div>
           )}
+          <div className="flex flex-wrap gap-2">
+            {brew.brew_temp_c != null && (
+              <div className="chip">
+                <Thermometer className="w-3.5 h-3.5" /> {t('brew_card.brew_temp')}: {brew.brew_temp_c}°C
+              </div>
+            )}
+            {brew.extraction_time_s > 0 && brew.final_yield_g > 0 && (
+              <div className="chip">{(brew.final_yield_g / brew.extraction_time_s).toFixed(2)} g/s</div>
+            )}
+            {brew.taste_balance && <div className="chip">{t(`brew_form.taste_${brew.taste_balance}`)}</div>}
+            {brew.used_wdt && <div className="chip">WDT</div>}
+            {brew.has_paper_filter && <div className="chip">{t('brew_form.espresso_paper')}</div>}
+          </div>
         </div>
       ) : (
       <div className="flex flex-wrap gap-2 pt-2 border-t border-line/50">

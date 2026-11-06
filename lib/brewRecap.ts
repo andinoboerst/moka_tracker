@@ -139,8 +139,7 @@ ${espresso
   const flowRate = extraction_time_s > 0 ? final_yield_g / extraction_time_s : null
 
   const brewDetails = espresso
-    ? `- Dose: ${coffee_weight_g}g in, ${final_yield_g}g out (ratio 1:${extraction_ratio_output}) in ${extraction_time_s}s${flowRate ? ` (about ${flowRate.toFixed(2)} g/s)` : ''}
-- First drip: ${first_drip_s != null ? first_drip_s + 's' : 'not recorded'}
+    ? `- Dose: ${coffee_weight_g}g in, ${final_yield_g}g out (ratio 1:${extraction_ratio_output}) in ${extraction_time_s}s measured from the first drop in the cup${first_drip_s != null ? ` (the first drop came after ${first_drip_s}s, so ${Math.round((extraction_time_s + first_drip_s) * 10) / 10}s in total)` : ''}${flowRate ? ` (about ${flowRate.toFixed(2)} g/s)` : ''}
 - Brew temperature: ${brew_temp_c != null ? brew_temp_c + '°C' : 'not recorded'}
 - Pressure profile: ${profileText}${preinfusionSeconds ? ` (pre-infusion ${preinfusionSeconds}s)` : ''}
 - Taste balance according to the user: ${taste_balance || 'not recorded'}
@@ -174,7 +173,7 @@ ${espresso
   const knowledge = espresso
     ? `- Only when the notes or the taste balance say the shot was bitter/harsh: grind coarser, shorten or soften the ramp/decline, lower the brew temperature or stop the shot earlier.
 - Only when they say sour/thin: grind finer, lengthen the pre-infusion, raise peak pressure or temperature, or let the shot run longer.
-- Typical espresso reference points (use them for context only when the rating is 6 or below): ratio 1:1.5 to 1:3, 25-35 s, extraction yield 18-22%. A different recipe is not a flaw if the user rated it well.
+- Typical espresso reference points (use them for context only when the rating is 6 or below): ratio 1:1.5 to 1:3, roughly 25-35 s (conventions differ on when the timer starts), extraction yield 18-22%. A different recipe is not a flaw if the user rated it well.
 - Refer to individual pressure stages by name when a profile is recorded.`
     : `- Only when the notes say bitter: grind coarser, lower the heat or start with cooler water. Only when they say sour: grind finer, raise the heat or start with warmer water.
 - If flow was "Sputtering", mention heat management and the stop point.

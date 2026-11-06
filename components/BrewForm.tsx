@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Bean, BeanMix, Brew, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
 import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeaders, formatDate, isEspresso } from '@/lib/utils'
 import { PressureProfileEditor } from './PressureProfile'
+import EspressoTimes, { type TimeField } from './EspressoTimes'
 import type { PressureStage } from '@/lib/pressure'
 import { mixArabicaShare, mixSignature } from '@/lib/beans'
 import { X, Plus, Minus, Play, Square, RotateCcw, History, Save, AlertTriangle, FlaskConical } from 'lucide-react'
@@ -80,11 +81,13 @@ function formFromBrew(brew: Brew, keepResult: boolean): FormState {
     has_paper_filter: !!brew.has_paper_filter,
     flow_type: brew.flow_type || 'Steady',
     brew_temp_c: brew.brew_temp_c?.toString() ?? '',
-    first_drip_s: brew.first_drip_s?.toString() ?? '',
+    first_drip_s: keepResult ? (brew.first_drip_s?.toString() ?? '') : '',
     taste_balance: brew.taste_balance ?? '',
     used_wdt: !!brew.used_wdt,
   }
 }
+
+const round1 = (n: number) => Math.round(n * 10) / 10
 
 export default function BrewForm({
   beans,
@@ -113,9 +116,10 @@ export default function BrewForm({
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
-  // Stopwatch for extraction time
+  // Stopwatch for extraction time. Espresso can also split it when the first drop lands.
   const [timerRunning, setTimerRunning] = useState(false)
   const [timerSeconds, setTimerSeconds] = useState(0)
+  const [splitTaken, setSplitTaken] = useState(false)
   const startedAt = useRef<number>(0)
 
   useEffect(() => {
@@ -124,18 +128,61 @@ export default function BrewForm({
     return () => clearInterval(id)
   }, [timerRunning])
 
+  // Espresso timing: any two of total / first drop / time-from-first-drop decide the third.
+  // formData.first_drip_s and formData.extraction_time_s are what is stored; the total is derived (drop + extraction).
+  const [totalTime, setTotalTime] = useState(() =>
+    isEdit && source?.first_drip_s != null ? String(round1(Number(source.extraction_time_s) + Number(source.first_drip_s))) : ''
+  )
+  const [timeOrder, setTimeOrder] = useState<TimeField[]>(() =>
+    isEdit && source ? (source.first_drip_s != null ? ['drop', 'extract'] : ['extract']) : []
+  )
+
+  /** The user changed one of the three times: the two most recently edited fields win, the third is worked out. */
+  const applyTimes = (field: TimeField, value: string) => {
+    const order = [field, ...timeOrder.filter((f) => f !== field)].slice(0, 2)
+    const vals: Record<TimeField, string> = {
+      total: field === 'total' ? value : totalTime,
+      drop: field === 'drop' ? value : formData.first_drip_s,
+      extract: field === 'extract' ? value : formData.extraction_time_s,
+    }
+    const auto = order.length === 2 ? (['total', 'drop', 'extract'] as TimeField[]).find((f) => !order.includes(f)) : undefined
+    if (auto) {
+      const n = (v: string) => (v.trim() === '' ? NaN : parseFloat(v))
+      const [total, drop, extract] = [n(vals.total), n(vals.drop), n(vals.extract)]
+      const result =
+        auto === 'total' ? drop + extract : auto === 'extract' ? total - drop : total - extract
+      vals[auto] = Number.isFinite(result) && result >= 0 ? String(round1(result)) : ''
+    }
+    setTotalTime(vals.total)
+    setTimeOrder(order)
+    setFormData((prev) => ({ ...prev, first_drip_s: vals.drop, extraction_time_s: vals.extract }))
+  }
+  const autoTimeField = timeOrder.length === 2 ? (['total', 'drop', 'extract'] as TimeField[]).find((f) => !timeOrder.includes(f)) : undefined
+
+  const elapsedPrecise = () => round1((Date.now() - startedAt.current) / 1000)
+
   const toggleTimer = () => {
     if (timerRunning) {
       setTimerRunning(false)
-      setFormData((prev) => ({ ...prev, extraction_time_s: String(timerSeconds) }))
+      if (espresso) {
+        applyTimes('total', String(elapsedPrecise()))
+      } else {
+        setFormData((prev) => ({ ...prev, extraction_time_s: String(timerSeconds) }))
+      }
     } else {
       startedAt.current = Date.now() - timerSeconds * 1000
+      setSplitTaken(false)
       setTimerRunning(true)
     }
+  }
+  const splitTimer = () => {
+    setSplitTaken(true)
+    applyTimes('drop', String(elapsedPrecise()))
   }
   const resetTimer = () => {
     setTimerRunning(false)
     setTimerSeconds(0)
+    setSplitTaken(false)
   }
 
   const activeBeans = useMemo(
@@ -337,6 +384,17 @@ export default function BrewForm({
       return
     }
 
+    // Espresso: extraction time is counted from the first drop. With only a total, there is no first-drop time to subtract.
+    const nOrNaN = (v: string) => (v.trim() === '' ? NaN : parseFloat(v))
+    const dropS = nOrNaN(formData.first_drip_s)
+    const extractS = Number.isFinite(nOrNaN(formData.extraction_time_s))
+      ? nOrNaN(formData.extraction_time_s)
+      : nOrNaN(totalTime) - (Number.isFinite(dropS) ? dropS : 0)
+    if (espresso && !(extractS >= 0)) {
+      setError(t('brew_form.time_needed'))
+      return
+    }
+
     try {
       const mix = useMix ? mixRows.map((r) => ({ bean_id: r.bean_id, percentage: parseInt(r.percentage) })) : undefined
       await onSubmit({
@@ -349,7 +407,7 @@ export default function BrewForm({
         // An espresso machine has no boiler load to weigh: the ratio is dose in : liquid out
         water_added_g: espresso ? parseFloat(formData.final_yield_g) : parseFloat(formData.water_added_g),
         final_yield_g: parseFloat(formData.final_yield_g),
-        extraction_time_s: parseInt(formData.extraction_time_s),
+        extraction_time_s: espresso ? Math.round(extractS) : parseInt(formData.extraction_time_s),
         milk_added_g: formData.milk_added_g ? parseFloat(formData.milk_added_g) : undefined,
         milk_type: formData.milk_added_g ? formData.milk_type : undefined,
         vibe_rating: parseInt(formData.vibe_rating),
@@ -359,7 +417,7 @@ export default function BrewForm({
         has_paper_filter: formData.has_paper_filter,
         flow_type: formData.flow_type,
         brew_temp_c: espresso && formData.brew_temp_c !== '' ? parseFloat(formData.brew_temp_c) : undefined,
-        first_drip_s: espresso && formData.first_drip_s !== '' ? parseFloat(formData.first_drip_s) : undefined,
+        first_drip_s: espresso && Number.isFinite(dropS) ? dropS : undefined,
         taste_balance: formData.taste_balance || undefined,
         used_wdt: espresso ? formData.used_wdt : undefined,
         pressure_profile: espresso && pressureProfile.length > 0 ? pressureProfile.filter((s) => s.duration_s > 0) : undefined,
@@ -681,42 +739,53 @@ export default function BrewForm({
           />
         </div>
 
-        <div>
-          <label className={labelCls}>{t('brew_form.extraction_time')}</label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={timerRunning ? timerSeconds : formData.extraction_time_s}
-              onChange={(e) => set({ extraction_time_s: e.target.value })}
-              readOnly={timerRunning}
-              placeholder="e.g., 45"
-              required
-              min="0"
-              className={inputCls}
-            />
-            <button
-              type="button"
-              onClick={toggleTimer}
-              className={`shrink-0 px-3 rounded-lg border flex items-center gap-1.5 text-sm font-medium ${
-                timerRunning ? 'border-red-500 text-red-400' : 'border-line-strong text-accent-ink hover:border-accent'
-              }`}
-              title={timerRunning ? t('feat.timer_stop') : t('feat.timer_start')}
-            >
-              {timerRunning ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              <span className="hidden sm:inline">{timerRunning ? t('feat.timer_stop') : t('feat.timer_start')}</span>
-            </button>
-            {!timerRunning && timerSeconds > 0 && (
+        {espresso ? (
+          <EspressoTimes
+            total={totalTime}
+            drop={formData.first_drip_s}
+            extract={formData.extraction_time_s}
+            auto={autoTimeField}
+            onChange={applyTimes}
+            timer={{ running: timerRunning, seconds: timerSeconds, splitTaken, onToggle: toggleTimer, onSplit: splitTimer, onReset: resetTimer }}
+          />
+        ) : (
+          <div>
+            <label className={labelCls}>{t('brew_form.extraction_time')}</label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={timerRunning ? timerSeconds : formData.extraction_time_s}
+                onChange={(e) => set({ extraction_time_s: e.target.value })}
+                readOnly={timerRunning}
+                placeholder="e.g., 45"
+                required
+                min="0"
+                className={inputCls}
+              />
               <button
                 type="button"
-                onClick={resetTimer}
-                className="shrink-0 px-2 text-muted hover:text-accent-ink"
-                title={t('feat.timer_reset')}
+                onClick={toggleTimer}
+                className={`shrink-0 px-3 rounded-lg border flex items-center gap-1.5 text-sm font-medium ${
+                  timerRunning ? 'border-red-500 text-red-400' : 'border-line-strong text-accent-ink hover:border-accent'
+                }`}
+                title={timerRunning ? t('feat.timer_stop') : t('feat.timer_start')}
               >
-                <RotateCcw className="w-4 h-4" />
+                {timerRunning ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                <span className="hidden sm:inline">{timerRunning ? t('feat.timer_stop') : t('feat.timer_start')}</span>
               </button>
-            )}
+              {!timerRunning && timerSeconds > 0 && (
+                <button
+                  type="button"
+                  onClick={resetTimer}
+                  className="shrink-0 px-2 text-muted hover:text-accent-ink"
+                  title={t('feat.timer_reset')}
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         <div>
           <label className={labelCls}>
@@ -778,16 +847,6 @@ export default function BrewForm({
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={labelCls}>{t('brew_form.first_drip')}</label>
-              <input
-                type="number" min="0" max="120" step="0.5"
-                value={formData.first_drip_s}
-                onChange={(e) => set({ first_drip_s: e.target.value })}
-                placeholder="e.g., 8"
-                className={inputCls}
-              />
-            </div>
             <label className="flex items-center gap-2 text-sm font-medium text-ink cursor-pointer">
               <input
                 type="checkbox"
@@ -813,7 +872,7 @@ export default function BrewForm({
             maxBar={selectedPot?.max_pressure_bar}
             onUseTime={(seconds) => {
               resetTimer()
-              set({ extraction_time_s: String(seconds) })
+              applyTimes('total', String(seconds))
             }}
           />
         </div>

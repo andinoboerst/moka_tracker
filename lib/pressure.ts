@@ -57,7 +57,9 @@ export function profilePoints(profile: PressureStage[]): [number, number][] {
   return points
 }
 
-/** Short text such as "10s @ 3 bar → 25s @ 9 bar". */
+/** Short text such as "10s @ 3 bar → 4s to 9 bar → 15s @ 9 bar": "@" holds a pressure, "to" moves towards it. */
 export function describeProfile(profile: PressureStage[]): string {
-  return profile.map((s) => `${s.duration_s}s @ ${s.pressure_bar} bar`).join(' → ')
+  return profile
+    .map((s) => `${s.duration_s}s ${isRamping(s.type) ? 'to' : '@'} ${s.pressure_bar} bar`)
+    .join(' → ')
 }

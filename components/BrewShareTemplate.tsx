@@ -132,7 +132,16 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
             label={espresso ? t('brew_share.dose_yield') : t('brew_share.coffee_water')}
             value={espresso ? `${brew.coffee_weight_g}g → ${brew.final_yield_g}g` : `${brew.coffee_weight_g || 0}g / ${brew.water_added_g || 0}g`}
           />
-          <Stat icon={Timer} label={t('brew_share.brew_time')} value={`${brew.extraction_time_s || 0}s`} />
+          <Stat
+            icon={Timer}
+            label={t('brew_share.brew_time')}
+            value={`${brew.extraction_time_s || 0}s`}
+            sub={
+              espresso && brew.first_drip_s != null
+                ? t('brew_card.time_split_short', { total: Math.round((Number(brew.extraction_time_s) + Number(brew.first_drip_s)) * 10) / 10 })
+                : undefined
+            }
+          />
           {brew.grinder_id && brew.grinder_setting != null && (
             <Stat
               icon={Settings}
