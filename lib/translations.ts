@@ -1,6 +1,7 @@
 export const translations = {
   en: {
     common: {
+      more: "More actions",
       save: "Save",
       saving: "Saving...",
       loading: "Loading...",
@@ -544,6 +545,7 @@ export const translations = {
   },
   it: {
     common: {
+      more: "Altre azioni",
       save: "Salva",
       saving: "Salvataggio...",
       loading: "Caricamento...",

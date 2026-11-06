@@ -122,8 +122,8 @@ When answering about equipment care, cleaning, or material-specific advice, use 
 
 LANGUAGE: Write the entire answer in ${languageName}. ${
       language === 'it'
-        ? 'Sprinkle in a little Italian coffee-culture charm, but keep the advice clear.'
-        : 'Add at most one or two short, playful Italian touches (for example "Mamma mia!", "Perfetto!" or "Buon caffè!") as light seasoning. The actual advice, explanations and suggestions must stay in plain English; never write full sentences of advice in Italian.'
+        ? 'Include some colourful Italian flair and slang, but keep the advice clear.'
+        : 'Include some Italian flair here and there: an Italian word, expression or bit of slang woven in naturally. The actual advice, explanations and suggestions must stay clear, plain English.'
     }
 
 Do not include markdown formatting in your answer (no asterisks, headings or bullet symbols; plain sentences or simple numbered lines are fine). Keep your advice actionable and specific.`

@@ -7,6 +7,7 @@ import { describeProfile } from '@/lib/pressure'
 import { translateStoredExpertValue, translateMilkType, translateRoastLevel } from '@/lib/dbValues'
 import { Trash2, Sparkles, Share2, Download, Pencil, Copy, Link2Off, Thermometer, Flame, Waves, FileText } from 'lucide-react'
 import VibeIcon from './VibeIcon'
+import ActionMenu from './ActionMenu'
 import Link from 'next/link'
 import { describeMix, mixArabicaShare } from '@/lib/beans'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -174,57 +175,22 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
             <p className="text-xs text-muted">{t('feat.mix_overall', { arabica: mixShare, robusta: 100 - mixShare })}</p>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <span title={getVibeName(brew.vibe_rating, language)} className="text-accent-ink px-1">
             <VibeIcon rating={brew.vibe_rating} size={26} />
           </span>
-          <Link
-            href={`/brew/${brew.id}/edit`}
-            className="p-2 hover:bg-line rounded transition text-accent-ink"
-            title={t('feat.edit_brew')}
-          >
-            <Pencil className="w-4 h-4" />
-          </Link>
-          <Link
-            href={`/brew?from=${brew.id}`}
-            className="p-2 hover:bg-line rounded transition text-accent-ink"
-            title={t('feat.brew_again')}
-          >
-            <Copy className="w-4 h-4" />
-          </Link>
-          {brew.share_token && (
-            <button
-              onClick={stopSharing}
-              className="p-2 hover:bg-line rounded transition text-muted"
-              title={t('feat.stop_sharing')}
-            >
-              <Link2Off className="w-4 h-4" />
-            </button>
-          )}
-          <button
-            onClick={handleShare}
-            disabled={isSharing}
-            className="p-2 hover:bg-line rounded transition disabled:opacity-50 text-accent-ink"
-            title={t('common.share')}
-          >
-            <Share2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="p-2 hover:bg-line rounded transition disabled:opacity-50 text-accent-ink"
-            title={t('brew_card.download_image')}
-          >
-            <Download className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => onDelete(brew.id)}
-            disabled={isDeleting}
-            className="p-2 hover:bg-red-900/30 rounded transition disabled:opacity-50"
-            title={t('common.delete')}
-          >
-            <Trash2 className="w-4 h-4 text-red-400" />
-          </button>
+          <ActionMenu
+            label={t('common.more')}
+            items={[
+              { label: t('feat.edit_brew'), icon: Pencil, href: `/brew/${brew.id}/edit` },
+              { label: t('feat.brew_again'), icon: Copy, href: `/brew?from=${brew.id}` },
+              { label: t('common.share'), icon: Share2, onClick: handleShare, disabled: isSharing },
+              { label: t('brew_card.download_image'), icon: Download, onClick: handleDownload, disabled: isDownloading },
+              // Only for brews that still have an old public link, so it can be switched off
+              ...(brew.share_token ? [{ label: t('feat.stop_sharing'), icon: Link2Off, onClick: stopSharing }] : []),
+              { label: t('common.delete'), icon: Trash2, onClick: () => onDelete(brew.id), danger: true, disabled: isDeleting },
+            ]}
+          />
         </div>
       </div>
 
@@ -350,10 +316,14 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
             {brew.has_paper_filter && <div className="chip">{t('brew_form.espresso_paper')}</div>}
           </div>
           {brew.pressure_profile && brew.pressure_profile.length > 0 && (
-            <div className="stat-tile p-3">
-              <p className="eyebrow mb-1.5">{t('brew_card.pressure_profile')}</p>
-              <PressureChart profile={brew.pressure_profile} maxBar={brew.moka_pot?.max_pressure_bar} />
-              <p className="text-xs text-muted mt-1">{describeProfile(brew.pressure_profile)}</p>
+            <div className="stat-tile flex items-center gap-4 p-3">
+              <div className="w-28 shrink-0">
+                <PressureChart compact profile={brew.pressure_profile} maxBar={brew.moka_pot?.max_pressure_bar} />
+              </div>
+              <div className="min-w-0">
+                <p className="eyebrow mb-1">{t('brew_card.pressure_profile')}</p>
+                <p className="num text-xs text-muted">{describeProfile(brew.pressure_profile)}</p>
+              </div>
             </div>
           )}
         </div>

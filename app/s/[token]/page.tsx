@@ -171,10 +171,14 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
               </dl>
 
               {brew.pressure_profile && brew.pressure_profile.length > 0 && (
-                <div className="bg-line rounded-xl p-3">
-                  <p className="text-xs text-muted mb-1">{t('brew_card.pressure_profile')}</p>
-                  <PressureChart profile={brew.pressure_profile} />
-                  <p className="text-xs text-muted mt-1">{describeProfile(brew.pressure_profile)}</p>
+                <div className="bg-line rounded-xl p-3 flex items-center gap-4">
+                  <div className="w-28 shrink-0">
+                    <PressureChart compact profile={brew.pressure_profile} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted mb-1">{t('brew_card.pressure_profile')}</p>
+                    <p className="text-xs text-ink">{describeProfile(brew.pressure_profile)}</p>
+                  </div>
                 </div>
               )}
 

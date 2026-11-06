@@ -131,7 +131,7 @@ export async function generateShareLine(input: ShareLineInput): Promise<string> 
 
   const prompt = `You write captions for a coffee lover's photo of their cup, to be posted for friends.
 Write ONE short, funny line, at most 90 characters. Be witty and original, not generic.
-${it ? 'Write it in Italian.' : 'Write it in English; at most one or two Italian words.'}
+${it ? 'Write it in Italian, with some colourful slang.' : 'Write it in English with some Italian flair: an Italian word or expression where it fits.'}
 Take your inspiration from ONE of these angles (use whichever gives the funniest line, or a better idea of your own): ${angles.join('; ')}.
 ${allowNonna ? '' : 'Do NOT mention nonna, grandmothers or grandmas.\n'}Do not start with "Nonna" and do not use the phrase "mamma mia".
 The user rated the cup ${input.rating}/10 (${tier.meaning}). ${mood}

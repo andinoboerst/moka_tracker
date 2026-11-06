@@ -25,6 +25,7 @@ export function PressureChart({
   maxBar,
   colors,
   size,
+  compact,
 }: {
   profile: PressureStage[]
   maxBar?: number | null
@@ -32,6 +33,8 @@ export function PressureChart({
   colors?: { accent: string; grid: string; text: string }
   /** Drawing area and label size, for larger placements than the default 320x110 */
   size?: { w: number; h: number; font: number }
+  /** Small sparkline without axes: just the shape of the shot, to be able to repeat it */
+  compact?: boolean
 }) {
   const accent = colors?.accent ?? 'var(--accent)'
   const grid = colors?.grid ?? 'var(--line)'
@@ -39,16 +42,26 @@ export function PressureChart({
   const total = profileDuration(profile)
   if (profile.length === 0 || total <= 0) return null
 
-  const W = size?.w ?? 320
-  const H = size?.h ?? 110
+  const W = size?.w ?? (compact ? 120 : 320)
+  const H = size?.h ?? (compact ? 36 : 110)
   const font = size?.font ?? 9
-  const pad = { l: font * 3, r: 8, t: 8, b: font * 2.2 }
+  const pad = compact ? { l: 2, r: 2, t: 3, b: 3 } : { l: font * 3, r: 8, t: 8, b: font * 2.2 }
   const top = Math.max(maxBar ?? 0, Math.ceil(profilePeak(profile)), 1)
   const x = (s: number) => pad.l + (s / total) * (W - pad.l - pad.r)
   const y = (bar: number) => H - pad.b - (bar / top) * (H - pad.t - pad.b)
   const points = profilePoints(profile)
   const path = points.map(([s, bar], i) => `${i ? 'L' : 'M'}${x(s).toFixed(1)},${y(bar).toFixed(1)}`).join(' ')
   const ticks = Array.from(new Set([0, Math.round(top / 2), top]))
+
+  if (compact) {
+    return (
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Pressure profile">
+        <line x1={pad.l} x2={W - pad.r} y1={y(0)} y2={y(0)} stroke={grid} strokeWidth="1" />
+        <path d={`${path} L${x(total)},${y(0)} L${x(0)},${y(0)} Z`} fill={accent} opacity="0.18" />
+        <path d={path} fill="none" stroke={accent} strokeWidth="1.75" strokeLinejoin="round" strokeLinecap="round" />
+      </svg>
+    )
+  }
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Pressure profile">
@@ -152,7 +165,7 @@ export function PressureProfileEditor({ value, onChange, maxBar, onUseTime }: Ed
       ))}
 
       {valid.length > 0 && (
-        <div className="rounded-lg border border-line bg-surface p-2">
+        <div className="rounded-lg border border-line bg-surface p-2 max-w-sm">
           <PressureChart profile={valid.map((s) => ({ ...s, pressure_bar: s.pressure_bar || 0 }))} maxBar={maxBar} />
         </div>
       )}
