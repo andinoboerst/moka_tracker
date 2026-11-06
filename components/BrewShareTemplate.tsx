@@ -107,9 +107,11 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
               <div>
                 <p className="text-2xl text-[#AB9E8F] mb-2">{t('brew_share.grind_size')}</p>
                 <p className="text-4xl font-semibold" style={{ fontFamily: 'var(--font-mono-ui)' }}>
-                  {brew.grinder?.microns_per_click
-                    ? `${brew.grinder_setting * brew.grinder.microns_per_click}μm`
-                    : `${brew.grinder_setting} ${t('brew_card.clicks')}`}
+                  {brew.grinder?.adjustment_type === 'stepless'
+                    ? `${brew.grinder_setting}μm`
+                    : brew.grinder?.microns_per_click
+                      ? `${Math.round(brew.grinder_setting * brew.grinder.microns_per_click)}μm`
+                      : `${brew.grinder_setting} ${t('brew_card.clicks')}`}
                 </p>
               </div>
             </div>

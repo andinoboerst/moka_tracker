@@ -154,6 +154,7 @@ export function buildBeanCatalog(
           grinder_brand: brew.grinder?.brand,
           grinder_model: brew.grinder?.model,
           grinder_microns_per_click: brew.grinder?.microns_per_click,
+          grinder_adjustment_type: brew.grinder?.adjustment_type,
           water_temp: brew.water_temp,
           heat_level: brew.heat_level,
           has_paper_filter: brew.has_paper_filter,

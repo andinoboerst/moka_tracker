@@ -7,7 +7,7 @@ const buildRecentBrewsSummary = (brews: any[]) => {
   return brews
     .map(
       (b) =>
-        `- ${b.created_at?.split('T')[0]}: ${b.mix?.length > 1 ? `a mix of ${b.mix.map((m: any) => `${m.percentage}% ${m.bean?.name}`).join(' + ')}` : b.bean?.name || 'unknown bean'} in ${b.moka_pot?.nickname || `${b.moka_pot?.brand} ${b.moka_pot?.model}`}, ${b.coffee_weight_g}g coffee / ${b.water_added_g}g water / ${b.final_yield_g}g yield, ${b.extraction_time_s}s, ${b.grinder_id ? `${b.grinder_setting} clicks` : 'pre-ground'}, ${b.water_temp || 'Boiling'} water, ${b.heat_level || 'Medium-Low'} heat, rated ${b.vibe_rating}/10${b.tasting_notes ? `, notes: "${b.tasting_notes}"` : ''}`
+        `- ${b.created_at?.split('T')[0]}: ${b.mix?.length > 1 ? `a mix of ${b.mix.map((m: any) => `${m.percentage}% ${m.bean?.name}`).join(' + ')}` : b.bean?.name || 'unknown bean'} in ${b.moka_pot?.nickname || `${b.moka_pot?.brand} ${b.moka_pot?.model}`}, ${b.coffee_weight_g}g coffee / ${b.water_added_g}g water / ${b.final_yield_g}g yield, ${b.extraction_time_s}s, ${b.grinder_id ? (b.grinder?.adjustment_type === 'stepless' ? `${b.grinder_setting} µm grind` : `${b.grinder_setting} clicks`) : 'pre-ground'}, ${b.moka_pot?.kind === 'espresso' ? `${b.brew_temp_c != null ? b.brew_temp_c + '°C' : 'temp n/a'}, pressure profile: ${b.pressure_profile?.length ? b.pressure_profile.map((s: any) => `${s.duration_s}s @ ${s.pressure_bar} bar (${s.type})`).join(' → ') : 'n/a'},` : `${b.water_temp || 'Boiling'} water, ${b.heat_level || 'Medium-Low'} heat,`} rated ${b.vibe_rating}/10${b.tasting_notes ? `, notes: "${b.tasting_notes}"` : ''}`
     )
     .join('\n')
 }
@@ -26,7 +26,7 @@ const buildInventorySummary = (beans: any[], grinders: any[], mokaPots: any[]) =
     ? grinders
         .map(
           (grinder) =>
-            `- ${grinder.brand} ${grinder.model}${grinder.microns_per_click ? ` (~${grinder.microns_per_click} µm/click)` : ''}`
+            `- ${grinder.brand} ${grinder.model}${grinder.adjustment_type === 'stepless' ? ' (stepless, setting is the grind size in µm)' : grinder.microns_per_click ? ` (~${grinder.microns_per_click} µm/click)` : ''}`
         )
         .join('\n')
     : '- None'
@@ -35,12 +35,12 @@ const buildInventorySummary = (beans: any[], grinders: any[], mokaPots: any[]) =
     ? mokaPots
         .map(
           (pot) =>
-            `- ${pot.brand} ${pot.model}${pot.nickname ? ` (nicknamed "${pot.nickname}")` : ''} (${pot.size_cups} cups${pot.type ? `, ${pot.type}` : ''})`
+            `- ${pot.kind === 'espresso' ? 'Espresso machine: ' : 'Moka pot: '}${pot.brand} ${pot.model}${pot.nickname ? ` (nicknamed "${pot.nickname}")` : ''} (${pot.kind === 'espresso' ? `${pot.type}${pot.max_pressure_bar ? `, up to ${pot.max_pressure_bar} bar` : ''}` : `${pot.size_cups} cups${pot.type ? `, ${pot.type}` : ''}`})`
         )
         .join('\n')
     : '- None'
 
-  return `INVENTORY SUMMARY:\nBeans:\n${beanText}\n\nGrinders:\n${grinderText}\n\nMoka Pots:\n${mokaPotText}`
+  return `INVENTORY SUMMARY:\nBeans:\n${beanText}\n\nGrinders:\n${grinderText}\n\nBrewing gear (moka pots and espresso machines):\n${mokaPotText}`
 }
 
 export async function GET(request: NextRequest) {
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       client.from('moka_pots').select('*'),
       client
         .from('brews')
-        .select('*, bean:beans(name), moka_pot:moka_pots(brand, model, nickname), mix:brew_beans(percentage, bean:beans(name))')
+        .select('*, bean:beans(name), moka_pot:moka_pots(brand, model, nickname, kind), grinder:grinders(adjustment_type), mix:brew_beans(percentage, bean:beans(name))')
         .order('created_at', { ascending: false })
         .limit(8),
     ])
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     const recentBrewsSummary = buildRecentBrewsSummary(brewsRes.data || [])
     const languageName = language === 'it' ? 'Italian' : 'English'
 
-    const systemPrompt = `You are a Moka brew expert specialized in advising moka pot users. Always respond as a friendly and precise coffee coach, with practical advice based on the user's actual inventory and equipment. The user wants help with moka brews, not espresso or pour-over.
+    const systemPrompt = `You are a coffee brewing expert specialized in advising moka pot and manual espresso users. Always respond as a friendly and precise coffee coach, with practical advice based on the user's actual inventory and equipment. The user wants help with moka pot and espresso brews, not pour-over. For espresso, the user shapes the pressure profile stage by stage (pre-infusion, ramp, hold, decline), so advice can address individual stages.
 
 When beginning a new conversation, mention the equipment the user owns and ask them to confirm or correct the details. Use inventory information and never assume a different grinder, bean, or moka pot than the user actually has.
 

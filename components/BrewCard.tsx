@@ -1,7 +1,9 @@
 'use client'
 
 import { Brew } from '@/lib/types'
-import { getVibeName, formatDate, mokaPotName, getAuthHeaders } from '@/lib/utils'
+import { getVibeName, formatDate, mokaPotName, getAuthHeaders, grindLabel, isEspresso } from '@/lib/utils'
+import { PressureChart } from './PressureProfile'
+import { describeProfile } from '@/lib/pressure'
 import { translateStoredExpertValue, translateMilkType, translateRoastLevel } from '@/lib/dbValues'
 import { Trash2, Sparkles, Share2, Download, Pencil, Copy, Link2, Link2Off, Check, Thermometer, Flame, Waves, FileText } from 'lucide-react'
 import VibeIcon from './VibeIcon'
@@ -246,12 +248,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
           <p className="text-sm font-medium text-ink">
             {brew.grinder_id ? (
               <>
-                <span className="num">{brew.grinder_setting}</span> {t('brew_card.clicks')}
-                {brew.grinder?.microns_per_click && (
-                  <span className="text-xs text-muted ml-1">
-                    (<span className="num">{brew.grinder_setting! * brew.grinder.microns_per_click}μm</span>)
-                  </span>
-                )}
+                <span className="num">{grindLabel(brew.grinder_setting ?? 0, brew.grinder, t('brew_card.clicks'))}</span>
               </>
             ) : (
               t('brew_form.pre_ground')
@@ -265,7 +262,8 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
         <div className="stat-tile p-3">
           <p className="eyebrow mb-1.5">{t('brew_card.moka_pot')}</p>
           <p className="text-sm font-medium text-ink">
-            {brew.moka_pot ? mokaPotName(brew.moka_pot) : ''} ({t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})
+            {brew.moka_pot ? mokaPotName(brew.moka_pot) : ''} (
+            {isEspresso(brew.moka_pot) ? t('moka_form.kind_espresso') : t('moka_form.cup_count', { count: brew.moka_pot?.size_cups ?? 0 })})
           </p>
         </div>
 
@@ -278,15 +276,17 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       </div>
 
       {/* Measurements */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className={`grid ${isEspresso(brew.moka_pot) ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
         <div className="stat-tile-strong p-3 text-center">
           <p className="eyebrow">{t('brew_card.coffee')}</p>
           <p className="num text-lg font-medium text-ink">{brew.coffee_weight_g}g</p>
         </div>
-        <div className="stat-tile-strong p-3 text-center">
-          <p className="eyebrow">{t('brew_card.water_in')}</p>
-          <p className="num text-lg font-medium text-ink">{brew.water_added_g}g</p>
-        </div>
+        {!isEspresso(brew.moka_pot) && (
+          <div className="stat-tile-strong p-3 text-center">
+            <p className="eyebrow">{t('brew_card.water_in')}</p>
+            <p className="num text-lg font-medium text-ink">{brew.water_added_g}g</p>
+          </div>
+        )}
         <div className="stat-tile-strong p-3 text-center">
           <p className="eyebrow">{t('brew_card.yield')}</p>
           <p className="num text-lg font-medium text-ink">{brew.final_yield_g}g</p>
@@ -295,12 +295,14 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
 
       {/* Additional Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="stat-tile p-3">
-          <p className="eyebrow mb-1.5">{t('brew_card.brew_ratio')}</p>
-          <p className="num text-sm font-medium text-ink">
-            1:{brew.brew_ratio_input?.toFixed(2)}
-          </p>
-        </div>
+        {!isEspresso(brew.moka_pot) && (
+          <div className="stat-tile p-3">
+            <p className="eyebrow mb-1.5">{t('brew_card.brew_ratio')}</p>
+            <p className="num text-sm font-medium text-ink">
+              1:{brew.brew_ratio_input?.toFixed(2)}
+            </p>
+          </div>
+        )}
         <div className="stat-tile p-3">
           <p className="eyebrow mb-1.5">{t('brew_card.extraction')}</p>
           <p className="num text-sm font-medium text-ink">
@@ -320,6 +322,22 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
       </div>
 
       {/* Expert Metrics Display */}
+      {isEspresso(brew.moka_pot) ? (
+        <div className="space-y-3 pt-2 border-t border-line/50">
+          {brew.brew_temp_c != null && (
+            <div className="chip w-fit">
+              <Thermometer className="w-3.5 h-3.5" /> {t('brew_card.brew_temp')}: {brew.brew_temp_c}°C
+            </div>
+          )}
+          {brew.pressure_profile && brew.pressure_profile.length > 0 && (
+            <div className="stat-tile p-3">
+              <p className="eyebrow mb-1.5">{t('brew_card.pressure_profile')}</p>
+              <PressureChart profile={brew.pressure_profile} maxBar={brew.moka_pot?.max_pressure_bar} />
+              <p className="text-xs text-muted mt-1">{describeProfile(brew.pressure_profile)}</p>
+            </div>
+          )}
+        </div>
+      ) : (
       <div className="flex flex-wrap gap-2 pt-2 border-t border-line/50">
         <div className="chip">
           <Thermometer className="w-3.5 h-3.5" /> {translateStoredExpertValue(brew.water_temp, t, 'Boiling')}
@@ -336,6 +354,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
           </div>
         )}
       </div>
+      )}
 
       {/* Tasting Notes */}
       {brew.tasting_notes && (

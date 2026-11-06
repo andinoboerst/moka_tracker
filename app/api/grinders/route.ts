@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { getErrorMessage } from '@/lib/errors'
+import { normalizeAdjustmentType } from '@/lib/dbValues'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -57,6 +58,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const { brand, model, microns_per_click } = body
+    const adjustment_type = normalizeAdjustmentType(body.adjustment_type)
 
     if (!brand || !model) {
       return NextResponse.json(
@@ -85,7 +87,8 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           brand,
           model,
-          microns_per_click: microns_per_click ? parseInt(microns_per_click) : null,
+          adjustment_type,
+          microns_per_click: adjustment_type === 'stepped' && microns_per_click ? parseInt(microns_per_click) : null,
         },
       ])
       .select()
@@ -108,6 +111,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json()
     const { id, brand, model, microns_per_click } = body
+    const adjustment_type = normalizeAdjustmentType(body.adjustment_type)
 
     if (!id || !brand || !model) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -124,7 +128,8 @@ export async function PUT(request: NextRequest) {
       .update({
         brand,
         model,
-        microns_per_click: microns_per_click ? parseInt(microns_per_click) : null,
+        adjustment_type,
+        microns_per_click: adjustment_type === 'stepped' && microns_per_click ? parseInt(microns_per_click) : null,
       })
       .eq('id', id)
       .select()

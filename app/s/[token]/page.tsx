@@ -8,7 +8,9 @@ import { supabase } from '@/lib/supabase'
 import { MokaPotIcon } from '@/components/icons/MokaPotIcon'
 import ThemeToggle from '@/components/ThemeToggle'
 import { useLanguage } from '@/lib/LanguageContext'
-import { formatDate, getVibeName, mokaPotName } from '@/lib/utils'
+import { formatDate, getVibeName, mokaPotName, grindLabel } from '@/lib/utils'
+import { PressureChart } from '@/components/PressureProfile'
+import { describeProfile, type PressureStage } from '@/lib/pressure'
 import { translateRoastLevel, translateStoredExpertValue } from '@/lib/dbValues'
 import { mixArabicaShare, type MixComponent } from '@/lib/beans'
 
@@ -26,12 +28,14 @@ interface SharedBrew {
   water_temp?: string
   heat_level?: string
   flow_type?: string
+  brew_temp_c?: number | null
+  pressure_profile?: PressureStage[] | null
   tasting_notes?: string
   milk_added_g?: number | null
   bean: { name: string; roaster: string; origin?: string; roast_level: string; bean_type?: string | null }
   mix: (MixComponent & { bean: { name: string; roaster: string; bean_type?: string | null } })[]
-  grinder?: { brand: string; model: string; microns_per_click?: number } | null
-  moka_pot: { brand: string; model: string; nickname?: string | null; size_cups: number }
+  grinder?: { brand: string; model: string; microns_per_click?: number; adjustment_type?: string } | null
+  moka_pot: { brand: string; model: string; nickname?: string | null; size_cups?: number | null; kind?: string }
 }
 
 export default function SharedBrewPage({ params }: { params: Promise<{ token: string }> }) {
@@ -111,7 +115,7 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
               <div className="grid grid-cols-3 gap-3 text-center">
                 {[
                   [t('brew_card.coffee'), `${brew.coffee_weight_g}g`],
-                  [t('brew_card.water_in'), `${brew.water_added_g}g`],
+                  ...(brew.moka_pot.kind === 'espresso' ? [] : [[t('brew_card.water_in'), `${brew.water_added_g}g`]]),
                   [t('brew_card.yield'), `${brew.final_yield_g}g`],
                 ].map(([label, value]) => (
                   <div key={label} className="bg-line rounded-xl p-3">
@@ -124,13 +128,16 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
               <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
                 <div>
                   <dt className="text-xs text-muted">{t('brew_card.moka_pot')}</dt>
-                  <dd className="text-ink">{mokaPotName(brew.moka_pot)} ({t('moka_form.cup_count', { count: brew.moka_pot.size_cups })})</dd>
+                  <dd className="text-ink">
+                    {mokaPotName(brew.moka_pot)} (
+                    {brew.moka_pot.kind === 'espresso' ? t('moka_form.kind_espresso') : t('moka_form.cup_count', { count: brew.moka_pot.size_cups ?? 0 })})
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted">{t('brew_card.grinder')}</dt>
                   <dd className="text-ink">
                     {brew.grinder_id && brew.grinder
-                      ? `${brew.grinder_setting} ${t('brew_card.clicks')} · ${brew.grinder.brand} ${brew.grinder.model}`
+                      ? `${grindLabel(brew.grinder_setting ?? 0, brew.grinder, t('brew_card.clicks'))} · ${brew.grinder.brand} ${brew.grinder.model}`
                       : t('brew_form.pre_ground')}
                   </dd>
                 </div>
@@ -138,19 +145,38 @@ export default function SharedBrewPage({ params }: { params: Promise<{ token: st
                   <dt className="text-xs text-muted">{t('brew_card.time')}</dt>
                   <dd className="text-ink">{brew.extraction_time_s}s</dd>
                 </div>
-                <div>
-                  <dt className="text-xs text-muted">{t('brew_card.brew_ratio')}</dt>
-                  <dd className="text-ink">1:{Number(brew.brew_ratio_input).toFixed(2)}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-muted">{t('brew_card.start_temp')}</dt>
-                  <dd className="text-ink">{translateStoredExpertValue(brew.water_temp, t, 'Boiling')}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-muted">{t('brew_card.heat')}</dt>
-                  <dd className="text-ink">{translateStoredExpertValue(brew.heat_level, t, 'Medium-Low')}</dd>
-                </div>
+                {brew.moka_pot.kind === 'espresso' ? (
+                  brew.brew_temp_c != null && (
+                    <div>
+                      <dt className="text-xs text-muted">{t('brew_card.brew_temp')}</dt>
+                      <dd className="text-ink">{brew.brew_temp_c}°C</dd>
+                    </div>
+                  )
+                ) : (
+                  <>
+                    <div>
+                      <dt className="text-xs text-muted">{t('brew_card.brew_ratio')}</dt>
+                      <dd className="text-ink">1:{Number(brew.brew_ratio_input).toFixed(2)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-muted">{t('brew_card.start_temp')}</dt>
+                      <dd className="text-ink">{translateStoredExpertValue(brew.water_temp, t, 'Boiling')}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-muted">{t('brew_card.heat')}</dt>
+                      <dd className="text-ink">{translateStoredExpertValue(brew.heat_level, t, 'Medium-Low')}</dd>
+                    </div>
+                  </>
+                )}
               </dl>
+
+              {brew.pressure_profile && brew.pressure_profile.length > 0 && (
+                <div className="bg-line rounded-xl p-3">
+                  <p className="text-xs text-muted mb-1">{t('brew_card.pressure_profile')}</p>
+                  <PressureChart profile={brew.pressure_profile} />
+                  <p className="text-xs text-muted mt-1">{describeProfile(brew.pressure_profile)}</p>
+                </div>
+              )}
 
               {brew.tasting_notes && (
                 <p className="text-ink italic border-l-4 border-accent pl-4">&ldquo;{brew.tasting_notes}&rdquo;</p>

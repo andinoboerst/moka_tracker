@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { BeanCatalogEntry } from '@/lib/types'
-import { getAuthHeaders, getVibeColor } from '@/lib/utils'
+import { getAuthHeaders, getVibeColor, grindLabel } from '@/lib/utils'
 import { translateRoastLevel, translateStoredExpertValue } from '@/lib/dbValues'
 import { useLanguage } from '@/lib/LanguageContext'
 import {
@@ -240,8 +240,11 @@ export default function BeanJournal() {
                     {!entry.is_pre_ground && bb.grinder_setting != null && (
                       <span className="flex items-center gap-1 text-xs text-ink bg-canvas border border-line rounded px-2 py-1">
                         <Settings className="w-3 h-3 text-muted" />
-                        {bb.grinder_setting} clicks
-                        {bb.grinder_microns_per_click ? ` (~${bb.grinder_setting * bb.grinder_microns_per_click}µm)` : ''}
+                        {grindLabel(
+                          bb.grinder_setting,
+                          { adjustment_type: bb.grinder_adjustment_type, microns_per_click: bb.grinder_microns_per_click },
+                          'clicks'
+                        )}
                       </span>
                     )}
                     {bb.water_temp && (

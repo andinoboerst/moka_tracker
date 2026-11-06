@@ -106,7 +106,7 @@ export default function Simulator({ brews }: { brews: Brew[] }) {
           <select value={anchor.id} onChange={(e) => setBrewId(e.target.value)} className={selectClass}>
             {candidates.map((b) => (
               <option key={b.id} value={b.id}>
-                {formatDate(b.created_at)} · {b.vibe_rating}/10 · {b.grinder_setting} {t('brew_card.clicks')}
+                {formatDate(b.created_at)} · {b.vibe_rating}/10 · {b.grinder?.adjustment_type === 'stepless' ? `${b.grinder_setting}µm` : `${b.grinder_setting} ${t('brew_card.clicks')}`}
               </option>
             ))}
           </select>

@@ -1,3 +1,5 @@
+import type { PressureStage } from './pressure'
+
 export interface Bean {
   id: string
   user_id: string
@@ -58,6 +60,7 @@ export interface BeanCatalogEntry {
     grinder_brand?: string
     grinder_model?: string
     grinder_microns_per_click?: number
+    grinder_adjustment_type?: string
     water_temp?: string
     heat_level?: string
     has_paper_filter?: boolean
@@ -71,19 +74,25 @@ export interface Grinder {
   user_id: string
   brand: string
   model: string
+  /** 'stepped': settings are clicks. 'stepless': the setting is the grind size itself (µm). */
+  adjustment_type?: 'stepped' | 'stepless'
   microns_per_click?: number
   created_at: string
   updated_at: string
 }
 
+/** Brewing gear: a moka pot or an espresso machine (the table keeps its historical name). */
 export interface MokaPot {
   id: string
   user_id: string
   brand: string
   model: string
   nickname?: string | null
+  kind?: 'moka' | 'espresso'
+  /** Moka: Stovetop / Electric / Induction. Espresso: the machine type (e.g. Lever). */
   type: string
-  size_cups: number
+  size_cups?: number | null
+  max_pressure_bar?: number | null
   created_at: string
   updated_at: string
 }
@@ -101,6 +110,12 @@ export interface Brew {
   extraction_time_s: number
   milk_added_g?: number
   milk_type?: string
+  brew_temp_c?: number | null
+  pressure_profile?: PressureStage[] | null
+  first_drip_s?: number | null
+  tds_percent?: number | null
+  taste_balance?: 'sour' | 'balanced' | 'bitter' | null
+  used_wdt?: boolean | null
   brew_ratio_input?: number
   extraction_ratio_output?: number
   vibe_rating: number
@@ -139,6 +154,12 @@ export interface BrewCreateInput {
   heat_level: string
   has_paper_filter: boolean
   flow_type: string
+  brew_temp_c?: number
+  pressure_profile?: PressureStage[]
+  first_drip_s?: number
+  tds_percent?: number
+  taste_balance?: string
+  used_wdt?: boolean
   /** UI locale only — not persisted; all DB enum fields use English canonical values */
   language?: string
 }

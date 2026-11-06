@@ -9,11 +9,12 @@ export interface GrinderFormData {
   brand: string
   model: string
   microns_per_click: string
+  adjustment_type: 'stepped' | 'stepless'
 }
 
 export type GrinderFormPayload = GrinderFormData & { id?: string }
 
-const emptyGrinderForm: GrinderFormData = { brand: '', model: '', microns_per_click: '' }
+const emptyGrinderForm: GrinderFormData = { brand: '', model: '', microns_per_click: '', adjustment_type: 'stepped' }
 
 function grinderToFormData(grinder?: Grinder | null): GrinderFormData {
   if (!grinder) return emptyGrinderForm
@@ -21,6 +22,7 @@ function grinderToFormData(grinder?: Grinder | null): GrinderFormData {
     brand: grinder.brand,
     model: grinder.model,
     microns_per_click: grinder.microns_per_click?.toString() || '',
+    adjustment_type: grinder.adjustment_type === 'stepless' ? 'stepless' : 'stepped',
   }
 }
 
@@ -111,6 +113,31 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
         </div>
 
         <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-ink mb-1">{t('grinder_form.adjustment')}</label>
+          <div role="radiogroup" className="grid grid-cols-2 gap-2">
+            {(['stepped', 'stepless'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                role="radio"
+                aria-checked={formData.adjustment_type === mode}
+                onClick={() => setFormData({ ...formData, adjustment_type: mode })}
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                  formData.adjustment_type === mode
+                    ? 'border-accent bg-accent/15 text-accent-ink'
+                    : 'border-line-strong text-muted hover:text-ink'
+                }`}
+              >
+                {t(`grinder_form.${mode}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {formData.adjustment_type === 'stepless' ? (
+          <p className="md:col-span-2 text-xs text-muted">{t('grinder_form.stepless_hint')}</p>
+        ) : (
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-ink mb-1">
             {t('grinder_form.microns')}
           </label>
@@ -123,6 +150,7 @@ export default function GrinderForm({ onSubmit, isLoading, initialData, onCancel
           />
           <p className="text-xs text-muted mt-1">{t('grinder_form.microns_hint')}</p>
         </div>
+        )}
       </div>
 
       <button

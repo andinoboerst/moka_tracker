@@ -32,6 +32,29 @@ export type MilkType = (typeof MILK_TYPES)[number]
 export const MOKA_POT_TYPES = ['Stovetop', 'Electric', 'Induction'] as const
 export type MokaPotType = (typeof MOKA_POT_TYPES)[number]
 
+export const BREWER_KINDS = ['moka', 'espresso'] as const
+export type BrewerKind = (typeof BREWER_KINDS)[number]
+
+/**
+ * Manual lever: you generate the pressure by hand (Flair, Cafelat Robot, Picopresso...).
+ * Spring lever: you load a spring, the spring pushes (Londinium, Argos...). Pressure falls off by itself.
+ * Semi-automatic: an electric pump supplies pressure (Gaggia Classic, Rancilio Silvia...); profiling mods optional.
+ */
+export const ESPRESSO_MACHINE_TYPES = ['Manual lever', 'Spring lever', 'Semi-automatic (pump)'] as const
+export type EspressoMachineType = (typeof ESPRESSO_MACHINE_TYPES)[number]
+
+export const normalizeBrewerKind = (value: unknown): BrewerKind => (value === 'espresso' ? 'espresso' : 'moka')
+
+export const TASTE_BALANCES = ['sour', 'balanced', 'bitter'] as const
+export type TasteBalance = (typeof TASTE_BALANCES)[number]
+export const normalizeTasteBalance = (value: unknown): TasteBalance | null =>
+  (TASTE_BALANCES as readonly string[]).includes(value as string) ? (value as TasteBalance) : null
+
+export const GRINDER_ADJUSTMENT_TYPES = ['stepped', 'stepless'] as const
+export type GrinderAdjustmentType = (typeof GRINDER_ADJUSTMENT_TYPES)[number]
+export const normalizeAdjustmentType = (value: unknown): GrinderAdjustmentType =>
+  value === 'stepless' ? 'stepless' : 'stepped'
+
 /** brew_form.* keys for expert-variable display */
 export const EXPERT_VALUE_I18N: Record<string, string> = {
   Boiling: 'brew_form.temp_boiling',

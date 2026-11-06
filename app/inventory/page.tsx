@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Header from '@/components/Header'
 import PageHeading from '@/components/PageHeading'
 import BeanForm from '@/components/BeanForm'
 import GrinderForm from '@/components/GrinderForm'
 import MokaPotForm from '@/components/MokaPotForm'
+import Modal from '@/components/Modal'
+import { Plus } from 'lucide-react'
 import InventoryList from '@/components/InventoryList'
 import MixManager from '@/components/MixManager'
 import { Bean, BeanMix, Grinder, MokaPot } from '@/lib/types'
@@ -23,10 +25,14 @@ export default function InventoryPage() {
   const [mixes, setMixes] = useState<BeanMix[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Edit states
-  const [editingBean, setEditingBean] = useState<Bean | null>(null)
-  const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null)
-  const [editingMokaPot, setEditingMokaPot] = useState<MokaPot | null>(null)
+  // The open add/edit dialog (item is set when editing)
+  const [modal, setModal] = useState<
+    | { type: 'bean'; item: Bean | null }
+    | { type: 'gear'; item: MokaPot | null }
+    | { type: 'grinder'; item: Grinder | null }
+    | null
+  >(null)
+  const closeModal = useCallback(() => setModal(null), [])
 
   const fetchBeans = async () => {
     try {
@@ -101,7 +107,7 @@ export default function InventoryPage() {
     })
     if (response.ok) {
       await fetchBeans()
-      setEditingBean(null)
+      closeModal()
     } else {
       const errorData = await response.json()
       throw new Error(errorData.error || `Failed to save bean`)
@@ -118,7 +124,7 @@ export default function InventoryPage() {
     })
     if (response.ok) {
       await fetchGrinders()
-      setEditingGrinder(null)
+      closeModal()
     } else {
       const errorData = await response.json()
       throw new Error(errorData.error || `Failed to save grinder`)
@@ -135,10 +141,10 @@ export default function InventoryPage() {
     })
     if (response.ok) {
       await fetchMokaPots()
-      setEditingMokaPot(null)
+      closeModal()
     } else {
       const errorData = await response.json()
-      throw new Error(errorData.error || `Failed to save moka pot`)
+      throw new Error(errorData.error || `Failed to save brewing gear`)
     }
   }
 
@@ -206,75 +212,95 @@ export default function InventoryPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <PageHeading title={t('inventory.title')} subtitle={t('inventory.subtitle')} className="mb-12" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left column: Forms */}
-          <div className="space-y-6">
-            <BeanForm
-              key={editingBean?.id ?? 'new-bean'}
-              onSubmit={handleSaveBean}
-              isLoading={false}
-              initialData={editingBean}
-              onCancel={() => setEditingBean(null)}
+        <div className="space-y-12 max-w-3xl mx-auto">
+          <section>
+            <SectionHeader title={t('inventory.your_beans')} addLabel={t('inventory.add_bean')} onAdd={() => setModal({ type: 'bean', item: null })} />
+            <InventoryList
+              items={beans}
+              type="beans"
+              onDelete={handleDeleteBean}
+              onEdit={(item) => setModal({ type: 'bean', item: item as Bean })}
+              onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
+              isDeleting={false}
             />
-            <GrinderForm
-              key={editingGrinder?.id ?? 'new-grinder'}
-              onSubmit={handleSaveGrinder}
-              isLoading={false}
-              initialData={editingGrinder}
-              onCancel={() => setEditingGrinder(null)}
-            />
-            <MokaPotForm
-              key={editingMokaPot?.id ?? 'new-pot'}
-              onSubmit={handleSaveMokaPot}
-              isLoading={false}
-              initialData={editingMokaPot}
-              onCancel={() => setEditingMokaPot(null)}
-            />
-          </div>
-
-          {/* Right column: Lists */}
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('inventory.your_beans')}</h2>
-              <InventoryList
-                items={beans}
-                type="beans"
-                onDelete={handleDeleteBean}
-                onEdit={(item) => setEditingBean(item as Bean)}
-                onToggleActive={(item) => handleToggleBeanActive(item as Bean)}
-                isDeleting={false}
-              />
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('feat.mixes_title')}</h2>
+            <div className="mt-6">
+              <h3 className="text-lg font-display font-bold text-accent-ink mb-3">{t('feat.mixes_title')}</h3>
               <MixManager beans={beans} mixes={mixes} onChanged={fetchMixes} />
-            </section>
+            </div>
+          </section>
 
-            <section>
-              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('inventory.your_grinders')}</h2>
-              <InventoryList
-                items={grinders}
-                type="grinders"
-                onDelete={handleDeleteGrinder}
-                onEdit={(item) => setEditingGrinder(item as Grinder)}
-                isDeleting={false}
-              />
-            </section>
+          <section>
+            <SectionHeader title={t('inventory.brewing_gear')} addLabel={t('inventory.add_gear')} onAdd={() => setModal({ type: 'gear', item: null })} />
+            <InventoryList
+              items={mokaPots}
+              type="gear"
+              onDelete={handleDeleteMokaPot}
+              onEdit={(item) => setModal({ type: 'gear', item: item as MokaPot })}
+              isDeleting={false}
+            />
+          </section>
 
-            <section>
-              <h2 className="text-2xl font-display font-bold text-accent-ink mb-4">{t('inventory.your_moka_pots')}</h2>
-              <InventoryList
-                items={mokaPots}
-                type="moka-pots"
-                onDelete={handleDeleteMokaPot}
-                onEdit={(item) => setEditingMokaPot(item as MokaPot)}
-                isDeleting={false}
-              />
-            </section>
-          </div>
+          <section>
+            <SectionHeader title={t('inventory.your_grinders')} addLabel={t('inventory.add_grinder')} onAdd={() => setModal({ type: 'grinder', item: null })} />
+            <InventoryList
+              items={grinders}
+              type="grinders"
+              onDelete={handleDeleteGrinder}
+              onEdit={(item) => setModal({ type: 'grinder', item: item as Grinder })}
+              isDeleting={false}
+            />
+          </section>
         </div>
       </main>
+
+      {modal && (
+        <Modal onClose={closeModal} label={t('inventory.add_item')}>
+          {modal.type === 'bean' && (
+            <BeanForm
+              key={modal.item?.id ?? 'new-bean'}
+              onSubmit={handleSaveBean}
+              isLoading={false}
+              initialData={modal.item}
+              onCancel={closeModal}
+            />
+          )}
+          {modal.type === 'gear' && (
+            <MokaPotForm
+              key={modal.item?.id ?? 'new-gear'}
+              onSubmit={handleSaveMokaPot}
+              isLoading={false}
+              initialData={modal.item}
+              onCancel={closeModal}
+            />
+          )}
+          {modal.type === 'grinder' && (
+            <GrinderForm
+              key={modal.item?.id ?? 'new-grinder'}
+              onSubmit={handleSaveGrinder}
+              isLoading={false}
+              initialData={modal.item}
+              onCancel={closeModal}
+            />
+          )}
+        </Modal>
+      )}
     </>
+  )
+}
+
+function SectionHeader({ title, addLabel, onAdd }: { title: string; addLabel: string; onAdd: () => void }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="text-2xl font-display font-bold text-accent-ink">{title}</h2>
+      <button
+        type="button"
+        onClick={onAdd}
+        aria-label={addLabel}
+        title={addLabel}
+        className="btn-primary h-9 w-9 !p-0 rounded-full flex items-center justify-center"
+      >
+        <Plus className="w-5 h-5" />
+      </button>
+    </div>
   )
 }

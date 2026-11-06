@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { Trophy, Target, Lightbulb } from 'lucide-react'
 import { Brew } from '@/lib/types'
 import { describeMix, mixSignature } from '@/lib/beans'
-import { formatDate, mokaPotName } from '@/lib/utils'
+import { formatDate, mokaPotName, grindLabel } from '@/lib/utils'
 import { translateStoredExpertValue } from '@/lib/dbValues'
 import { useLanguage } from '@/lib/LanguageContext'
 
@@ -68,7 +68,6 @@ export default function DialIn({ brews }: { brews: Brew[] }) {
     ? [sweetSpot.setting - 1, sweetSpot.setting + 1].find((s) => s >= 0 && !tested.has(s))
     : undefined
 
-  const microns = best.grinder?.microns_per_click
 
   return (
     <div className="space-y-8">
@@ -102,7 +101,7 @@ export default function DialIn({ brews }: { brews: Brew[] }) {
               <dt className="text-xs text-muted">{t('brew_card.grinder')}</dt>
               <dd className="text-ink font-medium">
                 {best.grinder_id
-                  ? `${best.grinder_setting} ${t('brew_card.clicks')}${microns && best.grinder_setting != null ? ` (~${best.grinder_setting * microns}µm)` : ''}`
+                  ? grindLabel(best.grinder_setting ?? 0, best.grinder, t('brew_card.clicks'))
                   : t('brew_form.pre_ground')}
               </dd>
             </div>

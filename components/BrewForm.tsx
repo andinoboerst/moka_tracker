@@ -2,7 +2,9 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { Bean, BeanMix, Brew, Grinder, MokaPot, BrewCreateInput } from '@/lib/types'
-import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeaders, formatDate } from '@/lib/utils'
+import { calculateBrewRatio, calculateExtractionRatio, mokaPotName, getAuthHeaders, formatDate, isEspresso } from '@/lib/utils'
+import { PressureProfileEditor } from './PressureProfile'
+import type { PressureStage } from '@/lib/pressure'
 import { mixArabicaShare, mixSignature } from '@/lib/beans'
 import { X, Plus, Play, Square, RotateCcw, History, Save, AlertTriangle, FlaskConical } from 'lucide-react'
 import VibeIcon from './VibeIcon'
@@ -50,6 +52,7 @@ const emptyForm = {
   heat_level: 'Medium-Low',
   has_paper_filter: false,
   flow_type: 'Steady',
+  brew_temp_c: '',
 }
 
 type FormState = typeof emptyForm
@@ -72,6 +75,7 @@ function formFromBrew(brew: Brew, keepResult: boolean): FormState {
     heat_level: brew.heat_level || 'Medium-Low',
     has_paper_filter: !!brew.has_paper_filter,
     flow_type: brew.flow_type || 'Steady',
+    brew_temp_c: brew.brew_temp_c?.toString() ?? '',
   }
 }
 
@@ -97,6 +101,7 @@ export default function BrewForm({
       ? source.mix.map((c) => ({ bean_id: c.bean_id, percentage: c.percentage.toString() }))
       : []
   )
+  const [pressureProfile, setPressureProfile] = useState<PressureStage[]>(() => source?.pressure_profile ?? [])
   const [useMix, setUseMix] = useState(() => !!(source?.mix && source.mix.length > 1))
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
@@ -142,6 +147,11 @@ export default function BrewForm({
       moka_pot_id: prev.moka_pot_id || (mokaPots[0]?.id ?? ''),
     }))
   }, [beans, grinders, mokaPots, source])
+
+  const selectedPot = mokaPots.find((p) => p.id === formData.moka_pot_id)
+  const espresso = isEspresso(selectedPot)
+  const selectedGrinder = grinders.find((g) => g.id === formData.grinder_id)
+  const stepless = selectedGrinder?.adjustment_type === 'stepless'
 
   const selectedBeanIds = useMix ? mixRows.map((r) => r.bean_id).filter(Boolean) : [formData.bean_id].filter(Boolean)
   const selectedBeans = selectedBeanIds.map((id) => beans.find((b) => b.id === id)).filter(Boolean) as Bean[]
@@ -241,6 +251,7 @@ export default function BrewForm({
     if (!similarBrew) return
     const next = formFromBrew(similarBrew, false)
     setFormData((prev) => ({ ...next, bean_id: prev.bean_id, moka_pot_id: prev.moka_pot_id }))
+    setPressureProfile(similarBrew.pressure_profile ?? [])
     setNotice(t('feat.used_last', { date: formatDate(similarBrew.created_at) }))
   }
 
@@ -288,9 +299,10 @@ export default function BrewForm({
         mix,
         grinder_id: formData.grinder_id || undefined,
         moka_pot_id: formData.moka_pot_id,
-        grinder_setting: formData.grinder_id && formData.grinder_setting !== '' ? parseInt(formData.grinder_setting) : undefined,
+        grinder_setting: formData.grinder_id && formData.grinder_setting !== '' ? parseFloat(formData.grinder_setting) : undefined,
         coffee_weight_g: parseFloat(formData.coffee_weight_g),
-        water_added_g: parseFloat(formData.water_added_g),
+        // An espresso machine has no boiler load to weigh: the ratio is dose in : liquid out
+        water_added_g: espresso ? parseFloat(formData.final_yield_g) : parseFloat(formData.water_added_g),
         final_yield_g: parseFloat(formData.final_yield_g),
         extraction_time_s: parseInt(formData.extraction_time_s),
         milk_added_g: formData.milk_added_g ? parseFloat(formData.milk_added_g) : undefined,
@@ -301,6 +313,8 @@ export default function BrewForm({
         heat_level: formData.heat_level,
         has_paper_filter: formData.has_paper_filter,
         flow_type: formData.flow_type,
+        brew_temp_c: espresso && formData.brew_temp_c !== '' ? parseFloat(formData.brew_temp_c) : undefined,
+        pressure_profile: espresso && pressureProfile.length > 0 ? pressureProfile.filter((s) => s.duration_s > 0) : undefined,
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save brew')
@@ -506,7 +520,7 @@ export default function BrewForm({
               <option value="">{t('brew_form.select_moka')}</option>
               {mokaPots.map((pot) => (
                 <option key={pot.id} value={pot.id}>
-                  {mokaPotName(pot)} ({t('moka_form.cup_count', { count: pot.size_cups })})
+                  {mokaPotName(pot)} ({pot.kind === 'espresso' ? t('moka_form.kind_espresso') : t('moka_form.cup_count', { count: pot.size_cups ?? 0 })})
                 </option>
               ))}
             </select>
@@ -528,12 +542,13 @@ export default function BrewForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {formData.grinder_id && !isPreGround && (
           <div>
-            <label className={labelCls}>{t('brew_form.grinder_setting')}</label>
+            <label className={labelCls}>{stepless ? t('brew_form.grinder_setting_um') : t('brew_form.grinder_setting')}</label>
             <input
               type="number"
+              step={stepless ? '0.1' : '1'}
               value={formData.grinder_setting}
               onChange={(e) => set({ grinder_setting: e.target.value })}
-              placeholder="e.g., 15"
+              placeholder={stepless ? 'e.g., 250' : 'e.g., 15'}
               required
               min="0"
               className={inputCls}
@@ -555,6 +570,7 @@ export default function BrewForm({
           />
         </div>
 
+        {!espresso && (
         <div>
           <label className={labelCls}>{t('brew_form.water_added')}</label>
           <input
@@ -568,6 +584,7 @@ export default function BrewForm({
             className={inputCls}
           />
         </div>
+        )}
 
         <div>
           <label className={labelCls}>{t('brew_form.final_yield')}</label>
@@ -575,7 +592,7 @@ export default function BrewForm({
             type="number"
             value={formData.final_yield_g}
             onChange={(e) => set({ final_yield_g: e.target.value })}
-            placeholder="e.g., 32"
+            placeholder={espresso ? 'e.g., 36' : 'e.g., 32'}
             required
             min="0"
             step="0.1"
@@ -660,7 +677,39 @@ export default function BrewForm({
         </div>
       )}
 
+      {/* Espresso: temperature + pressure profile */}
+      {espresso && (
+        <div className="p-6 bg-canvas/50 border border-line rounded-xl space-y-6">
+          <h3 className="text-lg font-display font-bold text-accent-ink flex items-center gap-2">
+            <FlaskConical className="w-5 h-5" /> {t('brew_form.pressure_profile')}
+          </h3>
+          <div className="max-w-xs">
+            <label className={labelCls}>{t('brew_form.brew_temp')}</label>
+            <input
+              type="number"
+              min="20"
+              max="110"
+              step="0.5"
+              value={formData.brew_temp_c}
+              onChange={(e) => set({ brew_temp_c: e.target.value })}
+              placeholder="e.g., 93"
+              className={inputCls}
+            />
+          </div>
+          <PressureProfileEditor
+            value={pressureProfile}
+            onChange={setPressureProfile}
+            maxBar={selectedPot?.max_pressure_bar}
+            onUseTime={(seconds) => {
+              resetTimer()
+              set({ extraction_time_s: String(seconds) })
+            }}
+          />
+        </div>
+      )}
+
       {/* Expert Variables */}
+      {!espresso && (
       <div className="p-6 bg-canvas/50 border border-line rounded-xl space-y-6">
         <h3 className="text-lg font-display font-bold text-accent-ink flex items-center gap-2">
           <FlaskConical className="w-5 h-5" /> {t('brew_form.expert_variables')}
@@ -709,13 +758,16 @@ export default function BrewForm({
           </div>
         </div>
       </div>
+      )}
 
       {/* Auto-Calculated Ratios */}
       <div className="grid grid-cols-2 gap-4 p-4 bg-line rounded-xl border border-line-strong">
-        <div>
-          <p className="text-sm text-muted mb-1">{t('brew_form.brew_ratio')}</p>
-          <p className="text-lg font-semibold text-accent-ink">{brewRatio ? `1:${brewRatio.toFixed(2)}` : '—'}</p>
-        </div>
+        {!espresso && (
+          <div>
+            <p className="text-sm text-muted mb-1">{t('brew_form.brew_ratio')}</p>
+            <p className="text-lg font-semibold text-accent-ink">{brewRatio ? `1:${brewRatio.toFixed(2)}` : '—'}</p>
+          </div>
+        )}
         <div>
           <p className="text-sm text-muted mb-1">{t('brew_form.extraction_ratio')}</p>
           <p className="text-lg font-semibold text-accent-ink">{extractionRatio ? `1:${extractionRatio.toFixed(2)}` : '—'}</p>

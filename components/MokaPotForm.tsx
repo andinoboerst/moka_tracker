@@ -4,8 +4,11 @@ import { useState } from 'react'
 import { MokaPot } from '@/lib/types'
 import { X, Save, Plus } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
+import { ESPRESSO_MACHINE_TYPES } from '@/lib/dbValues'
 
 export interface MokaPotFormData {
+  kind: 'moka' | 'espresso'
+  max_pressure_bar: string
   brand: string
   model: string
   nickname: string
@@ -15,16 +18,26 @@ export interface MokaPotFormData {
 
 export type MokaPotFormPayload = MokaPotFormData & { id?: string }
 
-const emptyMokaPotForm: MokaPotFormData = { brand: '', model: '', nickname: '', type: 'Stovetop', size_cups: 2 }
+const emptyMokaPotForm: MokaPotFormData = {
+  kind: 'moka',
+  max_pressure_bar: '',
+  brand: '',
+  model: '',
+  nickname: '',
+  type: 'Stovetop',
+  size_cups: 2,
+}
 
 function mokaPotToFormData(pot?: MokaPot | null): MokaPotFormData {
   if (!pot) return emptyMokaPotForm
   return {
+    kind: pot.kind === 'espresso' ? 'espresso' : 'moka',
+    max_pressure_bar: pot.max_pressure_bar?.toString() ?? '',
     brand: pot.brand,
     model: pot.model,
     nickname: pot.nickname ?? '',
     type: pot.type,
-    size_cups: pot.size_cups,
+    size_cups: pot.size_cups ?? 2,
   }
 }
 
@@ -41,6 +54,10 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
   const [formData, setFormData] = useState<MokaPotFormData>(() => mokaPotToFormData(initialData))
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  const isEspresso = formData.kind === 'espresso'
+  const setKind = (kind: 'moka' | 'espresso') =>
+    setFormData({ ...formData, kind, type: kind === 'espresso' ? ESPRESSO_MACHINE_TYPES[0] : 'Stovetop' })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,7 +84,9 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
     >
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-accent-ink">
-          {initialData ? t('moka_form.edit_title') : t('moka_form.add_title')}
+          {isEspresso
+            ? initialData ? t('moka_form.edit_title_espresso') : t('moka_form.add_title_espresso')
+            : initialData ? t('moka_form.edit_title') : t('moka_form.add_title')}
         </h3>
         {onCancel && (
           <button type="button" onClick={onCancel} className="text-muted hover:text-ink">
@@ -85,7 +104,28 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
 
       {success && (
         <div className="bg-green-900/30 border border-green-700 text-green-400 px-4 py-2 rounded">
-          {t('moka_form.success')}
+          {isEspresso ? t('moka_form.success_espresso') : t('moka_form.success')}
+        </div>
+      )}
+
+      {!initialData && (
+        <div role="radiogroup" aria-label={t('moka_form.kind')} className="grid grid-cols-2 gap-2">
+          {(['moka', 'espresso'] as const).map((kind) => (
+            <button
+              key={kind}
+              type="button"
+              role="radio"
+              aria-checked={formData.kind === kind}
+              onClick={() => setKind(kind)}
+              className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                formData.kind === kind
+                  ? 'border-accent bg-accent/15 text-accent-ink'
+                  : 'border-line-strong text-muted hover:text-ink'
+              }`}
+            >
+              {t(`moka_form.kind_${kind}`)}
+            </button>
+          ))}
         </div>
       )}
 
@@ -97,7 +137,7 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
             value={formData.brand}
             onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
             className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink focus:outline-none focus:border-accent"
-            placeholder="e.g., Bialetti"
+            placeholder={isEspresso ? 'e.g., Flair' : 'e.g., Bialetti'}
             required
           />
         </div>
@@ -109,7 +149,7 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
             value={formData.model}
             onChange={(e) => setFormData({ ...formData, model: e.target.value })}
             className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink focus:outline-none focus:border-accent"
-            placeholder="e.g., Venus"
+            placeholder={isEspresso ? 'e.g., 58' : 'e.g., Venus'}
             required
           />
         </div>
@@ -128,7 +168,38 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
           />
         </div>
 
-        <div>
+        {isEspresso ? (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-ink mb-1">{t('moka_form.machine_type')}</label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink focus:outline-none focus:border-accent"
+              >
+                {ESPRESSO_MACHINE_TYPES.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-ink mb-1">{t('moka_form.max_pressure')}</label>
+              <input
+                type="number"
+                min="1"
+                max="20"
+                step="0.5"
+                value={formData.max_pressure_bar}
+                onChange={(e) => setFormData({ ...formData, max_pressure_bar: e.target.value })}
+                placeholder="e.g., 9"
+                className="w-full bg-canvas border border-line-strong rounded px-3 py-2 text-ink placeholder-muted focus:outline-none focus:border-accent"
+              />
+              <p className="text-xs text-muted mt-1">{t('moka_form.max_pressure_hint')}</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
           <label className="block text-sm font-medium text-ink mb-1">{t('moka_form.type')}</label>
           <select
             value={formData.type}
@@ -155,6 +226,8 @@ export default function MokaPotForm({ onSubmit, isLoading, initialData, onCancel
             ))}
           </select>
         </div>
+          </>
+        )}
       </div>
 
       <button

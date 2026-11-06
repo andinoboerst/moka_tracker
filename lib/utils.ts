@@ -43,6 +43,22 @@ export const mokaPotName = (pot: { brand: string; model: string; nickname?: stri
   return pot.nickname?.trim() || `${pot.brand} ${pot.model}`
 }
 
+export const isEspresso = (pot?: { kind?: string | null } | null): boolean => pot?.kind === 'espresso'
+
+/**
+ * Human-readable grind setting. Stepless grinders log the grind size (µm) directly;
+ * stepped grinders log clicks, with the total size when microns/click is known.
+ */
+export const grindLabel = (
+  setting: number,
+  grinder: { adjustment_type?: string; microns_per_click?: number | null } | null | undefined,
+  clicksWord: string
+): string => {
+  if (grinder?.adjustment_type === 'stepless') return `${setting}µm`
+  const microns = grinder?.microns_per_click ? ` (~${Math.round(setting * grinder.microns_per_click)}µm)` : ''
+  return `${setting} ${clicksWord}${microns}`
+}
+
 /**
  * Get vibe color based on rating
  */

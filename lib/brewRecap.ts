@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { mixArabicaShare } from './beans'
+import { describeProfile, type PressureStage } from './pressure'
 
 export interface RecapInput {
   bean_id: string
@@ -18,6 +19,8 @@ export interface RecapInput {
   heat_level?: string | null
   has_paper_filter?: boolean
   flow_type?: string | null
+  brew_temp_c?: number | null
+  pressure_profile?: PressureStage[] | null
   brew_ratio_input: number
   extraction_ratio_output: number
   mix?: { bean_id: string; percentage: number }[] | null
@@ -37,7 +40,7 @@ export async function generateBrewRecap(
     bean_id, grinder_id, moka_pot_id, grinder_setting, coffee_weight_g, water_added_g,
     final_yield_g, extraction_time_s, milk_added_g, milk_type, vibe_rating, tasting_notes,
     water_temp, heat_level, has_paper_filter, flow_type, brew_ratio_input,
-    extraction_ratio_output, language = 'en', mix,
+    extraction_ratio_output, language = 'en', mix, brew_temp_c, pressure_profile,
   } = input
 
   // Fetch entity details for richer AI context
@@ -64,9 +67,15 @@ export async function generateBrewRecap(
   const grinder = grinderRes.data
   const mokaPot = mokaPotRes.data
 
-  const totalMicrons = (grinder?.microns_per_click && grinder_setting)
+  const espresso = mokaPot?.kind === 'espresso'
+  const stepless = grinder?.adjustment_type === 'stepless'
+  const totalMicrons = (!stepless && grinder?.microns_per_click && grinder_setting)
     ? grinder.microns_per_click * grinder_setting
     : null
+  const grindSettingText = stepless
+    ? `${grinder_setting} microns (stepless grinder, setting is the grind size)`
+    : `${grinder_setting} clicks ${totalMicrons ? `(~${totalMicrons} microns)` : ''}`
+  const profileText = pressure_profile && pressure_profile.length ? describeProfile(pressure_profile) : 'not recorded'
 
   let daysPastRoast = null
   if (bean?.roast_date) {
@@ -99,10 +108,12 @@ export async function generateBrewRecap(
     historyText = previousBrews.map((b, i) => `
 Previous Brew ${i + 1}:
 - Vibe Rating: ${b.vibe_rating}/10
-${b.grinder_id ? `- Grinder Setting: ${b.grinder_setting} clicks` : '- Coffee was Pre-ground'}
+${b.grinder_id ? `- Grinder Setting: ${b.grinder_setting}${stepless ? ' microns (stepless)' : ' clicks'}` : '- Coffee was Pre-ground'}
 - Coffee/Water/Yield: ${b.coffee_weight_g}g / ${b.water_added_g}g / ${b.final_yield_g}g
 - Extraction Time: ${b.extraction_time_s}s
-- Expert Vars: ${b.water_temp || 'Boiling'} Start, ${b.heat_level || 'Med'} Heat, ${b.flow_type || 'Steady'} Flow, Filter: ${b.has_paper_filter ? 'Yes' : 'No'}
+${espresso
+  ? `- Espresso Vars: ${b.brew_temp_c != null ? b.brew_temp_c + '°C' : 'temp not recorded'}, pressure profile: ${b.pressure_profile?.length ? describeProfile(b.pressure_profile) : 'not recorded'}`
+  : `- Expert Vars: ${b.water_temp || 'Boiling'} Start, ${b.heat_level || 'Med'} Heat, ${b.flow_type || 'Steady'} Flow, Filter: ${b.has_paper_filter ? 'Yes' : 'No'}`}
 - Tasting Notes: "${b.tasting_notes || 'None'}"`).join('\n')
   }
 
@@ -124,36 +135,41 @@ Analyze the following CURRENT brew details, and consider the HISTORY of previous
 2. "suggestion": Start by briefly acknowledging the current result in a few words, then give a detailed 2-3 sentence suggestion for the next brew. Give clear, exact instructions on what to change and why it will improve the coffee. Do NOT use emojis; let dry, deadpan wit carry the personality.
 
 CONTEXT:
-- This is for a MOKA POT brew. This is not espresso or pour-over.
+${espresso
+? `- This is for a MANUAL ESPRESSO brew (${mokaPot?.type || 'manual espresso machine'}). This is not a moka pot or pour-over.
+- The user controls the pressure profile stage by stage (pre-infusion, ramp, hold, decline). Suggestions may refer to pre-infusion length, peak pressure, ramp speed, final decline, dose, yield, grind and temperature in °C.
+- The brew ratio is dose in : liquid out. Typical espresso lands around 1:1.5 to 1:3 in 25-35 seconds, but judge by the tasting notes first.`
+: `- This is for a MOKA POT brew. This is not espresso or pour-over.
 - Suggestions about water should refer to "Starting Water Temp" (the water you put in the boiler).
-- Do not be too exact with temperature degrees (e.g., don't say "use exactly 82°C"), use general terms like "warmer", "cooler", "near boiling", etc.
+- Do not be too exact with temperature degrees (e.g., don't say "use exactly 82°C"), use general terms like "warmer", "cooler", "near boiling", etc.`}
 
 CURRENT Brew Details:
 ${mixText || `- Bean: ${bean?.name} (${bean?.roaster}) - Species: ${bean?.bean_type || 'Unknown'}${bean?.bean_type === 'Blend' && bean?.arabica_percent != null ? ` (${bean.arabica_percent}% Arabica)` : ''} - Origin: ${bean?.origin || 'Unknown'} - Roast Level: ${bean?.roast_level}${bean?.tasting_notes ? ` - Advertised flavour notes of the bag: "${bean.tasting_notes}"` : ''}`}${mixText ? '\n- Main bean details: ' + bean?.name + ' (' + bean?.roaster + ') - Origin: ' + (bean?.origin || 'Unknown') + ' - Roast Level: ' + bean?.roast_level : ''} ${bean?.roast_date ? `(Roast Date: ${bean.roast_date}, Freshness: ${daysPastRoast} days)` : ''}
-- Moka Pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} Cup, ${mokaPot?.type})
+- ${espresso ? `Espresso Machine: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.type})` : `Moka Pot: ${mokaPot?.brand} ${mokaPot?.model} (${mokaPot?.size_cups} Cup, ${mokaPot?.type})`}
 ${grinder
           ? `- Grinder: ${grinder.brand} ${grinder.model}
-- Grinder Setting: ${grinder_setting} clicks ${totalMicrons ? `(~${totalMicrons} microns)` : ''}`
+- Grinder Setting: ${grindSettingText}`
           : '- Coffee: Pre-ground (No grinder used)'}
 - Vibe Rating: ${vibe_rating}/10
 - Tasting Notes: "${tasting_notes || 'None provided'}"
 - Coffee: ${coffee_weight_g}g
-- Water In: ${water_added_g}g
-- Yield: ${final_yield_g}g
+${espresso ? '' : `- Water In: ${water_added_g}g\n`}- Yield: ${final_yield_g}g
 - Extraction Time: ${extraction_time_s} seconds
 - Milk Added: ${milk_added_g ? `${milk_added_g}g (${milk_type || 'Unknown type'})` : 'None (Black Coffee)'}
-- Brew Ratio: 1:${brew_ratio_input}
-- Extraction Ratio: 1:${extraction_ratio_output}
-- Starting Water Temp: ${water_temp || 'Boiling'}
-- Heat Level: ${heat_level || 'Medium-Low'}
-- Using Paper Filter: ${has_paper_filter ? 'Yes' : 'No'}
-- Flow Observation: ${flow_type || 'Steady'}
+${espresso
+  ? `- Extraction Ratio (dose : yield): 1:${extraction_ratio_output}\n- Brew Temperature: ${brew_temp_c != null ? brew_temp_c + '°C' : 'not recorded'}\n- Pressure Profile: ${profileText}`
+  : `- Brew Ratio: 1:${brew_ratio_input}\n- Extraction Ratio: 1:${extraction_ratio_output}\n- Starting Water Temp: ${water_temp || 'Boiling'}\n- Heat Level: ${heat_level || 'Medium-Low'}\n- Using Paper Filter: ${has_paper_filter ? 'Yes' : 'No'}\n- Flow Observation: ${flow_type || 'Steady'}`}
 
 HISTORY (Last 3 brews with this setup):
 ${historyText}
 
 Rules:
-- If rating is low (≤5) and notes mention "bitter", suggest coarser grind, lower heat, or starting with cooler water.
+${espresso ? `- ESPRESSO BREW: IGNORE every rule below about heat level, starting water temp, flow type, the stop point and paper filters; they only apply to moka pots.
+- If notes mention "bitter" or "harsh": suggest a coarser grind, a shorter or lower-pressure ramp/decline, a lower brew temperature or a shorter yield.
+- If notes mention "sour" or "thin": suggest a finer grind, a longer pre-infusion, a higher peak pressure or temperature, or a longer yield.
+- Mention the pressure profile (pre-infusion, ramp, hold, decline) when it is recorded, and suggest concrete changes to individual stages.
+- If the shot ran very fast (under ~20s) or very slow (over ~40s), say so and tie it to the grind.
+` : ''}- If rating is low (≤5) and notes mention "bitter", suggest coarser grind, lower heat, or starting with cooler water.
 - If notes mention "sour", suggest finer grind, higher heat, or starting with hotter water.
 - If flow_type is "Sputtering", emphasize heat management and the "stop point".
 - IF THE COFFEE IS PRE-GROUND, DO NOT suggest changing the grind size. Focus on heat and starting water temp instead!

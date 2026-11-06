@@ -4,11 +4,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { calculateBrewRatio, calculateExtractionRatio } from '@/lib/utils'
 import { getAuthedContext, fetchAllRows } from '@/lib/serverAuth'
+import { parsePressureProfile, type PressureStage } from '@/lib/pressure'
 import { generateBrewRecap } from '@/lib/brewRecap'
 import {
   normalizeFlowType,
   normalizeHeatLevel,
   normalizeMilkType,
+  normalizeTasteBalance,
   normalizeWaterTemp,
 } from '@/lib/dbValues'
 
@@ -80,6 +82,12 @@ type BrewFields = {
   heat_level: string
   has_paper_filter: boolean
   flow_type: string
+  brew_temp_c: number | null
+  pressure_profile: PressureStage[] | null
+  first_drip_s: number | null
+  tds_percent: number | null
+  taste_balance: string | null
+  used_wdt: boolean | null
 }
 
 /** Validates and normalises a brew payload. Returns an error string on failure. */
@@ -118,8 +126,23 @@ function parseBrewBody(body: any): { error: string } | { fields: BrewFields; mix
 
   const grinderSetting =
     body.grinder_setting !== undefined && body.grinder_setting !== '' && body.grinder_setting !== null
-      ? parseInt(body.grinder_setting)
+      ? parseFloat(body.grinder_setting)
       : null
+  const profile = parsePressureProfile(body.pressure_profile)
+  if ('error' in profile) return { error: profile.error }
+  const brewTemp = body.brew_temp_c === '' || body.brew_temp_c == null ? null : parseFloat(body.brew_temp_c)
+  if (brewTemp !== null && (!Number.isFinite(brewTemp) || brewTemp < 20 || brewTemp > 110)) {
+    return { error: 'Brew temperature must be between 20 and 110 °C' }
+  }
+  const optionalNumber = (v: unknown) => (v === '' || v == null ? null : Number(v))
+  const firstDrip = optionalNumber(body.first_drip_s)
+  const tds = optionalNumber(body.tds_percent)
+  if (firstDrip !== null && (!Number.isFinite(firstDrip) || firstDrip < 0 || firstDrip > 120)) {
+    return { error: 'First drip time must be between 0 and 120 seconds' }
+  }
+  if (tds !== null && (!Number.isFinite(tds) || tds <= 0 || tds > 25)) {
+    return { error: 'TDS must be between 0 and 25 %' }
+  }
   const milk = body.milk_added_g ? parseFloat(body.milk_added_g) : null
 
   return {
@@ -140,6 +163,12 @@ function parseBrewBody(body: any): { error: string } | { fields: BrewFields; mix
       heat_level: normalizeHeatLevel(body.heat_level),
       has_paper_filter: !!body.has_paper_filter,
       flow_type: normalizeFlowType(body.flow_type),
+      brew_temp_c: brewTemp,
+      pressure_profile: profile.profile,
+      first_drip_s: firstDrip,
+      tds_percent: tds,
+      taste_balance: normalizeTasteBalance(body.taste_balance),
+      used_wdt: typeof body.used_wdt === 'boolean' ? body.used_wdt : null,
     },
     mix,
   }

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import PageHeading from '@/components/PageHeading'
-import { getAuthHeaders, formatDate } from '@/lib/utils'
+import { getAuthHeaders, formatDate, grindLabel } from '@/lib/utils'
 import { translateStoredExpertValue } from '@/lib/dbValues'
 import { useLanguage } from '@/lib/LanguageContext'
 import {
@@ -290,8 +290,7 @@ export default function AnalyticsPage() {
                           </Detail>
                           {!brew.bean?.is_pre_ground && brew.grinder_setting != null && (
                             <Detail icon={Settings} label={t('brew_card.grinder')}>
-                              {brew.grinder_setting} {t('brew_card.clicks')}
-                              {brew.grinder?.microns_per_click ? ` (~${brew.grinder_setting * brew.grinder.microns_per_click}µm)` : ''}
+                              {grindLabel(brew.grinder_setting, brew.grinder, t('brew_card.clicks'))}
                             </Detail>
                           )}
                           <Detail icon={Flame} label={t('brew_card.heat')}>

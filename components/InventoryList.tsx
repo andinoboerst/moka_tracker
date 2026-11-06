@@ -1,7 +1,7 @@
 'use client'
 
 import { Bean, Grinder, MokaPot } from '@/lib/types'
-import { Trash2, Edit2, Package, Scale, Calendar, Zap, ZapOff, Globe } from 'lucide-react'
+import { Trash2, Edit2, Scale, Calendar, Zap, Globe, Gauge } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { useLanguage } from '@/lib/LanguageContext'
 
@@ -9,7 +9,7 @@ export type InventoryItem = Bean | Grinder | MokaPot
 
 interface InventoryListProps {
   items: Bean[] | Grinder[] | MokaPot[]
-  type: 'beans' | 'grinders' | 'moka-pots'
+  type: 'beans' | 'grinders' | 'gear'
   onDelete: (id: string) => Promise<void>
   onEdit: (item: InventoryItem) => void
   onToggleActive?: (item: InventoryItem) => Promise<void>
@@ -95,7 +95,12 @@ export default function InventoryList({
           <h4 className="font-medium text-ink">
             {grinder.brand} {grinder.model}
           </h4>
-          {grinder.microns_per_click && (
+          {grinder.adjustment_type === 'stepless' && (
+            <p className="text-[10px] text-muted flex items-center gap-1 mt-0.5">
+              <Zap className="w-3 h-3" /> {t('inventory.stepless')} · {t('inventory.grind_um')}
+            </p>
+          )}
+          {grinder.adjustment_type !== 'stepless' && grinder.microns_per_click && (
             <p className="text-[10px] text-muted flex items-center gap-1 mt-0.5">
               <Zap className="w-3 h-3" /> {t('inventory.microns_per_click', { microns: grinder.microns_per_click })}
             </p>
@@ -104,17 +109,34 @@ export default function InventoryList({
       )
     } else {
       const pot = item as MokaPot
+      const espresso = pot.kind === 'espresso'
       return (
         <div className="flex-1">
-          <h4 className="font-medium text-ink">
-            {pot.nickname?.trim() || `${pot.brand} ${pot.model}`}
-          </h4>
+          <div className="flex items-center gap-2">
+            <h4 className="font-medium text-ink">
+              {pot.nickname?.trim() || `${pot.brand} ${pot.model}`}
+            </h4>
+            <span className="text-[10px] text-accent-ink bg-line px-1.5 py-0.5 rounded border border-line-strong font-bold uppercase">
+              {espresso ? t('moka_form.kind_espresso') : t('moka_form.kind_moka')}
+            </span>
+          </div>
           {pot.nickname?.trim() && (
             <p className="text-xs text-muted">{pot.brand} {pot.model}</p>
           )}
-          <p className="text-sm text-muted">
-            {pot.type} • {pot.size_cups} {t('moka_form.size').replace(' (Cups)', '')}
-          </p>
+          {espresso ? (
+            <p className="text-sm text-muted flex items-center gap-2">
+              {pot.type}
+              {pot.max_pressure_bar ? (
+                <span className="flex items-center gap-1 text-[11px]">
+                  <Gauge className="w-3 h-3" /> {t('inventory.max_pressure', { bar: pot.max_pressure_bar })}
+                </span>
+              ) : null}
+            </p>
+          ) : (
+            <p className="text-sm text-muted">
+              {pot.type} • {pot.size_cups} {t('moka_form.size').replace(' (Cups)', '')}
+            </p>
+          )}
         </div>
       )
     }
@@ -126,7 +148,7 @@ export default function InventoryList({
         ? 'inventory.empty_beans'
         : type === 'grinders'
           ? 'inventory.empty_grinders'
-          : 'inventory.empty_moka_pots'
+          : 'inventory.empty_gear'
     return (
       <div className="text-center py-8 text-muted italic">
         {t(emptyKey)}

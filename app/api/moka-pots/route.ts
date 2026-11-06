@@ -1,8 +1,32 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from '@/lib/supabase'
 import { getErrorMessage, getErrorStack } from '@/lib/errors'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import { normalizeMokaPotType } from '@/lib/dbValues'
+import { ESPRESSO_MACHINE_TYPES, normalizeBrewerKind, normalizeMokaPotType } from '@/lib/dbValues'
+
+/** Validates a brewing-gear payload (moka pot or espresso machine) into DB columns. */
+function parseBrewer(body: any): { error: string } | { fields: Record<string, unknown> } {
+  const kind = normalizeBrewerKind(body.kind)
+  const { brand, model, type } = body
+  const nickname = typeof body.nickname === 'string' && body.nickname.trim() ? body.nickname.trim().slice(0, 50) : null
+  if (!brand || !model) return { error: 'Missing required fields: brand, model' }
+
+  if (kind === 'espresso') {
+    const pressure = body.max_pressure_bar === '' || body.max_pressure_bar == null ? null : Number(body.max_pressure_bar)
+    if (pressure !== null && (!Number.isFinite(pressure) || pressure <= 0 || pressure > 20)) {
+      return { error: 'Max pressure must be between 0 and 20 bar' }
+    }
+    const machineType = (ESPRESSO_MACHINE_TYPES as readonly string[]).includes(type) ? type : ESPRESSO_MACHINE_TYPES[0]
+    return { fields: { kind, brand, model, nickname, type: machineType, size_cups: null, max_pressure_bar: pressure } }
+  }
+
+  const sizeCups = Number(body.size_cups)
+  if (!type || !(sizeCups > 0)) return { error: 'Missing required fields: brand, model, type, size_cups' }
+  return {
+    fields: { kind, brand, model, nickname, type: normalizeMokaPotType(type), size_cups: sizeCups, max_pressure_bar: null },
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -56,16 +80,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const { brand, model, type, size_cups } = body
-    const nickname = typeof body.nickname === 'string' && body.nickname.trim() ? body.nickname.trim().slice(0, 50) : null
-
-    if (!brand || !model || !type || !size_cups || size_cups <= 0) {
-      return NextResponse.json(
-        { error: 'Missing required fields: brand, model, type, size_cups' },
-        { status: 400 }
-      )
-    }
+    const parsed = parseBrewer(await request.json())
+    if ('error' in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 })
 
     // Create a client with the user's token so RLS policies work
     const userClient = createClient(
@@ -83,14 +99,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await userClient
       .from('moka_pots')
       .insert([
-        {
-          user_id: user.id,
-          brand,
-          model,
-          nickname,
-          type: normalizeMokaPotType(type),
-          size_cups,
-        },
+        { user_id: user.id, ...parsed.fields },
       ])
       .select()
 
@@ -113,12 +122,9 @@ export async function PUT(request: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
-    const { id, brand, model, type, size_cups } = body
-    const nickname = typeof body.nickname === 'string' && body.nickname.trim() ? body.nickname.trim().slice(0, 50) : null
-
-    if (!id || !brand || !model || !type || !size_cups || size_cups <= 0) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
+    if (!body.id) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    const parsed = parseBrewer(body)
+    if ('error' in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 })
 
     const userClient = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -128,8 +134,8 @@ export async function PUT(request: NextRequest) {
 
     const { data, error } = await userClient
       .from('moka_pots')
-      .update({ brand, model, nickname, type: normalizeMokaPotType(type), size_cups })
-      .eq('id', id)
+      .update(parsed.fields)
+      .eq('id', body.id)
       .select()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
