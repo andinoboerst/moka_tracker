@@ -21,7 +21,7 @@ interface BrewShareTemplateProps {
 
 // Rendered off-screen and exported as a PNG, so it uses fixed brand colours
 // (espresso canvas, terracotta accent) rather than the live theme tokens.
-const C = { canvas: '#12100E', surface: '#1C1917', line: '#2E2925', ink: '#F2E8DA', muted: '#AB9E8F', accent: '#E58A62', accentFill: '#C85A32' }
+const C = { canvas: '#12100E', surface: '#1C1917', line: '#2E2925', ink: '#F2E8DA', muted: '#AB9E8F', accent: '#E58A62', accentFill: '#C85A32', sage: '#9DB09A' }
 const mono = { fontFamily: 'var(--font-mono-ui)' }
 const display = { fontFamily: 'var(--font-display-ui)' }
 
@@ -46,6 +46,10 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
   const { language, t } = useLanguage()
   const espresso = isEspresso(brew.moka_pot)
   const hasProfile = espresso && !!brew.pressure_profile?.length
+  // Same kind marker as on the dashboard cards: a coloured edge and a small pill
+  const kind = espresso
+    ? { label: t('dashboard.kind_espresso'), edge: C.accentFill, text: C.accent }
+    : { label: t('dashboard.kind_moka'), edge: C.sage, text: C.sage }
   const ratio = brew.extraction_ratio_output || brew.final_yield_g / brew.coffee_weight_g || 0
 
   // The short caption when we have one; otherwise fall back to the longer recap
@@ -90,7 +94,7 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
       <div className="w-full flex justify-between items-center z-10">
         <div>
           <h1 className="text-7xl font-semibold mb-4 tracking-tight" style={display}>Moka Tracker</h1>
-          <p className="text-3xl" style={{ color: C.muted }}>
+          <p className="text-3xl whitespace-nowrap" style={{ color: C.muted }}>
             {t('brew_share.ritual')} <span className="mx-2">/</span>
             <span style={mono}>{formatDate(brew.created_at)}</span>
           </p>
@@ -110,14 +114,25 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
       </div>
 
       {/* Main card */}
-      <div className="w-full rounded-[2.5rem] border p-14 z-10 shadow-2xl relative" style={{ background: C.surface, borderColor: C.line }}>
-        {brew.moka_pot && (
-          <div className="absolute top-10 right-10 px-7 py-3.5 rounded-full border" style={{ background: C.canvas, borderColor: C.line }}>
-            <p className="text-3xl" style={{ ...mono, color: C.accent }}>{mokaPotName(brew.moka_pot)}</p>
-          </div>
-        )}
+      <div className="w-full rounded-[2.5rem] border p-14 z-10 shadow-2xl relative overflow-hidden" style={{ background: C.surface, borderColor: C.line }}>
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-2" style={{ background: kind.edge }} />
+        {/* Kind chip stacked above the brewer chip */}
+        <div className="absolute top-10 right-10 flex flex-col items-end gap-3">
+          <span
+            className="inline-flex items-center gap-2.5 rounded-full border px-5 py-1.5 text-2xl font-semibold uppercase tracking-[0.12em]"
+            style={{ ...mono, color: kind.text, borderColor: kind.text }}
+          >
+            <span className="h-3 w-3 rounded-full" style={{ background: kind.text }} />
+            {kind.label}
+          </span>
+          {brew.moka_pot && (
+            <div className="px-7 py-3.5 rounded-full border" style={{ background: C.canvas, borderColor: C.line }}>
+              <p className="text-3xl" style={{ ...mono, color: C.accent }}>{mokaPotName(brew.moka_pot)}</p>
+            </div>
+          )}
+        </div>
 
-        <div className="mb-10 pb-8 border-b pr-64" style={{ borderColor: C.line }}>
+        <div className="mb-10 pb-8 border-b pr-72" style={{ borderColor: C.line }}>
           <h2 className="text-6xl font-semibold mb-3 leading-tight" style={display}>
             {brew.mix && brew.mix.length > 1 ? describeMix(brew.mix) : brew.bean?.name}
           </h2>
