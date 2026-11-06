@@ -182,7 +182,8 @@ const BrewShareTemplate = forwardRef<HTMLDivElement, BrewShareTemplateProps>(({ 
             <PressureChart
               profile={brew.pressure_profile!}
               maxBar={brew.moka_pot?.max_pressure_bar}
-              colors={{ accent: C.accent, grid: C.line, text: C.muted }}
+              colors={{ accent: C.accent, grid: C.line, text: C.muted, marker: C.ink }}
+              marker={brew.first_drip_s != null ? { s: Number(brew.first_drip_s), label: t('brew_card.first_drop') } : undefined}
               size={{ w: 640, h: 150, font: 14 }}
             />
           </div>

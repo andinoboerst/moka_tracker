@@ -874,6 +874,7 @@ export default function BrewForm({
             value={pressureProfile}
             onChange={setPressureProfile}
             maxBar={selectedPot?.max_pressure_bar}
+            firstDropS={parseFloat(formData.first_drip_s) || undefined}
             onUseTime={(seconds) => {
               resetTimer()
               applyTimes('total', String(seconds))

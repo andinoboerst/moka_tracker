@@ -314,6 +314,7 @@ export default function BrewCard({ brew, onDelete, isDeleting, onUpdate }: BrewC
             profile={brew.pressure_profile}
             maxBar={brew.moka_pot?.max_pressure_bar}
             size={{ w: 560, h: 120, font: 12 }}
+            marker={brew.first_drip_s != null ? { s: Number(brew.first_drip_s), label: t('brew_card.first_drop') } : undefined}
           />
           <p className="num text-xs text-muted mt-2">{describeProfile(brew.pressure_profile)}</p>
         </div>

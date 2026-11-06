@@ -26,19 +26,23 @@ export function PressureChart({
   colors,
   size,
   compact,
+  marker,
 }: {
   profile: PressureStage[]
   maxBar?: number | null
   /** Fixed colours for places that ignore the live theme (the exported share image) */
-  colors?: { accent: string; grid: string; text: string }
+  colors?: { accent: string; grid: string; text: string; marker?: string }
   /** Drawing area and label size, for larger placements than the default 320x110 */
   size?: { w: number; h: number; font: number }
   /** Small sparkline without axes: just the shape of the shot, to be able to repeat it */
   compact?: boolean
+  /** A vertical line at a point in time, e.g. the first drop in the cup. Ignored when it falls outside the profile. */
+  marker?: { s: number; label: string }
 }) {
   const accent = colors?.accent ?? 'var(--accent)'
   const grid = colors?.grid ?? 'var(--line)'
   const text = colors?.text ?? 'var(--muted)'
+  const markerColor = colors?.marker ?? 'var(--ink)'
   const total = profileDuration(profile)
   if (profile.length === 0 || total <= 0) return null
 
@@ -75,6 +79,27 @@ export function PressureChart({
       ))}
       <path d={`${path} L${x(total)},${y(0)} L${x(0)},${y(0)} Z`} fill={accent} opacity="0.15" />
       <path d={path} fill="none" stroke={accent} strokeWidth="2" strokeLinejoin="round" />
+      {marker && marker.s > 0 && marker.s < total && (() => {
+        const mx = x(marker.s)
+        // Pressure where the line meets the curve, marked with a small dot
+        const pts = profilePoints(profile)
+        const seg = pts.findIndex(([s], i) => i > 0 && s >= marker.s)
+        const [s0, b0] = pts[Math.max(0, seg - 1)]
+        const [s1, b1] = pts[Math.max(1, seg)]
+        const bar = s1 === s0 ? b1 : b0 + ((marker.s - s0) / (s1 - s0)) * (b1 - b0)
+        // Keep the label clear of the 0s / total labels at the ends
+        const label = `${marker.label} ${marker.s}s`
+        const w = label.length * font * 0.58
+        const anchor = mx - w / 2 < pad.l + font * 2.5 ? 'start' : mx + w / 2 > W - pad.r - font * 3 ? 'end' : 'middle'
+        const tx = anchor === 'start' ? mx + 3 : anchor === 'end' ? mx - 3 : mx
+        return (
+          <g>
+            <line x1={mx} x2={mx} y1={y(top)} y2={y(0)} stroke={markerColor} strokeWidth="1.5" strokeDasharray="4 3" opacity="0.85" />
+            <circle cx={mx} cy={y(bar)} r={Math.max(2.5, font * 0.28)} fill={markerColor} />
+            <text x={tx} y={H - 5} textAnchor={anchor} fontSize={font} fill={markerColor}>{label}</text>
+          </g>
+        )
+      })()}
       <text x={pad.l} y={H - 5} fontSize={font} fill={text}>0s</text>
       <text x={W - pad.r} y={H - 5} textAnchor="end" fontSize={font} fill={text}>{total}s</text>
     </svg>
@@ -90,10 +115,12 @@ interface EditorProps {
   maxBar?: number | null
   /** Called with the profile's total seconds when the user wants it as the extraction time */
   onUseTime?: (seconds: number) => void
+  /** First drop in the cup, shown as a marker on the chart */
+  firstDropS?: number
 }
 
 /** Stage-by-stage editor for an espresso pressure profile, with a live chart. */
-export function PressureProfileEditor({ value, onChange, maxBar, onUseTime }: EditorProps) {
+export function PressureProfileEditor({ value, onChange, maxBar, onUseTime, firstDropS }: EditorProps) {
   const { t } = useLanguage()
   const update = (i: number, patch: Partial<PressureStage>) =>
     onChange(value.map((stage, idx) => (idx === i ? { ...stage, ...patch } : stage)))
@@ -167,7 +194,11 @@ export function PressureProfileEditor({ value, onChange, maxBar, onUseTime }: Ed
 
       {valid.length > 0 && (
         <div className="rounded-lg border border-line bg-surface p-2 max-w-sm">
-          <PressureChart profile={valid.map((s) => ({ ...s, pressure_bar: s.pressure_bar || 0 }))} maxBar={maxBar} />
+          <PressureChart
+            profile={valid.map((s) => ({ ...s, pressure_bar: s.pressure_bar || 0 }))}
+            maxBar={maxBar}
+            marker={firstDropS ? { s: firstDropS, label: t('brew_card.first_drop') } : undefined}
+          />
         </div>
       )}
 
