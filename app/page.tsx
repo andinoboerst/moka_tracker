@@ -224,6 +224,8 @@ export default function Home() {
       : stats.latest.bean?.name
     : ''
 
+  const hasGuide = !!(suggestion && stats?.latest)
+
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const from = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1
   const to = Math.min(total, page * PAGE_SIZE)
@@ -308,36 +310,45 @@ export default function Home() {
           </section>
         ) : (
           <>
-            {hasBothKinds && (
-              <div className="mb-8">
-                <BrewerKindToggle value={kind} onChange={changeKind} />
-              </div>
-            )}
-
-            {/* Next Brew Guide Card */}
-            {suggestion && stats?.latest && (
-              <div className="card rounded-2xl relative overflow-hidden mb-8 p-6 sm:p-8">
-                <div className="absolute top-0 right-0 p-4 opacity-[0.06] text-ink pointer-events-none">
-                  <MokaPotIcon className="w-32 h-32" />
-                </div>
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="w-5 h-5 text-accent-ink" />
-                    <h2 className="text-xl font-display font-semibold text-ink">{t('dashboard.next_brew_guide')}</h2>
+            {/* Next Brew Guide + stats */}
+            <div className={`grid gap-4 mb-6 ${hasGuide ? 'lg:grid-cols-[1fr_15rem]' : ''}`}>
+              {suggestion && stats?.latest && (
+                <div className="card rounded-2xl relative overflow-hidden p-6 sm:p-8">
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.06] text-ink pointer-events-none">
+                    <MokaPotIcon className="w-32 h-32" />
                   </div>
-                  <p className="text-muted text-sm mb-3">
-                    {t('dashboard.based_on_last', { bean: latestName || '?', rating: stats.latest.vibe_rating })}
-                  </p>
-                  <p className="text-ink text-lg font-medium leading-relaxed max-w-3xl">
-                    &ldquo;{suggestion}&rdquo;
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-5 h-5 text-accent-ink" />
+                      <h2 className="text-xl font-display font-semibold text-ink">{t('dashboard.next_brew_guide')}</h2>
+                    </div>
+                    <p className="text-muted text-sm mb-3">
+                      {t('dashboard.based_on_last', { bean: latestName || '?', rating: stats.latest.vibe_rating })}
+                    </p>
+                    <p className="text-ink text-lg font-medium leading-relaxed max-w-3xl">
+                      &ldquo;{suggestion}&rdquo;
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className={`grid grid-cols-2 gap-4 ${hasGuide ? 'lg:grid-cols-1' : ''}`}>
+                <div className="card px-5 py-4 text-center flex flex-col justify-center">
+                  <p className="eyebrow mb-2">{t('dashboard.total_brews')}</p>
+                  <p className="num text-4xl font-medium text-ink">{stats?.total ?? '—'}</p>
+                </div>
+                <div className="card px-5 py-4 text-center flex flex-col justify-center">
+                  <p className="eyebrow mb-2">{t('dashboard.avg_vibe')}</p>
+                  <p className="num text-4xl font-medium text-ink">
+                    {stats?.avg_rating != null ? stats.avg_rating.toFixed(1) : '—'}
                   </p>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Low stock */}
             {lowStock.length > 0 && (
-              <div className="card mb-8 flex items-start gap-3 px-4 py-3">
+              <div className="card mb-6 flex items-start gap-3 px-4 py-3">
                 <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <p className="text-ink font-semibold">{t('feat.stock_low_title')}</p>
@@ -348,43 +359,32 @@ export default function Home() {
               </div>
             )}
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-              <div className="card p-6 text-center">
-                <p className="eyebrow mb-3">{t('dashboard.total_brews')}</p>
-                <p className="num text-5xl font-medium text-ink">{stats?.total ?? '—'}</p>
-              </div>
-              <div className="card p-6 text-center">
-                <p className="eyebrow mb-3">{t('dashboard.avg_vibe')}</p>
-                <p className="num text-5xl font-medium text-ink">
-                  {stats?.avg_rating != null ? stats.avg_rating.toFixed(1) : '—'}
-                </p>
-              </div>
-              <div className="card p-6 text-center flex flex-col items-center justify-center">
-                <p className="eyebrow mb-4">{t('dashboard.quick_action')}</p>
-                <Link
-                  href="/brew"
-                  className="btn-primary py-2.5 px-5"
-                >
-                  <Plus className="w-4 h-4" />
-                  {t('nav.log_brew')}
-                </Link>
-              </div>
-            </div>
-
             {/* Brews List */}
             <section>
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <h2 className="text-2xl font-display font-semibold text-ink">{t('dashboard.recent_brews')}</h2>
-                {(stats?.total ?? 0) > 0 && (
-                  <button
-                    onClick={handleExport}
-                    disabled={exporting}
-                    className="flex items-center gap-2 text-sm text-muted hover:text-accent-ink border border-line-strong rounded-lg px-3 py-1.5 disabled:opacity-50"
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <h2 className="text-2xl font-display font-semibold text-ink">{t('dashboard.recent_brews')}</h2>
+                  {hasBothKinds && <BrewerKindToggle value={kind} onChange={changeKind} />}
+                </div>
+                <div className="flex items-center gap-2">
+                  {(stats?.total ?? 0) > 0 && (
+                    <button
+                      onClick={handleExport}
+                      disabled={exporting}
+                      className="flex items-center gap-2 text-sm text-muted hover:text-accent-ink border border-line-strong rounded-lg px-3 py-1.5 disabled:opacity-50"
+                    >
+                      <Download className="w-4 h-4" /> {t('feat.export_csv')}
+                    </button>
+                  )}
+                  <Link
+                    href="/brew"
+                    aria-label={t('nav.log_brew')}
+                    title={t('nav.log_brew')}
+                    className="btn-primary h-9 w-9 !p-0 rounded-full"
                   >
-                    <Download className="w-4 h-4" /> {t('feat.export_csv')}
-                  </button>
-                )}
+                    <Plus className="w-5 h-5" />
+                  </Link>
+                </div>
               </div>
 
               {/* Search & filters */}

@@ -194,7 +194,9 @@ export async function GET(request: NextRequest) {
         return query.order('created_at', { ascending: false }).range(from, to)
       })
       const total = rows.length
-      const avg = total ? rows.reduce((sum, r) => sum + (r.vibe_rating || 0), 0) / total : null
+      // Rows are newest first: the average only covers the last 10 brews so it keeps reflecting current form
+      const recent = rows.slice(0, 10)
+      const avg = recent.length ? recent.reduce((sum, r) => sum + (r.vibe_rating || 0), 0) / recent.length : null
       let latestQuery: any = client
         .from('brews')
         .select('id, ai_recap, vibe_rating, bean:beans(name), mix:brew_beans(percentage, bean:beans(name))')
